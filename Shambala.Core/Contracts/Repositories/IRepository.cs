@@ -1,4 +1,4 @@
-
+using Shambala.Domain;
 namespace Shambala.Core.Contracts.Repositories
 {
     public interface IInvoiceRepository : IGenericRepository<Invoice>
@@ -9,15 +9,11 @@ namespace Shambala.Core.Contracts.Repositories
     {
 
     }
-    public interface ISalesmanRepository : IGenericRepository<Scheme>
+    public interface ISchemeRepository : IGenericRepository<Scheme>
     {
 
     }
-    public interface ISalesmanRepository : IGenericRepository<Shop>
-    {
-
-    }
-    public interface ISalesmanRepository : IGenericRepository<Salesman>
+    public interface IShopRepository : IGenericRepository<Shop>
     {
 
     }

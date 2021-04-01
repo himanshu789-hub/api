@@ -1,12 +1,9 @@
 
-
 namespace Shambala.Core.Contracts.Repositories
 {
-    public class IGenericRepository<T> where T : class
+    public interface IGenericRepository<T>  where T : class
     {
         T Add(T entity);
-        boolean Delete(int Id);
-        T Get(int Id);
-        boolean Update(T entity);
+        bool Update(T entity);
     }
 }

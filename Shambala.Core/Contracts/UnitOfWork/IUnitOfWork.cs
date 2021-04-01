@@ -8,9 +8,9 @@ namespace Shambala.Core.Contracts.UnitOfWork
         IOutgoingShipmentRepository OutgoingShipmentRepository{get;set;}
         IProductRepository ProductRepository{get;set;}
         ISalesmanRepository SalesmanRepository{get;set;}
-        ISchemeRepository SchemeRepository{get;set;}
-        
+        ISchemeRepository SchemeRepository{get;set;}        
         void SaveChanges();
+        void BeginTransaction();
         void Commit();
     }
 }

@@ -8,7 +8,7 @@ namespace Shambala.Domain
         public Flavour()
         {
             Invoice = new HashSet<Invoice>();
-            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetails>();
+            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetail>();
             ProductFlavourQuantity = new HashSet<ProductFlavourQuantity>();
         }
 
@@ -16,7 +16,7 @@ namespace Shambala.Domain
         public string Title { get; set; }
 
         public virtual ICollection<Invoice> Invoice { get; set; }
-        public virtual ICollection<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
+        public virtual ICollection<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }
         public virtual ICollection<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
     }
 }

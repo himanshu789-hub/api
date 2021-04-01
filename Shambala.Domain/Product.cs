@@ -10,7 +10,7 @@ namespace Shambala.Domain
             CaretDetail = new HashSet<CaretDetail>();
             IncomingShipment = new HashSet<IncomingShipment>();
             Invoice = new HashSet<Invoice>();
-            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetails>();
+            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetail>();
             ProductFlavourQuantity = new HashSet<ProductFlavourQuantity>();
         }
 
@@ -20,7 +20,7 @@ namespace Shambala.Domain
         public virtual ICollection<CaretDetail> CaretDetail { get; set; }
         public virtual ICollection<IncomingShipment> IncomingShipment { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }
-        public virtual ICollection<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
+        public virtual ICollection<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }
         public virtual ICollection<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
     }
 }

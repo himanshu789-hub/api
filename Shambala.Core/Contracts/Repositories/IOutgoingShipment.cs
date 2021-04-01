@@ -1,10 +1,11 @@
-
+using Shambala.Domain;
+using System.Collections.Generic;
 
 namespace Shambala.Core.Contracts.Repositories
 {
-   public interface IOutgoingShipment
+   public interface IOutgoingShipmentRepository
    {
-       boolean Add(OutgoingShipment outgoingShipment,IEnumerable<OutgoingShipmentDetails> OutgoingShipmentDetails);
-       boolean ChangeStatus(string status);
+       bool Add(OutgoingShipment outgoingShipment,IEnumerable<OutgoingShipmentDetail> OutgoingShipmentDetails);
+       bool ChangeStatus(string status);
    }    
 }

@@ -1,6 +1,5 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Shambala.Domain;
 
 namespace Shambala.Infrastructure
@@ -21,7 +20,7 @@ namespace Shambala.Infrastructure
         public virtual DbSet<IncomingShipment> IncomingShipment { get; set; }
         public virtual DbSet<Invoice> Invoice { get; set; }
         public virtual DbSet<OutgoingShipment> OutgoingShipment { get; set; }
-        public virtual DbSet<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
+        public virtual DbSet<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
         public virtual DbSet<Salesman> Salesman { get; set; }
@@ -274,7 +273,7 @@ entity.HasIndex(e => e.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_Flavour_Relationship");
 
-                entity.HasOne(d => d.OutgoingShipmentIdFk)
+                entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)

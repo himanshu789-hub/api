@@ -1,4 +1,7 @@
 using Shambala.Options;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
+
 namespace Shambala.Configuration
 {
     public static class OptionExtension

@@ -1,12 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <ItemGroup>
-    <ProjectReference Include="..\Shambala.Domain\Shambala.Domain.csproj" />
     <ProjectReference Include="..\Shambala.Infrastructure\Shambala.Infrastructure.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <PackageReference Include="MySql.Data.EntityFrameworkCore" Version="8.0.22" />
+    <ProjectReference Include="..\Shambala.Core\Shambala.Core.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

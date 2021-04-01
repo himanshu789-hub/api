@@ -1,6 +1,7 @@
 using Shambala.Infrastructure;
+using Shambala.Core.Contracts.UnitOfWork;
 
-namespace Shambala.Core.Contracts.UnitOfWork
+namespace Shambala.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
@@ -54,6 +55,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         {
             _context = context;
         }
+
         public void SaveChanges()
         {
             _context.SaveChanges();
