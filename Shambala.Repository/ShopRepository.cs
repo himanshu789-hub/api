@@ -14,6 +14,7 @@ namespace Shambala.Repositories
 
         public Shop Add(Shop entity)
         {
+            throw new System.NotImplementedException();
         }
 
         public bool Delete(int Id)
