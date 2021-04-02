@@ -4,10 +4,10 @@ using Shambala.Infrastructure;
 
 namespace Shambala.Repository
 {
-    public class InvoiceRepository : GenericRepository<Invoice>, IInvoiceRepository
+    public class SchemeRepository : GenericRepository<Scheme>, ISchemeRepository
     {
         ShambalaContext _context;
-        public InvoiceRepository(ShambalaContext context) : base(context)
+        public SchemeRepository(ShambalaContext context) : base(context)
         {
             _context = context;
         }
