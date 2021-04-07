@@ -12,7 +12,6 @@ namespace Shambala.Domain
         public byte TotalQuantityRejected { get; set; }
         public int OutgoingShipmentIdFk { get; set; }
         public byte FlavourIdFk { get; set; }
-
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }

@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Shambala.Infrastructure\Shambala.Infrastructure.csproj" />
     <ProjectReference Include="..\Shambala.Core\Shambala.Core.csproj" />
+    <ProjectReference Include="..\Shambala.Repository\Shambala.Repository.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

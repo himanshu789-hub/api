@@ -1,16 +1,18 @@
 using Shambala.Core.Contracts.Repositories;
+using System.Threading.Tasks;
+
 namespace Shambala.Core.Contracts.UnitOfWork
 {
     public interface IUnitOfWork
     {
-        IShopRepository ShopRepository { get; set; }
-        IInvoiceRepository InvoiceRepository{get;set;}
-        IOutgoingShipmentRepository OutgoingShipmentRepository{get;set;}
-        IProductRepository ProductRepository{get;set;}
-        ISalesmanRepository SalesmanRepository{get;set;}
-        ISchemeRepository SchemeRepository{get;set;}        
-        void SaveChanges();
+        IShopRepository ShopRepository { get; }
+        IInvoiceRepository InvoiceRepository { get;  }
+        IOutgoingShipmentRepository OutgoingShipmentRepository { get;  }
+        IProductRepository ProductRepository { get;  }
+        ISalesmanRepository SalesmanRepository { get;  }
+        ISchemeRepository SchemeRepository { get;  }
+        public void SaveChanges();
         void BeginTransaction();
-        void Commit();
+        Task<int> SaveChangesAsync();
     }
 }

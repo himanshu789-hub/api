@@ -1,56 +1,66 @@
 using Shambala.Infrastructure;
 using Shambala.Core.Contracts.UnitOfWork;
+using Shambala.Core.Contracts.Repositories;
+using Shambala.Repository;
+using System.Threading.Tasks;
 
 namespace Shambala.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
         ShambalaContext _context;
-        IShopRepository ShopRepository
+        IShopRepository _shopRepository{get;set;}
+        IInvoiceRepository _invoiceRepository{get;set;}
+        IOutgoingShipmentRepository _outgoingShipmentRepository{get;set;}
+        IProductRepository  _productRepository{get;set;}
+        ISalesmanRepository _salesRepository{get;set;}
+        ISchemeRepository _schemeRepository{get;set;}
+        public IShopRepository ShopRepository
         {
             get
             {
-                ShopRepository == null ? new ShopRepository(_context) : ShopRepository;
+                return _shopRepository = _shopRepository == null ? new ShopRepository(_context) : ShopRepository;
             }
+           
         }
-        IInvoiceRepository InvoiceRepository
+        public  IInvoiceRepository InvoiceRepository
         {
             get
             {
-                InvoiceRepository == null ? new InvoiceRepository(_context) : InvoiceRepository;
+                return _invoiceRepository =  _invoiceRepository == null ? new InvoiceRepository(_context) : InvoiceRepository;
             }
         }
-        
-        IOutgoingShipmentRepository OutgoingShipmentRepository
+
+        public  IOutgoingShipmentRepository OutgoingShipmentRepository
         {
             get
             {
-                OutgoingShipmentRepository == null ? new OutgoingShipmentRepository(_context) : OutgoingShipmentRepository;
+                return _outgoingShipmentRepository =  _outgoingShipmentRepository == null ? new OutgoingShipmentRepository(_context) : OutgoingShipmentRepository;
             }
         }
-        IProductRepository ProductRepository
+        public IProductRepository ProductRepository
         {
             get
             {
-                ProductRepository == null ? new ProductRepository(_context) : ProductRepository;
+                return _productRepository = _productRepository == null ? new ProductRepository(_context) : ProductRepository;
             }
         }
-        
-        ISalesmanRepository SalesmanRepository
+
+        public ISalesmanRepository SalesmanRepository
         {
             get
             {
-                SalesmanRepository == null ? new SalesmanRepository(_context) : SalesmanRepository;
+                return _salesRepository =  _salesRepository == null ? new SalesmanRepository(_context) : SalesmanRepository;
             }
         }
-        ISchemeRepository SchemeRepository
+        public ISchemeRepository SchemeRepository
         {
             get
             {
-                SchemeRepository == null ? new SchemeRepository(_context) : SchemeRepository;
+                return _schemeRepository =  _schemeRepository == null ? new SchemeRepository(_context) : SchemeRepository;
             }
         }
-               
+
         public UnitOfWork(ShambalaContext context)
         {
             _context = context;
@@ -58,11 +68,17 @@ namespace Shambala.UnitOfWork
 
         public void SaveChanges()
         {
+            
             _context.SaveChanges();
         }
-        public Task SaveChangesAsync()
+        public async Task<int> SaveChangesAsync()
         {
-            await _context.SaveChangesAsync();
+            return await _context.SaveChangesAsync();
+        }
+
+        public void BeginTransaction()
+        {
+            _context.Database.BeginTransaction();
         }
     }
 }

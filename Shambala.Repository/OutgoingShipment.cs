@@ -2,12 +2,11 @@ using Shambala.Domain;
 using Shambala.Infrastructure;
 using Shambala.Core.Contracts.Repositories;
 using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore;
 using System.Linq;
 public class OutgoingShipmentRepository : IOutgoingShipmentRepository
 {
     ShambalaContext _context;
-    OutgoingShipmentRepository(ShambalaContext context) => _context = context;
+    public OutgoingShipmentRepository(ShambalaContext context) => _context = context;
     public OutgoingShipment Add(OutgoingShipment outgoingShipment, IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails)
     {
         foreach (var item in outgoingShipmentDetails)
