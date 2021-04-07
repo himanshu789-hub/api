@@ -10,7 +10,8 @@ namespace Shambala.Domain
         public short TotalRecievedPieces { get; set; }
         public short TotalDefectPieces { get; set; }
         public byte CaretSize { get; set; }
-
+        public DateTime DateCreated{get;set;}
         public virtual Product ProductIdFkNavigation { get; set; }
+
     }
 }

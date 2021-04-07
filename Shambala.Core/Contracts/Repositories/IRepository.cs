@@ -13,6 +13,10 @@ namespace Shambala.Core.Contracts.Repositories
     {
 
     }
+    public interface IIncomingShipmentRepository:IGenericRepository<IncomingShipment>
+    {
+        
+    }
     public interface IShopRepository : IGenericRepository<Shop>
     {
        Shop GetWithInvoiceDetail(int Id);

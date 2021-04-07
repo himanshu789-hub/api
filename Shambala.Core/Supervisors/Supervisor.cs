@@ -30,6 +30,13 @@ namespace Shambala.Core.Supervisors
 
         }
     }
+    public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, IncomingShipmentDTO, IIncomingShipmentRepository>
+    {
+        public IncomingShipmentSupervisor(IMapper mapper, IIncomingShipmentRepository repository) : base(mapper, repository)
+        {
+
+        }
+    }
     public class ShopSupervisor : GenericSupervisor<Shop, ShopDTO, IShopRepository>, IShopSupervisor
     {
         public ShopSupervisor(IMapper mapper, IShopRepository repository) : base(mapper, repository)

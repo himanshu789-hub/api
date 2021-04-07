@@ -103,11 +103,6 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.TotalRecievedPieces).HasColumnType("smallint(5) unsigned");
 
-                entity.HasOne(d => d.ProductIdFkNavigation)
-                    .WithMany(p => p.IncomingShipment)
-                    .HasForeignKey(d => d.ProductIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Incoming_shipment_Product_Relationship");
             });
 
             modelBuilder.Entity<Invoice>(entity =>
