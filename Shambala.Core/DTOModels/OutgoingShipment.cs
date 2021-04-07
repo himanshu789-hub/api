@@ -3,13 +3,12 @@ using System.Collections.Generic;
 
 namespace Shambala.Core.DTOModels
 {
-    public class OutgoingShipment
+    public class OutgoingShipmentDTO
     {
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public string Status { get; set; }
         public virtual SalesmanDTO Salesman { get; set; }
-        public virtual ICollection<InvoiceDTO> Invoice { get; set; }
         public virtual ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
 
     }
@@ -22,6 +21,6 @@ namespace Shambala.Core.DTOModels
         public byte TotalQuantityRejected { get; set; }
         public int OutgoingShipmentIdFk { get; set; }
         public  FlavourDTO Flavour { get; set; }
-        public virtual ProductDTO Product { get; set; }
+        public ProductDTO Product { get; set; }
     }
 }

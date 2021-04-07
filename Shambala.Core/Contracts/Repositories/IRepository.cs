@@ -7,7 +7,7 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>
     {
-
+      
     }
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {
@@ -15,6 +15,6 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface IShopRepository : IGenericRepository<Shop>
     {
-
+       Shop GetWithInvoiceDetail(int Id);
     }
 }
