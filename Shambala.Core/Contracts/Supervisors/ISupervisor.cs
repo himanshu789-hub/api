@@ -17,6 +17,10 @@ namespace Shambala.Core.Contracts.Supervisors
     }
     public interface IShopSupervisor : IGenericSupervisor<Shop, ShopDTO>
     {
-          ShopWithInvoicesDTO GetDetailWithInvoices(int Id);
+    ShopWithInvoicesDTO GetDetailWithInvoices(int Id);
+    }
+    public interface IIncomingShipmentSupervisor : IGenericSupervisor<IncomingShipment,IncomingShipmentDTO>
+    { 
+        
     }
 }
