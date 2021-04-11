@@ -11,6 +11,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         IOutgoingShipmentRepository OutgoingShipmentRepository { get; }
         IProductRepository ProductRepository { get; }
         ISalesmanRepository SalesmanRepository { get; }
+        IIncomingShipmentRepository IncomingShipmentRepository{get;}
         ISchemeRepository SchemeRepository { get; }
         void SaveChanges();
         void BeginTransaction(IsolationLevel levl);

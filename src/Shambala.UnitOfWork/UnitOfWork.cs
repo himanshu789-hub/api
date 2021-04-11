@@ -16,6 +16,7 @@ namespace Shambala.UnitOfWork
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
         IProductRepository _productRepository { get; set; }
         ISalesmanRepository _salesRepository { get; set; }
+        IIncomingShipmentRepository _incomingShipmentRepository { get; set; }
         ISchemeRepository _schemeRepository { get; set; }
         public IShopRepository ShopRepository
         {
@@ -25,11 +26,18 @@ namespace Shambala.UnitOfWork
             }
 
         }
+        public IIncomingShipmentRepository IncomingShipmentRepository
+        {
+            get
+            {
+                return _incomingShipmentRepository = _incomingShipmentRepository == null ? new IncomingShipmentRepository(context: _context) : _incomingShipmentRepository;
+            }
+        }
         public IInvoiceRepository InvoiceRepository
         {
             get
             {
-                return _invoiceRepository = _invoiceRepository == null ? new InvoiceRepository(_context) : InvoiceRepository;
+                return _invoiceRepository = _invoiceRepository == null ? new InvoiceRepository(_context) : _invoiceRepository;
             }
         }
 
@@ -37,14 +45,14 @@ namespace Shambala.UnitOfWork
         {
             get
             {
-                return _outgoingShipmentRepository = _outgoingShipmentRepository == null ? new OutgoingShipmentRepository(_context) : OutgoingShipmentRepository;
+                return _outgoingShipmentRepository = _outgoingShipmentRepository == null ? new OutgoingShipmentRepository(_context) : _outgoingShipmentRepository;
             }
         }
         public IProductRepository ProductRepository
         {
             get
             {
-                return _productRepository = _productRepository == null ? new ProductRepository(_context) : ProductRepository;
+                return _productRepository = _productRepository == null ? new ProductRepository(_context) : _productRepository;
             }
         }
 
@@ -52,14 +60,14 @@ namespace Shambala.UnitOfWork
         {
             get
             {
-                return _salesRepository = _salesRepository == null ? new SalesmanRepository(_context) : SalesmanRepository;
+                return _salesRepository = _salesRepository == null ? new SalesmanRepository(_context) : _salesRepository;
             }
         }
         public ISchemeRepository SchemeRepository
         {
             get
             {
-                return _schemeRepository = _schemeRepository == null ? new SchemeRepository(_context) : SchemeRepository;
+                return _schemeRepository = _schemeRepository == null ? new SchemeRepository(_context) : _schemeRepository;
             }
         }
 
@@ -96,7 +104,8 @@ namespace Shambala.UnitOfWork
 
         public void Rollback()
         {
-            transaction.Rollback();
+            if (transaction != null)
+                transaction.Rollback();
         }
 
         public void Dispose()
@@ -104,6 +113,7 @@ namespace Shambala.UnitOfWork
             if (transaction != null)
                 transaction.Dispose();
             _context.Dispose();
+            System.GC.Collect();
         }
 
         public async Task<int> SaveChangesAsync()

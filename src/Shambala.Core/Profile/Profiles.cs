@@ -17,7 +17,7 @@ namespace Shambala.Core.Profile
             CreateMap<Shop, ShopWithInvoicesDTO>();
             CreateMap<Product, ProductDTO>();
             CreateMap<ProductFlavourQuantity, FlavourDTO>()
-            .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFkNavigation.Id))
+            .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
             .IncludeMembers(e => e.FlavourIdFkNavigation);
         }
     }

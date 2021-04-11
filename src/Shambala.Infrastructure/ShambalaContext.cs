@@ -59,10 +59,6 @@ namespace Shambala.Infrastructure
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.HasOne(d => d.ProductIdFkNavigation)
-                    .WithMany(p => p.CaretDetail)
-                    .HasForeignKey(d => d.ProductIdFk)
-                    .HasConstraintName("Product_Caret_Relationship");
             });
 
             modelBuilder.Entity<Flavour>(entity =>
