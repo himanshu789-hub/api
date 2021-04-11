@@ -63,7 +63,7 @@ namespace Shambala.Infrastructure
                     .IsUnique();
 
                 entity.HasIndex(e => e.ProductIdFk)
-                    .HasName("Incoming_shipment_Product_Relationship_idx");
+                    .HasName("IncomingShipment_Product_Relationship_idx");
 
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
 

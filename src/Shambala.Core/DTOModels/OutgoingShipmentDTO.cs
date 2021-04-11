@@ -12,6 +12,16 @@ namespace Shambala.Core.DTOModels
         public virtual ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
 
     }
+    public class ProductInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+    }
+    public class FlavourInfo
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+    }
     public class OutgoingShipmentDetailDTO
     {
 
@@ -19,8 +29,8 @@ namespace Shambala.Core.DTOModels
         public byte CaretSize { get; set; }
         public short TotalQuantityShiped { get; set; }
         public byte TotalQuantityRejected { get; set; }
-        public int OutgoingShipmentIdFk { get; set; }
-        public  FlavourDTO Flavour { get; set; }
-        public ProductDTO Product { get; set; }
+        public int OutgoingShipmentId { get; set; }
+        public FlavourInfo Flavour { get; set; }
+        public ProductInfo Product { get; set; }
     }
 }

@@ -31,6 +31,7 @@ namespace Shambala.Core.Supervisors
                     _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (short)(item.TotalRecievedPieces - item.TotalDefectPieces));
                 }
                 await _unitOfWork.SaveChangesAsync();
+                _logger.LogInformation("Added Incoming Shipment");
             }
             catch (System.Exception e)
             {
