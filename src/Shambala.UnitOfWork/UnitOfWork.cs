@@ -92,7 +92,6 @@ namespace Shambala.UnitOfWork
             }
             else
                 _context.SaveChanges();
-            this.Dispose();
         }
 
 
@@ -136,7 +135,6 @@ namespace Shambala.UnitOfWork
             else
                 value = await _context.SaveChangesAsync();
 
-            this.Dispose();
             return value;
         }
     }

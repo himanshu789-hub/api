@@ -38,28 +38,6 @@ namespace Shambala.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<CaretDetail>(entity =>
-            {
-                entity.ToTable("caret_detail");
-
-                entity.HasIndex(e => e.ProductIdFk)
-                    .HasName("Product_Caret_Relationship_idx");
-
-                entity.Property(e => e.Id).HasColumnType("tinyint(3) unsigned");
-
-                entity.Property(e => e.CaretPrice).HasColumnType("decimal(6,2)");
-
-                entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
-
-                entity.Property(e => e.Gstrate)
-                    .HasColumnName("GSTRate")
-                    .HasColumnType("tinyint(4)");
-
-                entity.Property(e => e.ProductIdFk)
-                    .HasColumnName("Product_Id_FK")
-                    .HasColumnType("int(10) unsigned");
-
-            });
 
             modelBuilder.Entity<Flavour>(entity =>
             {
@@ -268,7 +246,7 @@ entity.HasIndex(e => e.OutgoingShipmentIdFk)
                     .WithMany(p => p.OutgoingShipmentDetails)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Outgoing_Shipment_Details_Product_Relationship");
+                    .HasConstraintName("Outgoing_Shipment_Details_OutgoingShipment_Relationship");
 
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)

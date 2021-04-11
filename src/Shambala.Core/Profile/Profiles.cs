@@ -11,14 +11,38 @@ namespace Shambala.Core.Profile
         {
             AddMemberConfiguration().AddName<PrePostfixName>(e => e.DestinationPostfixes.Contains("IdFkNavigation"));
             CreateMap<Salesman, SalesmanDTO>();
+            CreateMap<Salesman, SalesmanDTO>().ReverseMap();
+
             CreateMap<Scheme, SchemeDTO>();
+            CreateMap<Salesman, SalesmanDTO>().ReverseMap();
+
             CreateMap<OutgoingShipment, OutgoingShipmentDTO>();
+            CreateMap<OutgoingShipment, OutgoingShipmentDTO>().ReverseMap();
+
+
+            CreateMap<IncomingShipment, IncomingShipmentDTO>().ForMember(destinationMember => destinationMember.ProductId, map => map.MapFrom(e => e.ProductIdFk));
+            CreateMap<IncomingShipment, IncomingShipmentDTO>().ForMember(destinationMember => destinationMember.ProductId, map => map.MapFrom(e => e.ProductIdFk)).ReverseMap();
+
+
             CreateMap<Shop, ShopDTO>();
+            CreateMap<Shop, ShopDTO>().ReverseMap();
+
             CreateMap<Shop, ShopWithInvoicesDTO>();
+            CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();
+
             CreateMap<Product, ProductDTO>();
-            CreateMap<ProductFlavourQuantity, FlavourDTO>()
+            CreateMap<Product, ProductDTO>().ReverseMap();
+
+            CreateMap<ProductFlavourQuantity, FlavourDTO>(AutoMapper.MemberList.None)
             .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
-            .IncludeMembers(e => e.FlavourIdFkNavigation);
+            .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
+            .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title));
+
+            CreateMap<ProductFlavourQuantity, FlavourDTO>(AutoMapper.MemberList.None)
+            .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
+            .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
+            .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title)).ReverseMap();
+
         }
     }
 }

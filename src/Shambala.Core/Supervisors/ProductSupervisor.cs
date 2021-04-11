@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Shambala.Core.Contracts.Supervisors;
 using Shambala.Core.DTOModels;
 using Shambala.Core.Contracts.UnitOfWork;
+using Microsoft.Extensions.Logging;
 using AutoMapper;
 using Shambala.Domain;
 namespace Shambala.Core.Supervisors
@@ -10,10 +11,12 @@ namespace Shambala.Core.Supervisors
     {
         IUnitOfWork _unitOfWork;
         IMapper _mapper;
-        public ProductSupervisor(IUnitOfWork unitOfWork, IMapper mapper)
+        ILogger<ProductSupervisor> _logger;
+        public ProductSupervisor(IUnitOfWork unitOfWork, IMapper mapper, ILogger<ProductSupervisor> logger)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _logger = logger;
 
         }
         public async void Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
@@ -21,7 +24,7 @@ namespace Shambala.Core.Supervisors
             try
             {
                 _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-                foreach (var item in incomingShipmentDTOs)
+                foreach (IncomingShipmentDTO item in incomingShipmentDTOs)
                 {
                     IncomingShipment currentShipment = _mapper.Map<IncomingShipment>(item);
                     _unitOfWork.IncomingShipmentRepository.Add(currentShipment);
@@ -29,10 +32,10 @@ namespace Shambala.Core.Supervisors
                 }
                 await _unitOfWork.SaveChangesAsync();
             }
-            catch (System.Exception)
+            catch (System.Exception e)
             {
+                _logger.LogError(e.ToString());
                 _unitOfWork.Rollback();
-                _unitOfWork.Dispose();
             }
         }
 

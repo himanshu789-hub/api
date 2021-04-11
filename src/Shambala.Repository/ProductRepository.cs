@@ -14,7 +14,7 @@ namespace Shambala.Repository
 
         public bool AddQuantity(int productId, int flavourId, short quantity)
         {
-            _context.Database.ExecuteSqlRaw("UPDATE ProductFlavourQuantity SET Quantity = Quantity + @Quantity WHERE Product_Id_FK = {0} AND Flavour_ID_FK = {1}", productId, flavourId);
+            _context.Database.ExecuteSqlRaw("UPDATE Product_Flavour_Quantity SET Quantity = Quantity + {2} WHERE Product_Id_FK = {0} AND Flavour_ID_FK = {1}", productId, flavourId,quantity);
             return true;
         }
 
