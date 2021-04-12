@@ -16,7 +16,7 @@ namespace Shambala.Domain
         public string Name { get; set; }
         public int Id { get; set; }
 
-        public virtual byte CaretDetail { get; set; }
+        public  byte CaretSize { get; set; }
         public virtual ICollection<IncomingShipment> IncomingShipment { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }

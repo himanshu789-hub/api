@@ -12,11 +12,13 @@ namespace Shambala.Repository
         public T Add(T entity)
         {
             var AddedEntity = _context.Set<T>().Add(entity);
+            _context.SaveChanges();
             return AddedEntity.Entity;
         }
 
         public T GetById(int Id)
         {
+            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
             return _context.Set<T>().Find("Id");
         }
 

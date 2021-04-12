@@ -28,7 +28,7 @@ namespace Shambala.Supervisor.Test
             _mapper = config.CreateMapper();
         }
         readonly IMapper _mapper;
-        string _connection = "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=sham@12DATA;SslMode=None";
+        string _connection = "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=sham@12DATA;SslMode=None;AllowPublicKeyRetrieval=true";
         [Fact]
         public void IncomingShipment_Adding()
         {
@@ -53,6 +53,24 @@ namespace Shambala.Supervisor.Test
         public void Product_All_Getting_Available()
         {
 
+            using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
+            var logger = logFactory.CreateLogger<ProductSupervisor>();
+            using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
+            {
+                var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
+                using (var context = new ShambalaContext(options))
+                {
+                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context))
+                    {
+                        var supervisor = new ProductSupervisor(unitOfWork, _mapper, logger);
+                        var products = supervisor.GetAll();
+                        Assert.NotNull(products);
+                        string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(products);
+                        logger.LogInformation(serialize);
+                    }
+                }
+            }
+
         }
         [Fact]
         public void IsMappingWorking()
@@ -61,11 +79,32 @@ namespace Shambala.Supervisor.Test
             var incomingDto = _mapper.Map<IncomingShipment>(dtos.First());
             Assert.NotNull(incomingDto);
             string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(incomingDto);
-            
+
             using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
             var logger = logFactory.CreateLogger<UnitTest1>();
             logger.LogInformation(serialize);
 
+        }
+        [Fact]
+        public void SalesmanGet_Working()
+        {
+            // using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
+            // var logger = logFactory.CreateLogger<ProductSupervisor>();
+            // using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
+            // {
+            //     var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
+            //     using (var context = new ShambalaContext(options))
+            //     {
+            //         using (var unitOfWork = new UnitOfWork.UnitOfWork(context))
+            //         {
+            //             var supervisor = new SalesmanSupervisor(unitOfWork, _mapper, logger);
+            //             var products = supervisor.GetAll();
+            //             Assert.NotNull(products);
+            //             string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(products);
+            //             logger.LogInformation(serialize);
+            //         }
+            //     }
+            // }
         }
     }
 }

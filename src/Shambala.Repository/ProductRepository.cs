@@ -20,7 +20,7 @@ namespace Shambala.Repository
 
         public IEnumerable<Product> GetAll()
         {
-            return _context.Product.Include(e => e.CaretDetail).Include(e => e.ProductFlavourQuantity).ToList();
+            return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ToList();
         }
     }
 }

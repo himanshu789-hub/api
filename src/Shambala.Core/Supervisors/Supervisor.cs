@@ -1,17 +1,24 @@
 using Shambala.Domain;
 using Shambala.Core.DTOModels;
 using Shambala.Core.Contracts.Repositories;
+using Microsoft.Extensions.Logging;
 using Shambala.Core.Contracts.Supervisors;
 using AutoMapper;
+using System.Collections.Generic;
 
 namespace Shambala.Core.Supervisors
 {
     public class SalesmanSupervisor : GenericSupervisor<Salesman, SalesmanDTO, ISalesmanRepository>, ISalesmanSupervisor
     {
-
-        public SalesmanSupervisor(IMapper mapper, ISalesmanRepository repository) : base(mapper, repository)
+        ILogger<SalesmanSupervisor> _logger;
+        public SalesmanSupervisor(IMapper mapper, ISalesmanRepository repository, ILogger<SalesmanSupervisor> logger) : base(mapper, repository)
         {
+            _logger = logger;
+        }
 
+        public IEnumerable<SalesmanDTO> GetAllActive()
+        {
+            return _mapper.Map<List<SalesmanDTO>>(_repository.GetAllActive());
         }
     }
 
@@ -34,7 +41,7 @@ namespace Shambala.Core.Supervisors
     {
         public IncomingShipmentSupervisor(IMapper mapper, IIncomingShipmentRepository repository) : base(mapper, repository)
         {
-                  
+
         }
     }
     public class ShopSupervisor : GenericSupervisor<Shop, ShopDTO, IShopRepository>, IShopSupervisor

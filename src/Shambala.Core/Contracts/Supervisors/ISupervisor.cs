@@ -1,11 +1,11 @@
 using Shambala.Core.DTOModels;
 using Shambala.Domain;
-
+using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Supervisors
 {
     public interface ISalesmanSupervisor : IGenericSupervisor<Salesman, SalesmanDTO>
     {
-
+           IEnumerable<SalesmanDTO> GetAllActive(); 
     }
     public interface IInvoiceSupervisor : IGenericSupervisor<Invoice, InvoiceDTO>
     {

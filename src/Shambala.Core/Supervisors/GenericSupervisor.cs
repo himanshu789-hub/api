@@ -1,5 +1,6 @@
 using Shambala.Core.Contracts.Supervisors;
 using AutoMapper;
+using Microsoft.Extensions.Logging;
 using Shambala.Core.Contracts.Repositories;
 namespace Shambala.Core.Supervisors
 {
@@ -7,6 +8,8 @@ namespace Shambala.Core.Supervisors
     {
         protected readonly IMapper _mapper;
         protected readonly V _repository;
+       // protected readonly ILogger<U> _logger;
+        
         protected GenericSupervisor(IMapper mapper, V repository)
         {
             _mapper = mapper;
@@ -17,6 +20,7 @@ namespace Shambala.Core.Supervisors
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);
             DomainEntity = _repository.Add(DomainEntity);
+            
             return _mapper.Map<TDTO>(DomainEntity);
         }
 

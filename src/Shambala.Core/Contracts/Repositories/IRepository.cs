@@ -1,4 +1,5 @@
 using Shambala.Domain;
+using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Repositories
 {
     public interface IInvoiceRepository : IGenericRepository<Invoice>
@@ -7,7 +8,7 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>
     {
-      
+          public IEnumerable<Salesman> GetAllActive();  
     }
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {
