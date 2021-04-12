@@ -63,6 +63,9 @@ namespace Shambala.Infrastructure
 
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("IncomingShipment_Product_Relationship_idx");
+                
+                entity.HasIndex(e => e.FlavourIdFk)
+                .HasName("IncomingShipment_Flavour_Relationship_idx");
 
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
 
@@ -71,6 +74,10 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.ProductIdFk)
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int(11) unsigned");
+                
+                entity.Property(e => e.FlavourIdFk)
+                .HasColumnName("Flavour_Id_FK")
+                .HasColumnType("tinyint(4) unsigned");
 
                 entity.Property(e => e.TotalDefectPieces).HasColumnType("smallint(5) unsigned");
 
@@ -174,7 +181,7 @@ namespace Shambala.Infrastructure
 
                 entity.HasIndex(e => e.SalesmanIdFk)
                     .HasName("OUtgoingShipment_Salesman_Relationship_idx");
-                
+
                 entity.Property(e => e.Id).HasColumnType("int(11) unsigned");
                 entity.Property(e => e.Status)
                     .IsRequired()
@@ -200,8 +207,8 @@ namespace Shambala.Infrastructure
 
                 entity.HasIndex(e => e.FlavourIdFk)
                     .HasName("Outgoing_Shipment_Details_Flavour_Relationship_idx");
-entity.HasIndex(e => e.OutgoingShipmentIdFk)
-                    .HasName("Outgoing_Shipment_Details_OutgoingShipment_Relationship_idx");
+                entity.HasIndex(e => e.OutgoingShipmentIdFk)
+                                    .HasName("Outgoing_Shipment_Details_OutgoingShipment_Relationship_idx");
 
                 entity.HasIndex(e => e.Id)
                     .HasName("Id_UNIQUE")

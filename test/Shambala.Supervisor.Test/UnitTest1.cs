@@ -21,8 +21,8 @@ namespace Shambala.Supervisor.Test
         ICollection<IncomingShipmentDTO> dtos = new List<IncomingShipmentDTO>();
         public UnitTest1()
         {
-            dtos.Add(new IncomingShipmentDTO() { CaretSize = 12, FlavourId = 4, Id = 1, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
-            dtos.Add(new IncomingShipmentDTO() { CaretSize = 12, FlavourId = 4, Id = 2, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
+            dtos.Add(new IncomingShipmentDTO() { CaretSize = 12, FlavourId = 4, Id = 0, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
+            dtos.Add(new IncomingShipmentDTO() { CaretSize = 12, FlavourId = 4, Id = 0, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
 
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
             _mapper = config.CreateMapper();
@@ -35,13 +35,14 @@ namespace Shambala.Supervisor.Test
 
             using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
             var logger = logFactory.CreateLogger<ProductSupervisor>();
+            var unitOfWorkLogger = logFactory.CreateLogger<UnitOfWork.UnitOfWork>();
 
             using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
             {
                 var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
                 using (var context = new ShambalaContext(options))
                 {
-                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context))
+                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context,unitOfWorkLogger))
                     {
                         var supervisor = new ProductSupervisor(unitOfWork, _mapper, logger);
                         supervisor.Add(dtos);
@@ -55,12 +56,14 @@ namespace Shambala.Supervisor.Test
 
             using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
             var logger = logFactory.CreateLogger<ProductSupervisor>();
+
+            var unitOfWorkLogger = logFactory.CreateLogger<UnitOfWork.UnitOfWork>();
             using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
             {
                 var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
                 using (var context = new ShambalaContext(options))
                 {
-                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context))
+                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context,unitOfWorkLogger))
                     {
                         var supervisor = new ProductSupervisor(unitOfWork, _mapper, logger);
                         var products = supervisor.GetAll();

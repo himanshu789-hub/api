@@ -13,7 +13,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         ISalesmanRepository SalesmanRepository { get; }
         IIncomingShipmentRepository IncomingShipmentRepository{get;}
         ISchemeRepository SchemeRepository { get; }
-        void SaveChanges();
+        int SaveChanges();
         void BeginTransaction(IsolationLevel levl);
         Task<int> SaveChangesAsync();
         void Rollback();

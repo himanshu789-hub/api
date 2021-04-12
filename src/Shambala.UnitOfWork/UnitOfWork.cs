@@ -4,11 +4,14 @@ using Shambala.Core.Contracts.Repositories;
 using Shambala.Repository;
 using System.Threading.Tasks;
 using System.Data;
+using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 namespace Shambala.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
+        bool _isTransactionRollback = false;
+        bool _isTransactionCommited = false;
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction;
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
@@ -70,28 +73,35 @@ namespace Shambala.UnitOfWork
                 return _schemeRepository = _schemeRepository == null ? new SchemeRepository(_context) : _schemeRepository;
             }
         }
-
-        public UnitOfWork(ShambalaContext context)
+        ILogger<UnitOfWork> logger;
+        public UnitOfWork(ShambalaContext context, ILogger<UnitOfWork> logger)
         {
             _context = context;
+            this.logger = logger;
         }
 
-        public void SaveChanges()
+        public int SaveChanges()
         {
+            int value = -3345;
             if (transaction != null)
             {
                 try
                 {
-                    _context.SaveChanges();
+                    value = _context.SaveChanges();
                     transaction.Commit();
+                    _isTransactionCommited = true;
                 }
-                catch (System.Exception)
+                catch (System.Exception e)
                 {
                     this.Rollback();
+                    logger.LogCritical(e.ToString());
                 }
             }
             else
-                _context.SaveChanges();
+            {
+                value = _context.SaveChanges();
+            }
+            return value;
         }
 
 
@@ -105,12 +115,17 @@ namespace Shambala.UnitOfWork
         {
             if (transaction != null)
                 transaction.Rollback();
+            _isTransactionRollback = true;
         }
 
         public void Dispose()
         {
             if (transaction != null)
+            {
                 transaction.Dispose();
+                if (!_isTransactionCommited && !_isTransactionRollback)
+                    transaction.Rollback();
+            }
             _context.Dispose();
             System.GC.Collect();
         }
@@ -125,10 +140,12 @@ namespace Shambala.UnitOfWork
 
                     value = await _context.SaveChangesAsync();
                     await transaction.CommitAsync();
+                    _isTransactionCommited = true;
                 }
-                catch (System.Exception)
+                catch (System.Exception e)
                 {
                     this.Rollback();
+                    logger.LogCritical(e.ToString());
                 }
             }
 

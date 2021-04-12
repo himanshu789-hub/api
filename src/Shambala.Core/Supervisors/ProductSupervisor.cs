@@ -21,23 +21,17 @@ namespace Shambala.Core.Supervisors
         }
         public async void Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
         {
-            try
+            _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
+            foreach (IncomingShipmentDTO item in incomingShipmentDTOs)
             {
-                _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-                foreach (IncomingShipmentDTO item in incomingShipmentDTOs)
-                {
-                    IncomingShipment currentShipment = _mapper.Map<IncomingShipment>(item);
-                    _unitOfWork.IncomingShipmentRepository.Add(currentShipment);
-                    _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (short)(item.TotalRecievedPieces - item.TotalDefectPieces));
-                }
-                await _unitOfWork.SaveChangesAsync();
-                _logger.LogInformation("Added Incoming Shipment");
+                IncomingShipment currentShipment = _mapper.Map<IncomingShipment>(item);
+
+                _unitOfWork.IncomingShipmentRepository.Add(currentShipment);
+
+                _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (short)(item.TotalRecievedPieces - item.TotalDefectPieces));
             }
-            catch (System.Exception e)
-            {
-                _logger.LogError(e.ToString());
-                _unitOfWork.Rollback();
-            }
+
+            await _unitOfWork.SaveChangesAsync();
         }
 
         public IEnumerable<ProductDTO> GetAll()
