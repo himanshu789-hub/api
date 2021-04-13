@@ -7,5 +7,5 @@ namespace Shambala.Core.Contracts.Repositories
     {
         IEnumerable<Product> GetAll();
         bool AddQuantity(int productId,int flavourId,short quantity);
-    }
+   }
 } 

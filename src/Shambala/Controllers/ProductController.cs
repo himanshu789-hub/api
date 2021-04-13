@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
+using System.Threading.Tasks;
 using Shambala.Core.DTOModels;
 using System.Collections.Generic;
 namespace Shambala.Controllers
@@ -12,14 +13,14 @@ namespace Shambala.Controllers
         {
             _productSupervisor = supervisor;
         }
-        public IActionResult Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
+        public async Task<IActionResult> Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
         {
             if (ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Root.Errors);
 
-            _productSupervisor.Add(incomingShipmentDTOs);
+            await _productSupervisor.AddAsync(incomingShipmentDTOs);
             return new OkObjectResult(true);
         }
-
+          
     }
 }

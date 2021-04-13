@@ -114,17 +114,20 @@ namespace Shambala.UnitOfWork
         public void Rollback()
         {
             if (transaction != null)
+            {
                 transaction.Rollback();
-            _isTransactionRollback = true;
+                _isTransactionRollback = true;
+            }
+
         }
 
         public void Dispose()
         {
             if (transaction != null)
             {
-                transaction.Dispose();
                 if (!_isTransactionCommited && !_isTransactionRollback)
                     transaction.Rollback();
+                transaction.Dispose();
             }
             _context.Dispose();
             System.GC.Collect();

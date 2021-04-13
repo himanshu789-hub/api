@@ -18,12 +18,6 @@ namespace Shambala.Core.Profile
             CreateMap<Scheme, SchemeDTO>();
             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
-            CreateMap<Product, ProductInfo>();
-            CreateMap<Product, ProductInfo>().ReverseMap();
-
-            CreateMap<Flavour,FlavourInfo>();
-            CreateMap<Flavour,FlavourInfo>().ReverseMap();
-
             CreateMap<OutgoingShipment, OutgoingShipmentDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentDTO>().ReverseMap();
 

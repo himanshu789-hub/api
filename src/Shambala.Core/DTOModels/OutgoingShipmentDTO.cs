@@ -7,20 +7,8 @@ namespace Shambala.Core.DTOModels
     {
         public int Id { get; set; }
         public DateTime DateCreated { get; set; }
-        public string Status { get; set; }
-        public virtual SalesmanDTO Salesman { get; set; }
-        public virtual ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
-
-    }
-    public class ProductInfo
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-    }
-    public class FlavourInfo
-    {
-        public int Id { get; set; }
-        public string Title { get; set; }
+        public int SalesmanId { get; set; }
+        public ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
     }
     public class OutgoingShipmentDetailDTO
     {
@@ -30,7 +18,7 @@ namespace Shambala.Core.DTOModels
         public short TotalQuantityShiped { get; set; }
         public byte TotalQuantityRejected { get; set; }
         public int OutgoingShipmentId { get; set; }
-        public FlavourInfo Flavour { get; set; }
-        public ProductInfo Product { get; set; }
+        public int FlavourId { get; set; }
+        public int ProductId { get; set; }
     }
 }

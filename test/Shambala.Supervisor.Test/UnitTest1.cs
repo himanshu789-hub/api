@@ -29,8 +29,9 @@ namespace Shambala.Supervisor.Test
         }
         readonly IMapper _mapper;
         string _connection = "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=sham@12DATA;SslMode=None;AllowPublicKeyRetrieval=true";
-        [Fact]
-        public void IncomingShipment_Adding()
+        
+        //[Fact]
+        public async void IncomingShipment_Adding()
         {
 
             using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
@@ -45,7 +46,7 @@ namespace Shambala.Supervisor.Test
                     using (var unitOfWork = new UnitOfWork.UnitOfWork(context,unitOfWorkLogger))
                     {
                         var supervisor = new ProductSupervisor(unitOfWork, _mapper, logger);
-                        supervisor.Add(dtos);
+                        await supervisor.AddAsync(dtos);
                     }
                 }
             }
@@ -108,6 +109,29 @@ namespace Shambala.Supervisor.Test
             //         }
             //     }
             // }
+        }
+        [Fact]
+        public void GetProductByOrderId_Working()
+        {
+            using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
+            var logger = logFactory.CreateLogger<ProductSupervisor>();
+
+            var unitOfWorkLogger = logFactory.CreateLogger<UnitOfWork.UnitOfWork>();
+            using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
+            {
+                var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
+                using (var context = new ShambalaContext(options))
+                {
+                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context, unitOfWorkLogger))
+                    {
+                        var supervisor = new OutgoingShipmentSupervisor( _mapper, unitOfWork);
+                        var products = supervisor.GetProductListByOrderId(1);
+                        Assert.NotNull(products);
+                        string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(products);
+                        logger.LogInformation(serialize);
+                    }
+                }
+            }           
         }
     }
 }

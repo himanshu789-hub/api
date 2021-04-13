@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Shambala.Core.Contracts.Supervisors;
+using System.Threading.Tasks;
 using Shambala.Core.DTOModels;
 using Shambala.Core.Contracts.UnitOfWork;
 using Microsoft.Extensions.Logging;
@@ -19,7 +20,7 @@ namespace Shambala.Core.Supervisors
             _logger = logger;
 
         }
-        public async void Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
+        public async Task<bool> AddAsync(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
         {
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             foreach (IncomingShipmentDTO item in incomingShipmentDTOs)
@@ -30,13 +31,14 @@ namespace Shambala.Core.Supervisors
 
                 _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (short)(item.TotalRecievedPieces - item.TotalDefectPieces));
             }
-
-            await _unitOfWork.SaveChangesAsync();
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
+
 
         public IEnumerable<ProductDTO> GetAll()
         {
             return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAll());
         }
+
     }
 }
