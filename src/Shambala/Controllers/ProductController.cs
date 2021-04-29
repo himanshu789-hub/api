@@ -15,12 +15,19 @@ namespace Shambala.Controllers
         }
         public async Task<IActionResult> Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Root.Errors);
 
-            await _productSupervisor.AddAsync(incomingShipmentDTOs);
-            return new OkObjectResult(true);
+            bool IsAdded = await _productSupervisor.AddAsync(incomingShipmentDTOs);
+            if (IsAdded)
+                return Ok();
+            else
+                return BadRequest();
         }
-          
+        public ActionResult GetAllWithoutLismit()
+        {
+            return new OkObjectResult(_productSupervisor.GetAll());
+        }
+
     }
 }

@@ -1,5 +1,5 @@
 using System;
-
+using Shambala.Core.Helphers;
 namespace Shambala.Core.DTOModels
 {
     public class SchemeDTO
@@ -9,7 +9,7 @@ namespace Shambala.Core.DTOModels
         public string Title { get; set; }
         public DateTime DateCreated { get; set; }
         public bool IsUserDefinedScheme { get; set; }
-        public byte SchemeType { get; set; }
+        public SchemeType SchemeType { get; set; }
         public decimal Value { get; set; }
     }
 }

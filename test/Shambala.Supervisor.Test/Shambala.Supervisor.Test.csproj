@@ -23,7 +23,6 @@
     <ProjectReference Include="..\..\src\Shambala.Core\Shambala.Core.csproj" />
     <ProjectReference Include="..\..\src\Shambala.Domain\Shambala.Domain.csproj" />
     <ProjectReference Include="..\..\src\Shambala.UnitOfWork\Shambala.UnitOfWork.csproj" />
-    <ProjectReference Include="..\..\sample\Shambala.Infrastructure.Test\Shambala.Infrastructure.Test.csproj" />
   </ItemGroup>
 
 </Project>

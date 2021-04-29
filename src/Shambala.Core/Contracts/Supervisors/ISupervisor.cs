@@ -3,23 +3,23 @@ using Shambala.Domain;
 using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Supervisors
 {
-    public interface ISalesmanSupervisor : IGenericSupervisor<Salesman, SalesmanDTO>
+    public interface ISalesmanSupervisor : IGenericSupervisor<SalesmanDTO>
     {
            IEnumerable<SalesmanDTO> GetAllActive(); 
     }
-    public interface IInvoiceSupervisor : IGenericSupervisor<Invoice, InvoiceDTO>
+    public interface IInvoiceSupervisor : IGenericSupervisor<InvoiceDTO>
     {
 
     }
-    public interface ISchemeSupervisor : IGenericSupervisor<Scheme, SchemeDTO>
+    public interface ISchemeSupervisor : IGenericSupervisor< SchemeDTO>
     {
 
     }
-    public interface IShopSupervisor : IGenericSupervisor<Shop, ShopDTO>
+    public interface IShopSupervisor : IGenericSupervisor<ShopDTO>
     {
     ShopWithInvoicesDTO GetDetailWithInvoices(int Id);
     }
-    public interface IIncomingShipmentSupervisor : IGenericSupervisor<IncomingShipment,IncomingShipmentDTO>
+    public interface IIncomingShipmentSupervisor : IGenericSupervisor<IncomingShipmentDTO>
     { 
         
     }

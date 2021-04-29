@@ -19,7 +19,7 @@ namespace Shambala.Core.Supervisors
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> Add(OutgoingShipmentDTO outgoingShipmentDTO)
+        public async Task<bool> AddAsync(OutgoingShipmentDTO outgoingShipmentDTO)
         {
             OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(outgoingShipmentDTO);
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
@@ -29,7 +29,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<ProductDTO> GetProductListByOrderId(int orderId)
         {
-            IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductById(orderId: orderId);
+            IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
             ICollection<ProductDTO> Products = new List<ProductDTO>();
             foreach (var item in OutgoingShipmentDettailInfos)
             {

@@ -28,7 +28,7 @@ namespace Shambala.Supervisor.Test
             _mapper = config.CreateMapper();
         }
         readonly IMapper _mapper;
-        string _connection = "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=sham@12DATA;SslMode=None;AllowPublicKeyRetrieval=true";
+        string _connection = "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None;AllowPublicKeyRetrieval=true";
         
         //[Fact]
         public async void IncomingShipment_Adding()

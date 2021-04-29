@@ -3,6 +3,7 @@
 -- Host: localhost    Database: shambala
 -- ------------------------------------------------------
 -- Server version	8.0.4-rc-log
+USE `shambala` ;
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -15,35 +16,6 @@
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
---
--- Table structure for table `caret_detail`
---
-
-DROP TABLE IF EXISTS `caret_detail`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!50503 SET character_set_client = utf8mb4 */;
-CREATE TABLE `caret_detail` (
-  `Id` tinyint(3) unsigned NOT NULL,
-  `CaretSize` tinyint(4) NOT NULL,
-  `GSTRate` tinyint(4) NOT NULL,
-  `CaretPrice` decimal(6,2) NOT NULL,
-  `Product_Id_FK` int(10) unsigned DEFAULT NULL,
-  PRIMARY KEY (`Id`),
-  KEY `Product_Caret_Relationship_idx` (`Product_Id_FK`),
-  CONSTRAINT `Product_Caret_Relationship` FOREIGN KEY (`Product_Id_FK`) REFERENCES `product` (`id`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Dumping data for table `caret_detail`
---
-
-LOCK TABLES `caret_detail` WRITE;
-UNLOCK TABLES;
-
---
--- Table structure for table `flavour`
---
 
 DROP TABLE IF EXISTS `flavour`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;

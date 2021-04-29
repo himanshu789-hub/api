@@ -15,5 +15,7 @@
         "titleBar.inactiveBackground": "#ffff0099",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "yellow"
+    "peacock.color": "yellow",
+    "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
+    "omnisharp.projectLoadTimeout": 120
 }

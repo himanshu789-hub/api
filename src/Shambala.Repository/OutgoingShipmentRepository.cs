@@ -2,6 +2,7 @@ using Shambala.Domain;
 using Shambala.Core.DTOModels;
 using Shambala.Infrastructure;
 using Shambala.Core.Contracts.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.Linq;
 public class OutgoingShipmentRepository : IOutgoingShipmentRepository
@@ -10,8 +11,6 @@ public class OutgoingShipmentRepository : IOutgoingShipmentRepository
     public OutgoingShipmentRepository(ShambalaContext context) => _context = context;
     public OutgoingShipment Add(OutgoingShipment outgoingShipment)
     {
-        foreach (var item in outgoingShipment.OutgoingShipmentDetails)
-            outgoingShipment.OutgoingShipmentDetails.Add(item);
         var Entity = _context.OutgoingShipment.Add(outgoingShipment);
         return Entity.Entity;
     }
@@ -25,9 +24,11 @@ public class OutgoingShipmentRepository : IOutgoingShipmentRepository
         return true;
     }
 
-    public IEnumerable<OutgoingShipmentDettailInfo> GetProductById(int orderId)
+    public IEnumerable<OutgoingShipmentDettailInfo> GetProductsById(int orderId)
     {
-        IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails.Where(e => e.Id == orderId).Select(e => new OutgoingShipmentDettailInfo
+        IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails.AsNoTracking()
+        .Where(e => e.Id == orderId)
+        .Select(e => new OutgoingShipmentDettailInfo
         {
             Product = new ProductInfo()
             {
@@ -42,6 +43,7 @@ public class OutgoingShipmentRepository : IOutgoingShipmentRepository
                 Title = e.FlavourIdFkNavigation.Title
             }
         }).ToList();
+        
         return OutgoingShipmentDettailInfos;
     }
 

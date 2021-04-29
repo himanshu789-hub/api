@@ -4,7 +4,7 @@ using Microsoft.Extensions.Logging;
 using Shambala.Core.Contracts.Repositories;
 namespace Shambala.Core.Supervisors
 {
-    public class GenericSupervisor<T, TDTO, V> : IGenericSupervisor<T, TDTO> where T : class where TDTO : class where V : IGenericRepository<T>
+    public class GenericSupervisor<T, TDTO, V> : IGenericSupervisor<TDTO> where T : class where TDTO : class where V : IGenericRepository<T>
     {
         protected readonly IMapper _mapper;
         protected readonly V _repository;

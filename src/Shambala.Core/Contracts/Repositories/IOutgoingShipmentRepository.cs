@@ -7,6 +7,6 @@ namespace Shambala.Core.Contracts.Repositories
    {
        OutgoingShipment Add(OutgoingShipment outgoingShipment);
        bool ChangeStatus(int Id,string status);
-       IEnumerable<OutgoingShipmentDettailInfo> GetProductById(int orderId);
+       IEnumerable<OutgoingShipmentDettailInfo> GetProductsById(int orderId);
    }    
 }

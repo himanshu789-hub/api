@@ -5,7 +5,7 @@ namespace Shambala.Core.Contracts.Supervisors
 {
     public interface  IOutgoingShipmentSupervisor
     {
-        Task<bool> Add(OutgoingShipmentDTO outgoingShipment);
+        Task<bool>  AddAsync(OutgoingShipmentDTO outgoingShipment);
         IEnumerable<ProductDTO> GetProductListByOrderId(int OrderId);
 
     }

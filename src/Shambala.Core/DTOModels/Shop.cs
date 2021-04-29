@@ -7,8 +7,11 @@ namespace Shambala.Core.DTOModels
         public string Title { get; set; }
         public string Address { get; set; }
         public short Id { get; set; }
-        public virtual SchemeDTO Scheme { get; set; }
 
+    }
+    public class ShopInfoDTO : ShopDTO
+    {
+        public SchemeDTO Scheme { get; set; }
     }
     public class ShopWithInvoicesDTO : ShopDTO
     {

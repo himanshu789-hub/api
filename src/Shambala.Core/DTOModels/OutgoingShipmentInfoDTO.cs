@@ -8,7 +8,7 @@ namespace Shambala.Core.DTOModels
     }
     public class OutgoingShipmentDettailInfo
     {
-      public  ProductInfo Product { get; set; }
+        public  ProductInfo Product { get; set; }
         public  FlavourDTO Flavour { get; set; }
     }
 }

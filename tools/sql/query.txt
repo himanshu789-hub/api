@@ -1,0 +1,5 @@
+SELECT OSD.Id,OSD.Product_Id_FK AS 'ProductId',OSD.Flavour_Id_FK AS 'FalvourId',(sum(OSD.Total_Quantity_Shiped)-sum(OSD.Total_Quantity_Rejected)) AS 'QuantityDispatch',
+pfq.Quantity AS 'QuantityInStock' FROM shambala.outgoing_shipment_details AS OSD 
+JOIN shambala.outgoing_shipment AS OUTS ON OSD.Outgoing_Shipment_Id_FK=OUTS.Id JOIN shambala.product_flavour_quantity 
+AS pfq ON pfq.Flavour_Id_FK=OSD.Flavour_Id_FK AND pfq.Product_Id_FK=OSD.Product_Id_FK WHERE OUTS.Status='RETURN' 
+GROUP BY OSD.Product_Id_FK,OSD.Flavour_Id_FK;
