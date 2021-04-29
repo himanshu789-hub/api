@@ -25,5 +25,12 @@ namespace Shambala.Controllers
             else
                 return BadRequest();
         }
+        public IActionResult GetProductListByOrderId([FromRoute] int orderId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Root.Errors);
+
+            return Ok(_outgoingSupervisor.GetProductListByOrderId(orderId));
+        }
     }
 }

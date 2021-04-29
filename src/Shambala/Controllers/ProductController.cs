@@ -3,6 +3,7 @@ using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
 using Shambala.Core.DTOModels;
 using System.Collections.Generic;
+
 namespace Shambala.Controllers
 
 {
@@ -26,7 +27,7 @@ namespace Shambala.Controllers
         }
         public ActionResult GetAllWithoutLismit()
         {
-            return new OkObjectResult(_productSupervisor.GetAll());
+            return Ok(_productSupervisor.GetAll());
         }
 
     }

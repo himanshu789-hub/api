@@ -52,6 +52,28 @@ namespace Shambala.Controllers
 
     public class SchemeController : GenericController<SchemeDTO>
     {
-        
+        public SchemeController(ISchemeSupervisor supervisor) : base(supervisor)
+        {
+
+        }
+    }
+    public class ShopController : GenericController<ShopDTO>
+    {
+        public ShopController(IShopSupervisor supervisor) : base(supervisor)
+        {
+
+        }
+    }
+    public class SalesmanController : GenericController<SalesmanDTO>
+    {
+        readonly ISalesmanSupervisor _supeervisor;
+        public SalesmanController(ISalesmanSupervisor salesmanSupervisor) : base(salesmanSupervisor)
+        {
+            _supeervisor = salesmanSupervisor;
+        }
+        public IActionResult GetAll()
+        {
+            return Ok(_supeervisor.GetAllActive());
+        }
     }
 }
