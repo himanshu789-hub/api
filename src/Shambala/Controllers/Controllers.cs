@@ -6,6 +6,7 @@ using System.Collections.Generic;
 
 namespace Shambala.Controllers
 {
+    [Microsoft.AspNetCore.Mvc.NonController]
     public class GenericController<T> : ControllerBase where T : class
     {
         readonly IGenericSupervisor<T> _supervisor;
@@ -59,8 +60,17 @@ namespace Shambala.Controllers
     }
     public class ShopController : GenericController<ShopDTO>
     {
+        readonly IShopSupervisor _supervisor;
         public ShopController(IShopSupervisor supervisor) : base(supervisor)
         {
+            _supervisor = supervisor;
+        }
+        public IActionResult GetInvoices([FromRoute] int shopId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+
+            return Ok(_supervisor.GetDetailWithInvoices(shopId));
 
         }
     }
