@@ -10,7 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-
+using Shambala.Configurations;
 namespace Shambala
 {
     public class Startup
@@ -26,6 +26,10 @@ namespace Shambala
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMappingConfiguration();
+            services.AddDIItems();
+            services.AddRepositoryServices();
+            services.AddServicesExtensionsWithIConfiguration(Configuration);
+            services.AddConnections();
             services.AddControllers();
         }
 

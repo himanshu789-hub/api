@@ -6,7 +6,6 @@ using System.Collections.Generic;
 
 namespace Shambala.Controllers
 {
-
     public class ShipmentController : ControllerBase
     {
         IOutgoingShipmentSupervisor _outgoingSupervisor;
