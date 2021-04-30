@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace Shambala.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.NonController]
+    
     public class GenericController<T> : ControllerBase where T : class
     {
         readonly IGenericSupervisor<T> _supervisor;
@@ -14,6 +14,7 @@ namespace Shambala.Controllers
         {
             _supervisor = supervisor;
         }
+        [HttpPost]
         public IActionResult Add(T dto)
         {
             ModelState.Remove("Id");
@@ -29,6 +30,7 @@ namespace Shambala.Controllers
             }
             return BadRequest(ModelState.Root.Errors);
         }
+        [HttpPut]
         public IActionResult Update(T dto)
         {
 
@@ -43,14 +45,16 @@ namespace Shambala.Controllers
             }
             return BadRequest(ModelState.Root.Errors);
         }
-        public IActionResult GetById(int Id)
+        [HttpGet]
+        public IActionResult GetById([FromRoute]int Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Root.Errors);
             return Ok(_supervisor.GetById(Id));
         }
-    }
 
+    }
+    [Controller]
     public class SchemeController : GenericController<SchemeDTO>
     {
         public SchemeController(ISchemeSupervisor supervisor) : base(supervisor)

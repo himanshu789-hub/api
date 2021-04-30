@@ -1,5 +1,6 @@
 using AutoMapper;
 using Shambala.Core.Profile;
+using Microsoft.Extensions.DependencyInjection;
 using Shambala.Core.Contracts.Supervisors;
 using Shambala.Core.Supervisors;
 namespace Microsoft.Extensions.DependencyInjection
@@ -18,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddScoped<IProductSupervisor, ProductSupervisor>();
             services.AddScoped<IOutgoingShipmentSupervisor, OutgoingShipmentSupervisor>();
+            services.AddScoped<ISchemeSupervisor, SchemeSupervisor>();
             return services;
         }
     }

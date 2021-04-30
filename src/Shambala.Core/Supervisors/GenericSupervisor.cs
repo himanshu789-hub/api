@@ -25,8 +25,9 @@ namespace Shambala.Core.Supervisors
         }
 
 
-        public TDTO GetById(int Id)
+        public TDTO GetById(object Id)
         {
+            
             return _mapper.Map<TDTO>(_repository.GetById(Id));
         }
 

@@ -14,6 +14,7 @@ namespace Shambala.Controllers
         {
             _productSupervisor = supervisor;
         }
+        [HttpPost]
         public async Task<IActionResult> Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
         {
             if (!ModelState.IsValid)
@@ -25,7 +26,9 @@ namespace Shambala.Controllers
             else
                 return BadRequest();
         }
-        public ActionResult GetAllWithoutLismit()
+
+        [HttpGet]
+        public IActionResult GetAllWithoutLimit()
         {
             return Ok(_productSupervisor.GetAll());
         }

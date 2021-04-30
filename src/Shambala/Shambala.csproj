@@ -4,6 +4,7 @@
     <ProjectReference Include="..\Shambala.Core\Shambala.Core.csproj" />
     <ProjectReference Include="..\Shambala.Infrastructure\Shambala.Infrastructure.csproj" />
     <ProjectReference Include="..\Shambala.Repository\Shambala.Repository.csproj" />
+    <ProjectReference Include="..\Shambala.UnitOfWork\Shambala.UnitOfWork.csproj" />
   </ItemGroup>
 
   <ItemGroup>

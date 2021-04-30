@@ -5,6 +5,6 @@ namespace Shambala.Core.Contracts.Repositories
     {
         T Add(T entity);
         bool Update(T entity);
-        T GetById(int Id);
+        T GetById(object Id);
     }
 }

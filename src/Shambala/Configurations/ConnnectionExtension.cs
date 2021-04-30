@@ -7,7 +7,7 @@ namespace Shambala.Configurations
 {
     public static class ConnectionExtension
     {
-        public static IServiceCollection ConfigureSQLInstance(IServiceCollection services,IConfiguration configuration)
+        public static IServiceCollection ConfigureSQLInstance(this IServiceCollection services,IConfiguration configuration)
         {
              services.AddDbContext<ShambalaContext>(options =>
              options.UseMySQL(configuration.GetConnectionString("MySQLConnection")));

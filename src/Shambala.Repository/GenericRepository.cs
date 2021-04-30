@@ -1,6 +1,7 @@
 using Shambala.Infrastructure;
 using Shambala.Core.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace Shambala.Repository
 {
@@ -14,12 +15,12 @@ namespace Shambala.Repository
             return AddedEntity.Entity;
         }
 
-        public T GetById(int Id)
+        public T GetById(object Id)
         {
-            var Tracking = _context.ChangeTracker.QueryTrackingBehavior;
-            _context.ChangeTracker.QueryTrackingBehavior = QueryTrackingBehavior.NoTracking;
-            var Entity = _context.Set<T>().Find(Id);
-            _context.ChangeTracker.QueryTrackingBehavior = Tracking;
+            var EntityId = System.Convert.ChangeType(Id, typeof(T).GetProperty("Id").PropertyType);
+            if (EntityId == null)
+                throw new System.Exception("Id cannot be converted to type '"+typeof(T).GetType().GetProperty("Id").PropertyType.FullName+"'");
+            var Entity = _context.Set<T>().Find(EntityId);
             return Entity;
         }
 

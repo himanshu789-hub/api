@@ -4,6 +4,6 @@ namespace Shambala.Core.Contracts.Supervisors
     {
          TDTO Add(TDTO entityDTO);
          bool Update(TDTO entityDTO);
-         TDTO GetById(int Id);
+         TDTO GetById(object Id);
     }
 }
