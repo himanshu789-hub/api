@@ -8,8 +8,8 @@ namespace Shambala.Core.Supervisors
     {
         protected readonly IMapper _mapper;
         protected readonly V _repository;
-       // protected readonly ILogger<U> _logger;
-        
+        // protected readonly ILogger<U> _logger;
+
         protected GenericSupervisor(IMapper mapper, V repository)
         {
             _mapper = mapper;
@@ -27,16 +27,19 @@ namespace Shambala.Core.Supervisors
 
         public TDTO GetById(object Id)
         {
-            
+
             return _mapper.Map<TDTO>(_repository.GetById(Id));
         }
 
         public bool Update(TDTO entityDTO)
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);
-            bool result = _repository.Update(DomainEntity);
-            _repository.SaveChanges();
-            return result;
+            bool IsUpdated = _repository.Update(DomainEntity);
+            if(IsUpdated)
+            {
+                _repository.SaveChanges();
+            }
+            return IsUpdated;
         }
     }
 }

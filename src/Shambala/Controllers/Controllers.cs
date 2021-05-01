@@ -32,8 +32,9 @@ namespace Shambala.Controllers
             return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
         }
         [HttpPut]
-        public IActionResult Update(T dto)
+        public IActionResult Update([FromBody]T dto)
         {
+            
             if (ModelState.IsValid)
             {
                 bool IsUpdated = _supervisor.Update(dto);

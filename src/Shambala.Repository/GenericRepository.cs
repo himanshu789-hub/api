@@ -3,7 +3,7 @@ using Shambala.Core.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
-
+using Shambala.Domain;
 namespace Shambala.Repository
 {
     public class GenericRepository<T> : IGenericRepository<T> where T : class
@@ -12,12 +12,12 @@ namespace Shambala.Repository
         public GenericRepository(ShambalaContext context) => _context = context;
         public T Add(T entity)
         {
-            if(typeof(T).GetProperty("IsActive").PropertyType.FullName==typeof(bool).FullName)
+            if (typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
             {
-                typeof(T).GetProperty("IsActive").SetValue(entity,true);
+                typeof(T).GetProperty("IsActive").SetValue(entity, true);
             }
             var AddedEntity = _context.Set<T>().Add(entity);
-           
+
             return AddedEntity.Entity;
         }
 
@@ -42,7 +42,19 @@ namespace Shambala.Repository
 
         public bool Update(T entity)
         {
-            throw new System.NotImplementedException();
+            if (typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
+            {
+                typeof(T).GetProperty("IsActive").SetValue(entity, true);
+            }
+            if (typeof(T).GetProperty("Id") == null)
+                throw new System.Exception("Id Property Not Found");
+            var EntityId = typeof(T).GetProperty("Id").GetValue(entity);
+            if (this.GetById(EntityId) != null)
+            {
+                _context.Set<T>().Update(entity);
+                return true;
+            }
+            return false;
         }
     }
 }

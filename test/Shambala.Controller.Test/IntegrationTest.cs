@@ -45,16 +45,29 @@ namespace Shambala.Controller.Test
 
             var response = await _client.PostAsync("/api/salesman/add", data);
             string result = response.Content.ReadAsStringAsync().Result;
-            System.Console.WriteLine("Response : "+result);
-         }
+            System.Console.WriteLine("Response : " + result);
+        }
         [Fact]
         public async void SalesmanController_GetAll()
         {
             var response = await _client.GetAsync("/api/salesman/getall");
             Assert.True(response.IsSuccessStatusCode);
-             
+
             var result = await response.Content.ReadAsStringAsync();
             System.Console.WriteLine("All Salesman" + result);
+        }
+        [Fact]
+        public async void SalesmanController_Update()
+        {
+            SalesmanDTO salesman = new SalesmanDTO
+            {
+                FullName = "John Beas",
+                Id = 10
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(salesman);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await _client.PutAsync("/api/salesman/update", data);
+            Assert.False(response.IsSuccessStatusCode);
         }
     }
 }
