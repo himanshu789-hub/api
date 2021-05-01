@@ -26,7 +26,7 @@ namespace Shambala
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMappingConfiguration()
-            .AddDIItems()
+            .AddSupervisorServices()
             .AddRepositoryServices()
             .AddServicesExtensionsWithIConfiguration(Configuration)
             .AddConnections()

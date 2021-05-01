@@ -15,11 +15,15 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(mapper);
             return services;
         }
-        public static IServiceCollection AddDIItems(this IServiceCollection services)
+        public static IServiceCollection AddSupervisorServices(this IServiceCollection services)
         {
             services.AddScoped<IProductSupervisor, ProductSupervisor>();
             services.AddScoped<IOutgoingShipmentSupervisor, OutgoingShipmentSupervisor>();
             services.AddScoped<ISchemeSupervisor, SchemeSupervisor>();
+            services.AddScoped<ISalesmanSupervisor, SalesmanSupervisor>();
+            services.AddScoped<IIncomingShipmentSupervisor, IncomingShipmentSupervisor>();
+            services.AddScoped<IInvoiceSupervisor, InvoiceSupervisor>();
+            services.AddScoped<IShopSupervisor, ShopSupervisor>();
             return services;
         }
     }

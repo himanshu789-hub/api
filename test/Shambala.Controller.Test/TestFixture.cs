@@ -14,7 +14,7 @@ namespace Shambala.Controller.Test
             var builder = Microsoft.AspNetCore.WebHost.CreateDefaultBuilder().UseStartup<Startup>().UseContentRoot(root);
             Server = new TestServer(builder);
             Client = Server.CreateClient();
-            Client.BaseAddress = new Uri("http://localhost:5000");
+            Client.BaseAddress = new Uri("https://localhost:5001");
         }
         public HttpClient Client { get; }
         public TestServer Server { get; }

@@ -3,6 +3,7 @@ using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
 using Shambala.Core.DTOModels;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Shambala.Controllers
 {
@@ -15,25 +16,24 @@ namespace Shambala.Controllers
             _supervisor = supervisor;
         }
         [HttpPost]
-        public IActionResult Add(T dto)
+        public IActionResult Add([FromBody]T dto)
         {
             ModelState.Remove("Id");
-
+            
             if (ModelState.IsValid)
             {
                 T AddedEntity = _supervisor.Add(dto);
                 if (AddedEntity != null)
                 {
-                    return Ok();
+                    return Ok(AddedEntity);
                 }
-                return BadRequest("Not Added");
+                return Ok("Not Added");
             }
-            return BadRequest(ModelState.Root.Errors);
+            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
         }
         [HttpPut]
         public IActionResult Update(T dto)
         {
-
             if (ModelState.IsValid)
             {
                 bool IsUpdated = _supervisor.Update(dto);
@@ -43,7 +43,7 @@ namespace Shambala.Controllers
                 }
                 return BadRequest("Not Updated");
             }
-            return BadRequest(ModelState.Root.Errors);
+            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
         }
         [HttpGet]
         public IActionResult GetById([FromRoute]int Id)

@@ -20,7 +20,7 @@ namespace Shambala.Core.Supervisors
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);
             DomainEntity = _repository.Add(DomainEntity);
-            
+            _repository.SaveChanges();
             return _mapper.Map<TDTO>(DomainEntity);
         }
 
@@ -34,7 +34,9 @@ namespace Shambala.Core.Supervisors
         public bool Update(TDTO entityDTO)
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);
-            return _repository.Update(DomainEntity);
+            bool result = _repository.Update(DomainEntity);
+            _repository.SaveChanges();
+            return result;
         }
     }
 }
