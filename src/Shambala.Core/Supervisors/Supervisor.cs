@@ -37,7 +37,7 @@ namespace Shambala.Core.Supervisors
 
         }
     }
-    public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, IncomingShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor
+    public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, ShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor
     {
         public IncomingShipmentSupervisor(IMapper mapper, IIncomingShipmentRepository repository) : base(mapper, repository)
         {

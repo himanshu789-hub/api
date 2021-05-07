@@ -10,8 +10,8 @@ namespace Shambala.Core.DTOModels
     }
     public class FlavourInfoDTO
     {
-      public string QuantityDispatch{get;set;}
-      public string QuantityInStock{get;set;}
+      public int QuantityDispatch{get;set;}
+      public int QuantityInStock{get;set;}
       public string Title{get;set;}
       public int Id{get;set;}
     }

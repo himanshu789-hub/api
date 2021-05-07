@@ -13,12 +13,12 @@ namespace Shambala.Controllers
         {
             _outgoingSupervisor = outgoingShipmentSupervisor;
         }
-        public async Task<IActionResult> AddAsync(OutgoingShipmentDTO outgoingShipmentDTO)
+        public async Task<IActionResult> AddAsync(PostOutgoingShipmentDTO postOutgoing)
         {
             if (!ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Root.Errors);
 
-            bool IsAdded = await _outgoingSupervisor.AddAsync(outgoingShipmentDTO);
+            bool IsAdded = await _outgoingSupervisor.AddAsync(postOutgoing);
             if (IsAdded)
                 return Ok();
             else

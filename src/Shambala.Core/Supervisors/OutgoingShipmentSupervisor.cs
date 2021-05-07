@@ -19,9 +19,9 @@ namespace Shambala.Core.Supervisors
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> AddAsync(OutgoingShipmentDTO outgoingShipmentDTO)
+        public async Task<bool> AddAsync(PostOutgoingShipmentDTO postOutgoingShipmentDTO)
         {
-            OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(outgoingShipmentDTO);
+            OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(postOutgoingShipmentDTO); 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             _unitOfWork.OutgoingShipmentRepository.Add(OutgoingShipment);
             return await _unitOfWork.SaveChangesAsync() > 0;

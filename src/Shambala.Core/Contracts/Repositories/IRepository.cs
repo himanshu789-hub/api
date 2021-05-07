@@ -8,7 +8,7 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>
     {
-          public IEnumerable<Salesman> GetAllActive();  
+         IEnumerable<Salesman> GetAllActive();  
     }
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {

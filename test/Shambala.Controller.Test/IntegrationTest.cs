@@ -69,5 +69,12 @@ namespace Shambala.Controller.Test
             var response = await _client.PutAsync("/api/salesman/update", data);
             Assert.False(response.IsSuccessStatusCode);
         }
+        [Fact]
+        public async void ProductController_getProductsWithDispatchQuantity()
+        {
+            var response = await _client.GetAsync("GetProductsWithStockAndDispatch");
+            var result = await response.Content.ReadAsStringAsync();
+            System.Console.WriteLine("Products : ", result);
+        }
     }
 }

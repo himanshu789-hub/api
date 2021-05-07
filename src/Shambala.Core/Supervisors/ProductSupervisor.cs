@@ -20,16 +20,14 @@ namespace Shambala.Core.Supervisors
             _logger = logger;
 
         }
-        public async Task<bool> AddAsync(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
+        public async Task<bool> AddAsync(IEnumerable<ShipmentDTO> incomingShipmentDTOs)
         {
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            foreach (IncomingShipmentDTO item in incomingShipmentDTOs)
+            foreach (ShipmentDTO item in incomingShipmentDTOs)
             {
                 IncomingShipment currentShipment = _mapper.Map<IncomingShipment>(item);
-
                 _unitOfWork.IncomingShipmentRepository.Add(currentShipment);
-
-                _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (short)(item.TotalRecievedPieces - item.TotalDefectPieces));
+                _unitOfWork.ProductRepository.AddQuantity(item.ProductId, item.FlavourId, (item.TotalRecievedPieces - item.TotalDefectPieces));
             }
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
@@ -38,6 +36,10 @@ namespace Shambala.Core.Supervisors
         public IEnumerable<ProductDTO> GetAll()
         {
             return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAll());
+        }
+        public IEnumerable<ProductInfoDTO> GetProductsByLeftQuantityAndDispatch()
+        {
+            return _unitOfWork.ProductRepository.GetProductsInStockWithDispatchQuantity();
         }
 
     }

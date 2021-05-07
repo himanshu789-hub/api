@@ -6,6 +6,7 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface IProductSupervisor
     {
         IEnumerable<ProductDTO> GetAll();
-         Task<bool> AddAsync(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs);
+        Task<bool> AddAsync(IEnumerable<ShipmentDTO> incomingShipmentDTOs);
+        IEnumerable<ProductInfoDTO> GetProductsByLeftQuantityAndDispatch();
     }
 }

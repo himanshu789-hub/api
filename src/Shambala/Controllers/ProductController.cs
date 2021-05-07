@@ -15,7 +15,7 @@ namespace Shambala.Controllers
             _productSupervisor = supervisor;
         }
         [HttpPost]
-        public async Task<IActionResult> Add(IEnumerable<IncomingShipmentDTO> incomingShipmentDTOs)
+        public async Task<IActionResult> Add(IEnumerable<ShipmentDTO> incomingShipmentDTOs)
         {
             if (!ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Root.Errors);
@@ -31,6 +31,14 @@ namespace Shambala.Controllers
         public IActionResult GetAllWithoutLimit()
         {
             return Ok(_productSupervisor.GetAll());
+        }
+        public IActionResult GetAllWithLimit()
+        {
+            throw new System.NotImplementedException();
+        }
+        public IEnumerable<ProductInfoDTO> GetProductsWithStockAndDispatch()
+        {
+            return _productSupervisor.GetProductsByLeftQuantityAndDispatch();
         }
 
     }

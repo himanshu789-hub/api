@@ -70,7 +70,7 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
 
                 entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
-
+            
                 entity.Property(e => e.ProductIdFk)
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int(11) unsigned");
@@ -82,6 +82,18 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.TotalDefectPieces).HasColumnType("smallint(5) unsigned");
 
                 entity.Property(e => e.TotalRecievedPieces).HasColumnType("smallint(5) unsigned");
+                   
+
+                entity.HasOne(d => d.ProductIdFkNavigation)
+                    .WithMany(p => p.IncomingShipment)
+                    .HasForeignKey(d => d.ProductIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("IncomingShipment_Product_Relationship"); 
+                    
+                entity.HasOne(d => d.FlavourIdFkNavigation)
+                    .WithMany(p => p.IncomingShipment)
+                    .HasForeignKey(d => d.FlavourIdFk)
+                    .HasConstraintName("IncmingShipment_Flavour");
 
             });
 
@@ -281,7 +293,7 @@ namespace Shambala.Infrastructure
                 entity.ToTable("product_flavour_quantity");
 
                 entity.HasIndex(e => e.FlavourIdFk)
-                    .HasName("Flavour_Id_FK_idx");
+                    .HasName("IncmingShipment_Flavour_idx");
 
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("Product_Relationship_idx");
@@ -296,7 +308,8 @@ namespace Shambala.Infrastructure
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.Quantity).HasColumnType("smallint(6) unsigned");
+                entity.Property(e => e.Quantity)
+                .HasColumnType("smallint(6) unsigned");
 
                 entity.HasOne(d => d.FlavourIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)

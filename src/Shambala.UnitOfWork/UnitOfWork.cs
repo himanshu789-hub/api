@@ -148,7 +148,7 @@ namespace Shambala.UnitOfWork
                 catch (System.Exception e)
                 {
                     this.Rollback();
-                    logger.LogCritical(e.ToString());
+                    throw e;
                 }
             }
 

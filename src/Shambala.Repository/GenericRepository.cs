@@ -12,7 +12,7 @@ namespace Shambala.Repository
         public GenericRepository(ShambalaContext context) => _context = context;
         public T Add(T entity)
         {
-            if (typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
+            if (typeof(T).GetProperty("IsActive")!=null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
             {
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
             }

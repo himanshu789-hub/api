@@ -9,9 +9,8 @@ namespace Shambala.Core.Profile
     {
         public ApplicationProfiles()
         {
-            AddMemberConfiguration().AddName<PrePostfixName>(e => e.AddStrings(e => e.DestinationPostfixes, "Fk", "IdFkNavigation"));
-
-
+            AddMemberConfiguration().AddName<PrePostfixName>(e => e.AddStrings(p => p.DestinationPostfixes, "Fk", "IdFkNavigation"));
+     
             CreateMap<Salesman, SalesmanDTO>();
             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
@@ -20,10 +19,12 @@ namespace Shambala.Core.Profile
 
             CreateMap<OutgoingShipment, OutgoingShipmentDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentDTO>().ReverseMap();
+             
+            CreateMap<PostOutgoingShipmentDTO,OutgoingShipment>()
+            .ForMember(e=>e.OutgoingShipmentDetails,map=>map.MapFrom(e=>e.Shipments)); 
 
-
-            CreateMap<IncomingShipment, IncomingShipmentDTO>();
-            CreateMap<IncomingShipment, IncomingShipmentDTO>().ReverseMap();
+            CreateMap<IncomingShipment, ShipmentDTO>();
+            CreateMap<IncomingShipment, ShipmentDTO>().ReverseMap();
 
             CreateMap<Shop, ShopDTO>();
             CreateMap<Shop, ShopDTO>().ReverseMap();
