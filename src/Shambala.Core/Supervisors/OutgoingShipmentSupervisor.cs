@@ -9,6 +9,7 @@ using System.Collections.Generic;
 
 namespace Shambala.Core.Supervisors
 {
+    using Exception;
     public class OutgoingShipmentSupervisor : IOutgoingShipmentSupervisor
     {
         IMapper _mapper;
@@ -19,12 +20,18 @@ namespace Shambala.Core.Supervisors
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        public async Task<bool> AddAsync(PostOutgoingShipmentDTO postOutgoingShipmentDTO)
+        public async Task<OutgoingShipmentWithSalesmanInfoDTO> AddAsync(PostOutgoingShipmentDTO postOutgoingShipmentDTO)
         {
-            OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(postOutgoingShipmentDTO); 
+            OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(postOutgoingShipmentDTO);
+            if (OutgoingShipment.OutgoingShipmentDetails.Distinct().Count() != OutgoingShipment.OutgoingShipmentDetails.Count())
+            {
+                throw new DuplicateShipmentsException();
+            }
+
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             _unitOfWork.OutgoingShipmentRepository.Add(OutgoingShipment);
-            return await _unitOfWork.SaveChangesAsync() > 0;
+            await _unitOfWork.SaveChangesAsync();
+            return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
         }
 
         public IEnumerable<ProductDTO> GetProductListByOrderId(int orderId)
@@ -45,5 +52,21 @@ namespace Shambala.Core.Supervisors
             }
             return Products;
         }
+
+        public async Task<bool> ReturnAsync(OutgoingShipmentDTO outgoingShipmentDTO)
+        {
+            OutgoingShipment outgoing = _mapper.Map<OutgoingShipment>(outgoingShipmentDTO);
+            var returnShipments = outgoing.OutgoingShipmentDetails;
+            if (returnShipments.Distinct().Count() != outgoing.OutgoingShipmentDetails.Count())
+                throw new DuplicateShipmentsException();
+            if (!_unitOfWork.OutgoingShipmentRepository.CheckStatus(outgoing.Id, Helphers.OutgoingShipmentStatus.PENDING))
+                throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
+            _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
+            _unitOfWork.OutgoingShipmentRepository.Return(outgoing.Id, outgoing.OutgoingShipmentDetails);
+            await _unitOfWork.SaveChangesAsync();
+
+            return true;
+        }
+
     }
 }

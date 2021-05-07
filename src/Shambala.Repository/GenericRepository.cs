@@ -6,13 +6,22 @@ using System.Threading.Tasks;
 using Shambala.Domain;
 namespace Shambala.Repository
 {
-    public class GenericRepository<T> : IGenericRepository<T> where T : class
+    public class GenericLoading<T> : ILoadingProperties<T> where T : class
+    {
+        readonly ShambalaContext _context;
+        public GenericLoading(ShambalaContext context) => _context = context;
+        public void Load<TProperty>(T entity, System.Linq.Expressions.Expression<System.Func<T, TProperty>> expression) where TProperty : class
+        {
+            _context.Entry(entity).Reference(expression).Load();
+        }
+    }
+    public class GenericRepository<T> :GenericLoading<T>, IGenericRepository<T> where T : class
     {
         ShambalaContext _context;
-        public GenericRepository(ShambalaContext context) => _context = context;
+        public GenericRepository(ShambalaContext context):base(context) => _context = context;
         public T Add(T entity)
         {
-            if (typeof(T).GetProperty("IsActive")!=null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
+            if (typeof(T).GetProperty("IsActive") != null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
             {
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
             }
@@ -20,6 +29,7 @@ namespace Shambala.Repository
 
             return AddedEntity.Entity;
         }
+
 
         public T GetById(object Id)
         {
@@ -29,6 +39,7 @@ namespace Shambala.Repository
             var Entity = _context.Set<T>().Find(EntityId);
             return Entity;
         }
+
 
         public int SaveChanges()
         {

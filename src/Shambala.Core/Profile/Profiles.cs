@@ -22,6 +22,9 @@ namespace Shambala.Core.Profile
              
             CreateMap<PostOutgoingShipmentDTO,OutgoingShipment>()
             .ForMember(e=>e.OutgoingShipmentDetails,map=>map.MapFrom(e=>e.Shipments)); 
+            CreateMap<OutgoingShipmentDTO,OutgoingShipment>();
+
+            CreateMap<OutgoingShipment,OutgoingShipmentWithSalesmanInfoDTO>();
 
             CreateMap<IncomingShipment, ShipmentDTO>();
             CreateMap<IncomingShipment, ShipmentDTO>().ReverseMap();
