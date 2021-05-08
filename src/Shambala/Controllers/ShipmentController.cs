@@ -51,6 +51,8 @@ namespace Shambala.Controllers
         }
         public async Task<IActionResult> Complete(int OutgoingShipmentId, IEnumerable<PostInvoiceDTO> invoiceDTOs)
         {
+            if(!ModelState.IsValid)
+            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
             try
             {
                 return Ok(await _outgoingSupervisor.CompleteAsync(OutgoingShipmentId, Utility.ToInvoices(invoiceDTOs)));
