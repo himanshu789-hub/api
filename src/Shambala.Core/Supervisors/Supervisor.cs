@@ -31,7 +31,7 @@ namespace Shambala.Core.Supervisors
         
     }
 
-    public class InvoiceSupervisor : GenericSupervisor<Invoice, InvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
+    public class InvoiceSupervisor : GenericSupervisor<Invoice, PostInvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
     {
         public InvoiceSupervisor(IMapper mapper, IInvoiceRepository repository) : base(mapper, repository)
         {

@@ -40,15 +40,18 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
         }
 
-        IEnumerable<ProductReturnBLL> GetProductReturnFromShipments(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails, IEnumerable<InvoiceDTO> invoiceDTOs)
+        IEnumerable<ProductReturnBLL> GetProductReturnFromShipments(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails, IEnumerable<Invoice> invoiceDTOs)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
+
+
             foreach (var OutgoingShipmentDetail in outgoingShipmentDetails)
             {
                 int ProductId = OutgoingShipmentDetail.ProductIdFk;
                 int FlavourId = OutgoingShipmentDetail.FlavourIdFk;
-                IEnumerable<InvoiceDTO> InvoicesWithParticularProductFlavour = invoiceDTOs.Where(e => e.ProductId == ProductId && e.FlavourId == FlavourId);
-                int QuantityToReturn = InvoicesWithParticularProductFlavour.Sum(e => e.Quantity);
+                int QuantityToReturn = invoiceDTOs
+                .Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId)
+                .Sum(e => e.QuantityPurchase);
                 productReturnBLLs.Add(new ProductReturnBLL
                 {
                     ProductId = ProductId,
@@ -59,12 +62,11 @@ namespace Shambala.Core.Supervisors
             return productReturnBLLs;
         }
 
-        void AddInvoice(IEnumerable<InvoiceDTO> invoiceDTOs)
+        void AddInvoices(IEnumerable<Invoice> invoices)
         {
-            IEnumerable<Invoice> Invoices = _mapper.Map<IEnumerable<Invoice>>(invoiceDTOs);
             IEnumerable<Product> Products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
 
-            foreach (Invoice invoice in Invoices)
+            foreach (Invoice invoice in invoices)
             {
                 ApplySchemeOverInvoice(invoice, Products);
                 _unitOfWork.InvoiceRepository.Add(invoice);
@@ -92,7 +94,7 @@ namespace Shambala.Core.Supervisors
             int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
             _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
         }
-        public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<InvoiceDTO> invoiceDTOs)
+        public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<Invoice> invoiceDTOs)
         {
             if (_unitOfWork.OutgoingShipmentRepository.CheckStatus(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.RETURN);
@@ -102,7 +104,7 @@ namespace Shambala.Core.Supervisors
             IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductReturnFromShipments(outgoingShipmentDetails, invoiceDTOs);
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            this.AddInvoice(invoiceDTOs);
+            this.AddInvoices(invoiceDTOs);
             _unitOfWork.ProductRepository.ReturnQuantity(productReturnBLLs);
             _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
             await _unitOfWork.SaveChangesAsync();

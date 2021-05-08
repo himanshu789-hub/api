@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
-using Shambala.Core.DTOModels;
-using System.Collections.Generic;
+using Shambala.Core.Models.DTOModel;
+using System.Data;
 using System.Linq;
 using Shambala.Core.Exception;
+using System.Collections.Generic;
 namespace Shambala.Controllers
 {
+    using Core.Helphers;
     public class ShipmentController : ControllerBase
     {
         IOutgoingShipmentSupervisor _outgoingSupervisor;
@@ -46,6 +48,19 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
 
             return Ok(_outgoingSupervisor.GetProductListByOrderId(orderId));
+        }
+        public async Task<IActionResult> Complete(int OutgoingShipmentId, IEnumerable<PostInvoiceDTO> invoiceDTOs)
+        {
+            try
+            {
+                return Ok(await _outgoingSupervisor.CompleteAsync(OutgoingShipmentId, Utility.ToInvoices(invoiceDTOs)));
+            }
+            catch (System.Exception e)
+            {
+                if (e is DataException)
+                    throw;
+                return BadRequest(e.InnerException);
+            }
         }
     }
 }

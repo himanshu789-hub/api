@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using System.Collections.Generic;
 
 namespace Shambala.Controllers

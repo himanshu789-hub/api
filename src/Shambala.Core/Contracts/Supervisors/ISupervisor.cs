@@ -7,7 +7,7 @@ namespace Shambala.Core.Contracts.Supervisors
     {
            IEnumerable<SalesmanDTO> GetAllActive(); 
     }
-    public interface IInvoiceSupervisor : IGenericSupervisor<InvoiceDTO>
+    public interface IInvoiceSupervisor : IGenericSupervisor<PostInvoiceDTO>
     {
     }
     public interface ISchemeSupervisor : IGenericSupervisor< SchemeDTO>
