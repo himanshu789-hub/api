@@ -1,7 +1,8 @@
 using Shambala.Core.Contracts.Repositories;
 using Shambala.Domain;
 using Shambala.Infrastructure;
-
+using System.Linq;
+using Microsoft.EntityFrameworkCore;
 namespace Shambala.Repository
 {
     public class SchemeRepository : GenericRepository<Scheme>, ISchemeRepository
@@ -11,5 +12,9 @@ namespace Shambala.Repository
         {
             _context = context;
         }
+
+        public Scheme GetSchemeWithNoTrackingById(short schemeId) =>
+            _context.Scheme.AsNoTracking().FirstOrDefault(e => e.Id == schemeId);
+
     }
 }

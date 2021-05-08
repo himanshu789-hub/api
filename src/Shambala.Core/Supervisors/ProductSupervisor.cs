@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using Shambala.Core.Contracts.UnitOfWork;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
@@ -35,7 +35,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<ProductDTO> GetAll()
         {
-            return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAll());
+            return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAllWithNoTracking());
         }
         public IEnumerable<ProductInfoDTO> GetProductsByLeftQuantityAndDispatch()
         {

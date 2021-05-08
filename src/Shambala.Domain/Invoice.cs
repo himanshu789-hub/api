@@ -10,9 +10,10 @@ namespace Shambala.Domain
         public short ShopIdFk { get; set; }
         public int ProductIdFk { get; set; }
         public byte FlavourIdFk { get; set; }
-        public short SchemeIdFk { get; set; }
+        public short? SchemeIdFk { get; set; }
         public byte CaretSize { get; set; }
         public short QuantityPurchase { get; set; }
+        
         public byte QuantityDefected { get; set; }
         public byte Gstrate { get; set; }
         public decimal CostPrice { get; set; }

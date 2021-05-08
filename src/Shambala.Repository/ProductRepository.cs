@@ -5,7 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
+using Shambala.Core.Models.BLLModel;
 
 namespace Shambala.Repository
 {
@@ -16,13 +17,18 @@ namespace Shambala.Repository
 
         public bool AddQuantity(int productId, int flavourId, int quantity)
         {
-            int value =  _context.Database.ExecuteSqlRaw("UPDATE Product_Flavour_Quantity SET Quantity = Quantity + {2} WHERE Product_Id_FK = {0} AND Flavour_Id_FK = {1}", productId, flavourId, quantity);
-    
+            int value = _context.Database.ExecuteSqlRaw("UPDATE Product_Flavour_Quantity SET Quantity = Quantity + {2} WHERE Product_Id_FK = {0} AND Flavour_Id_FK = {1}", productId, flavourId, quantity);
+
             return value > 0;
         }
 
+        public bool DeductQuantityOfProductFlavour(int productId, int flavourId, int quantity)
+        {
+            int value = _context.Database.ExecuteSqlRaw("UPDATE Product_Flavour_Quantity SET Quantity = Quantity - {2} WHERE Product_Id_FK = {0} AND Flavour_Id_FK = {1}", productId, flavourId, quantity);
+            return value > 0;
+        }
 
-        public IEnumerable<Product> GetAll()
+        public IEnumerable<Product> GetAllWithNoTracking()
         {
             return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ToList();
         }
@@ -110,6 +116,18 @@ namespace Shambala.Repository
             //       e.Quantity
             //   }).
 
+        }
+
+        public bool ReturnQuantity(IEnumerable<ProductReturnBLL> productReturnBLLs)
+        {
+            foreach (var item in productReturnBLLs)
+            {
+                ProductFlavourQuantity productFlavourQuantity = _context.ProductFlavourQuantity.FirstOrDefault(e => e.ProductIdFk == item.ProductId && e.FlavourIdFk == item.FlavourId);
+                if (productFlavourQuantity == null)
+                    return false;
+                productFlavourQuantity.Quantity += (short)item.Quantity;
+            }
+            return true;
         }
     }
 }

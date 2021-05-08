@@ -1,15 +1,15 @@
 using Shambala.Domain;
-using Shambala.Core.DTOModels;
 using Shambala.Infrastructure;
 using Shambala.Core.Contracts.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Shambala.Core.Helphers;
 using System.Linq;
-using Shambala.Core.Exception;
+using Shambala.Core.Models.BLLModel;
+using Shambala.Core.Models.DTOModel;
+
 namespace Shambala.Repository
 {
-
     public class OutgoingShipmentRepository : Shambala.Repository.GenericLoading<OutgoingShipment>, IOutgoingShipmentRepository
     {
         ShambalaContext _context;
@@ -55,7 +55,7 @@ namespace Shambala.Repository
 
             return OutgoingShipmentDettailInfos;
         }
-        
+
         public bool CheckStatus(int Id, OutgoingShipmentStatus expectedValue)
         {
             return _context.OutgoingShipment.First(e => e.Id == Id).Status == System.Enum.GetName(typeof(OutgoingShipmentStatus), expectedValue);
@@ -75,6 +75,16 @@ namespace Shambala.Repository
                 ShipmentDetail.TotalQuantityRejected += DefectedQuantity;
             }
             outgoing.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN);
+            return true;
+        }
+
+        public bool Complete(int Id)
+        {
+            ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
+            OutgoingShipment outgoingShipment = _context.OutgoingShipment.FirstOrDefault(e => e.Id == Id);
+            if (outgoingShipment == null || outgoingShipment.Status != System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN))
+                return false;
+            outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.COMPLETED);
             return true;
         }
     }

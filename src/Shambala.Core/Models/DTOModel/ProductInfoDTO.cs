@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-namespace Shambala.Core.DTOModels
+namespace Shambala.Core.Models.DTOModel
 {
     public class ProductInfoDTO
     {

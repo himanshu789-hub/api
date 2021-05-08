@@ -1,4 +1,4 @@
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using Shambala.Domain;
 using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Supervisors
@@ -9,7 +9,6 @@ namespace Shambala.Core.Contracts.Supervisors
     }
     public interface IInvoiceSupervisor : IGenericSupervisor<InvoiceDTO>
     {
-
     }
     public interface ISchemeSupervisor : IGenericSupervisor< SchemeDTO>
     {

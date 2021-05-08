@@ -1,7 +1,7 @@
 using AutoMapper.Configuration.Conventions;
 using AutoMapper.Configuration;
 using Shambala.Domain;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 
 namespace Shambala.Core.Profile
 {

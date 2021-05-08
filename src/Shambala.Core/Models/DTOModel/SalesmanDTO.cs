@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-namespace Shambala.Core.DTOModels
+namespace Shambala.Core.Models.DTOModel
 {
     public class SalesmanDTO
     {

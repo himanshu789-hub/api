@@ -1,4 +1,4 @@
-namespace Shambala.Core.DTOModels
+namespace Shambala.Core.Models.DTOModel
 {
     public class ProductInfo
     {

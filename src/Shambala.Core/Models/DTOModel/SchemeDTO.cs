@@ -1,6 +1,6 @@
 using System;
 using Shambala.Core.Helphers;
-namespace Shambala.Core.DTOModels
+namespace Shambala.Core.Models.DTOModel
 {
     public class SchemeDTO
     {

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Shambala.Core.Helphers;
-namespace Shambala.Core.DTOModels
+namespace Shambala.Core.Models.DTOModel
 {
     public abstract class OutgoingShipmentBaseDTO
     {

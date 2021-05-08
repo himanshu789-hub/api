@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using System.Threading.Tasks;
 namespace Shambala.Core.Contracts.Supervisors
 {

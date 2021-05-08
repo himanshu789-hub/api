@@ -1,5 +1,5 @@
 using Shambala.Domain;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using Shambala.Core.Contracts.Repositories;
 using Microsoft.Extensions.Logging;
 using Shambala.Core.Contracts.Supervisors;
@@ -28,6 +28,7 @@ namespace Shambala.Core.Supervisors
         {
 
         }
+        
     }
 
     public class InvoiceSupervisor : GenericSupervisor<Invoice, InvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
@@ -36,6 +37,7 @@ namespace Shambala.Core.Supervisors
         {
 
         }
+
     }
     public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, ShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor
     {
