@@ -6,7 +6,7 @@ namespace Shambala.Configurations
 {
     public static class OptionExtension
     {
-        public static IServiceCollection AddServicesExtensionsWithIConfiguration(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddConnectionServices(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddOptions();
             var connection = configuration.GetSection("ConnectionStrings");
