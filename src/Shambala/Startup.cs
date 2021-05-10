@@ -29,7 +29,6 @@ namespace Shambala
             .AddSupervisorServices()
             .AddRepositoryServices()
             .AddConnectionServices(Configuration)
-            .ConfigureSQLInstance(Configuration)
             .AddUnitOfWorkService()
             .ConfigureSQLInstance(Configuration);
             services.AddControllers();

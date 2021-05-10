@@ -5,6 +5,7 @@ using Shambala.Core.Models.DTOModel;
 using System.Data;
 using System.Linq;
 using Shambala.Core.Exception;
+using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 namespace Shambala.Controllers
 {
@@ -16,31 +17,33 @@ namespace Shambala.Controllers
         {
             _outgoingSupervisor = outgoingShipmentSupervisor;
         }
-        public async Task<IActionResult> AddAsync(PostOutgoingShipmentDTO postOutgoing)
+
+        [HttpPost]
+        public async Task<IActionResult> AddAsync([FromBody] PostOutgoingShipmentDTO postOutgoing)
         {
             ModelState.Remove("Id");
             if (!ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Values.SelectMany(e => e.Errors));
 
             return Ok(await _outgoingSupervisor.AddAsync(postOutgoing));
-
         }
-        public async Task<IActionResult> ReturnAsync(OutgoingShipmentDTO outgoingShipmentDTO)
+
+        [HttpPut]
+        public async Task<IActionResult> ReturnAsync([FromBody] OutgoingShipmentDTO outgoingShipmentDTO)
         {
             if (!ModelState.IsValid)
-                return BadRequest(ModelState.Values.Select(e => e.Errors));
+                return BadRequest(ModelState.Values.Select(e => e.Errors.Select(e => e.ErrorMessage)));
             try
             {
-                await _outgoingSupervisor.ReturnAsync(outgoingShipmentDTO);
+                return Ok(await _outgoingSupervisor.ReturnAsync(outgoingShipmentDTO));
             }
             catch (System.Exception e)
             {
                 if (e is DuplicateShipmentsException || e is OutgoingShipmentNotOperableException)
                     return BadRequest(e.Message);
                 else
-                    throw e;
+                    throw;
             }
-            return Ok();
         }
         public IActionResult GetProductListByOrderId([FromRoute] int orderId)
         {
@@ -49,19 +52,21 @@ namespace Shambala.Controllers
 
             return Ok(_outgoingSupervisor.GetProductListByOrderId(orderId));
         }
-        public async Task<IActionResult> Complete(int OutgoingShipmentId, IEnumerable<PostInvoiceDTO> invoiceDTOs)
+
+        [HttpPost]
+        public async Task<IActionResult> CompleteAsync([FromRoute][Required] int Id, [FromBody] IEnumerable<PostInvoiceDTO> postInvoiceDTOs)
         {
-            if(!ModelState.IsValid)
-            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             try
             {
-                return Ok(await _outgoingSupervisor.CompleteAsync(OutgoingShipmentId, Utility.ToInvoices(invoiceDTOs)));
+                return Ok(await _outgoingSupervisor.CompleteAsync(Id, Utility.ToInvoices(postInvoiceDTOs)));
             }
             catch (System.Exception e)
             {
-                if (e is DataException)
-                    throw;
-                return BadRequest(e.InnerException);
+                if (e is OutgoingShipmentNotOperableException || e is DuplicateNameException)
+                    return BadRequest(e.Message);
+                throw;
             }
         }
     }
