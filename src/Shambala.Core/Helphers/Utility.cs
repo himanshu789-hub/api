@@ -22,9 +22,10 @@ namespace Shambala.Core.Helphers
                     NewInvoice.OutgoingShipmentIdFk = Invoice.OutgoingShipmentId;
                     NewInvoice.SchemeIdFk = Invoice.SchemeId;
                     NewInvoice.ShopIdFk = Invoice.ShopId;
+                    
                     NewInvoice.ProductIdFk = item.ProductId;
-                    NewInvoice.FlavourIdFk = (byte)item.FlavourId;
-                    NewInvoice.QuantityPurchase = (short)item.Quantity;
+                    NewInvoice.FlavourIdFk = item.FlavourId;
+                    NewInvoice.QuantityPurchase = item.Quantity;
                     Result.Add(NewInvoice);
                 }
 

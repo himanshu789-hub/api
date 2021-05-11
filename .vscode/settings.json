@@ -1,21 +1,22 @@
 {
     "workbench.colorCustomizations": {
-        "activityBar.activeBackground": "#ffff33",
-        "activityBar.activeBorder": "#00bfbf",
-        "activityBar.background": "#ffff33",
+        "activityBar.activeBackground": "#84c7e4",
+        "activityBar.activeBorder": "#d748ac",
+        "activityBar.background": "#84c7e4",
         "activityBar.foreground": "#15202b",
         "activityBar.inactiveForeground": "#15202b99",
-        "activityBarBadge.background": "#00bfbf",
-        "activityBarBadge.foreground": "#15202b",
-        "statusBar.background": "#ffff00",
+        "activityBarBadge.background": "#d748ac",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "statusBar.background": "#5ab4db",
         "statusBar.foreground": "#15202b",
-        "statusBarItem.hoverBackground": "#cccc00",
-        "titleBar.activeBackground": "#ffff00",
+        "statusBarItem.hoverBackground": "#30a1d2",
+        "titleBar.activeBackground": "#5ab4db",
         "titleBar.activeForeground": "#15202b",
-        "titleBar.inactiveBackground": "#ffff0099",
+        "titleBar.inactiveBackground": "#5ab4db99",
         "titleBar.inactiveForeground": "#15202b99"
     },
-    "peacock.color": "yellow",
+    "peacock.color": "#5ab4db",
     "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
-    "omnisharp.projectLoadTimeout": 120
+    "omnisharp.projectLoadTimeout": 120,
+    "dotnet-test-explorer.testProjectPath": "test/*"
 }

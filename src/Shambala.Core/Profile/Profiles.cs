@@ -17,12 +17,17 @@ namespace Shambala.Core.Profile
             CreateMap<Scheme, SchemeDTO>();
             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
-            CreateMap<OutgoingShipment, OutgoingShipmentDTO>();
-            CreateMap<OutgoingShipment, OutgoingShipmentDTO>().ReverseMap();
-             
+            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
+            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>().ReverseMap();
+            CreateMap<OutgoingShipmentDetail,OutgoingShipmentDetailDTO>();
+            CreateMap<ShipmentDTO,OutgoingShipmentDetail>()
+            .ForMember(e=>e.TotalQuantityShiped,map=>map.MapFrom(e=>e.TotalRecievedPieces))
+            .ForMember(e=>e.TotalQuantityRejected,map => map.MapFrom(e=>e.TotalDefectPieces)); 
+            
             CreateMap<PostOutgoingShipmentDTO,OutgoingShipment>()
-            .ForMember(e=>e.OutgoingShipmentDetails,map=>map.MapFrom(e=>e.Shipments)); 
-            CreateMap<OutgoingShipmentDTO,OutgoingShipment>();
+            .ForMember(e=>e.OutgoingShipmentDetails,map=>map.MapFrom(e=>e.Shipments));
+
+            CreateMap<OutgoingShipmentInfoDTO,OutgoingShipment>().ReverseMap();
 
             CreateMap<OutgoingShipment,OutgoingShipmentWithSalesmanInfoDTO>();
 

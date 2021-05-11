@@ -9,6 +9,7 @@ namespace Shambala.Core.Contracts.Repositories
     public interface ISalesmanRepository : IGenericRepository<Salesman>
     {
          IEnumerable<Salesman> GetAllActive();  
+        
     }
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {
@@ -21,5 +22,6 @@ namespace Shambala.Core.Contracts.Repositories
     public interface IShopRepository : IGenericRepository<Shop>
     {
        Shop GetWithInvoiceDetail(int Id);
+       IEnumerable<Shop> GetAllByName(string name);
     }
 }

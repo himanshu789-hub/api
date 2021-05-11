@@ -8,7 +8,7 @@ using Shambala.Core.Supervisors;
 using NLog.Web;
 using Shambala.Core.Profile;
 using Shambala.Infrastructure;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 namespace Shambala.Supervisor.Test

@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using System.Text;
 
 namespace Shambala.Controller.Test
@@ -72,7 +72,7 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void ProductController_getProductsWithDispatchQuantity()
         {
-            var response = await _client.GetAsync("GetProductsWithStockAndDispatch");
+            var response = await _client.GetAsync("/api/GetProductsWithStockAndDispatch");
             var result = await response.Content.ReadAsStringAsync();
             System.Console.WriteLine("Products : ", result);
         }

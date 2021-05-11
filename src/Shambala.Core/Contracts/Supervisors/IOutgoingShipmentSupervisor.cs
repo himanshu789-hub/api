@@ -11,8 +11,9 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface  IOutgoingShipmentSupervisor:IGSTRate
     {        
         Task<OutgoingShipmentWithSalesmanInfoDTO>  AddAsync(PostOutgoingShipmentDTO outgoingShipment);
-        Task<bool> ReturnAsync(OutgoingShipmentDTO outgoingShipmentDTO);
+        Task ReturnAsync(int Id,IEnumerable<ShipmentDTO> shipmentDTOs);
         IEnumerable<ProductDTO> GetProductListByOrderId(int OrderId);
         Task<bool> CompleteAsync(int OutgoingShipmentId,IEnumerable<Invoice> invoices);
+        IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date); 
     }
 }

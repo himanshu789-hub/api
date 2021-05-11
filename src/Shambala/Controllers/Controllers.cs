@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Shambala.Controllers
 {
-    
+
     public class GenericController<T> : ControllerBase where T : class
     {
         readonly IGenericSupervisor<T> _supervisor;
@@ -16,10 +16,10 @@ namespace Shambala.Controllers
             _supervisor = supervisor;
         }
         [HttpPost]
-        public IActionResult Add([FromBody]T dto)
+        public IActionResult Add([FromBody] T dto)
         {
             ModelState.Remove("Id");
-            
+
             if (ModelState.IsValid)
             {
                 T AddedEntity = _supervisor.Add(dto);
@@ -29,12 +29,12 @@ namespace Shambala.Controllers
                 }
                 return Ok("Not Added");
             }
-            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
+            return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
         }
         [HttpPut]
-        public IActionResult Update([FromBody]T dto)
+        public IActionResult Update([FromBody] T dto)
         {
-            
+
             if (ModelState.IsValid)
             {
                 bool IsUpdated = _supervisor.Update(dto);
@@ -44,10 +44,10 @@ namespace Shambala.Controllers
                 }
                 return BadRequest("Not Updated");
             }
-            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors));
+            return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
         }
         [HttpGet]
-        public IActionResult GetById([FromRoute]int Id)
+        public IActionResult GetById([FromRoute] int Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Root.Errors);
@@ -77,6 +77,13 @@ namespace Shambala.Controllers
 
             return Ok(_supervisor.GetDetailWithInvoices(shopId));
 
+        }
+        [HttpGet]
+        public IActionResult GetAllByName([FromQuery] string name)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
+            return Ok(_supervisor.GetAllByName(name));
         }
     }
     public class SalesmanController : GenericController<SalesmanDTO>

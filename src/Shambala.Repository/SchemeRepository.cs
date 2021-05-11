@@ -14,7 +14,7 @@ namespace Shambala.Repository
         }
 
         public Scheme GetSchemeWithNoTrackingById(short schemeId) =>
-            _context.Scheme.AsNoTracking().FirstOrDefault(e => e.Id == schemeId);
+            _context.Scheme.AsNoTracking().First(e => e.Id == schemeId);
 
     }
 }

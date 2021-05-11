@@ -20,6 +20,7 @@ namespace Shambala.Core.Supervisors
         {
             return _mapper.Map<List<SalesmanDTO>>(_repository.GetAllActive());
         }
+
     }
 
     public class SchemeSupervisor : GenericSupervisor<Scheme, SchemeDTO, ISchemeRepository>, ISchemeSupervisor
@@ -28,7 +29,7 @@ namespace Shambala.Core.Supervisors
         {
 
         }
-        
+
     }
 
     public class InvoiceSupervisor : GenericSupervisor<Invoice, PostInvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
@@ -50,6 +51,11 @@ namespace Shambala.Core.Supervisors
     {
         public ShopSupervisor(IMapper mapper, IShopRepository repository) : base(mapper, repository)
         {
+        }
+
+        public IEnumerable<ShopDTO> GetAllByName(string name)
+        {
+            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.GetAllByName(name));
         }
 
         public ShopWithInvoicesDTO GetDetailWithInvoices(int Id)

@@ -3,6 +3,8 @@ using Shambala.Domain;
 using Shambala.Infrastructure;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+
 namespace Shambala.Repository
 {
     public class ShopRepository : GenericRepository<Shop>, IShopRepository
@@ -11,6 +13,14 @@ namespace Shambala.Repository
         public ShopRepository(ShambalaContext context) : base(context)
         {
             _context = context;
+        }
+
+        public IEnumerable<Shop> GetAllByName(string name)
+        {
+            return _context.Shop
+            .Where(e => e.Title.Contains(name))
+            .AsNoTracking()
+            .ToList();
         }
 
         public Shop GetWithInvoiceDetail(int Id)

@@ -12,6 +12,8 @@ namespace Shambala.Core.Supervisors
     using Exception;
     using Models.BLLModel;
     using Helphers;
+    using System;
+
     public class OutgoingShipmentSupervisor : IOutgoingShipmentSupervisor
     {
         IMapper _mapper;
@@ -68,6 +70,7 @@ namespace Shambala.Core.Supervisors
 
             foreach (Invoice invoice in invoices)
             {
+
                 ApplySchemeOverInvoice(invoice, Products);
                 _unitOfWork.InvoiceRepository.Add(invoice);
             }
@@ -94,17 +97,17 @@ namespace Shambala.Core.Supervisors
             int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
             _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
         }
-        public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<Invoice> invoiceDTOs)
+        public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<Invoice> invoices)
         {
-            if (_unitOfWork.OutgoingShipmentRepository.CheckStatus(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
+            if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.RETURN);
 
             OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(OutgoingShipmentId);
             IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
-            IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductReturnFromShipments(outgoingShipmentDetails, invoiceDTOs);
+            IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductReturnFromShipments(outgoingShipmentDetails, invoices);
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            this.AddInvoices(invoiceDTOs);
+            this.AddInvoices(invoices);
             _unitOfWork.ProductRepository.ReturnQuantity(productReturnBLLs);
             _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
             await _unitOfWork.SaveChangesAsync();
@@ -129,21 +132,26 @@ namespace Shambala.Core.Supervisors
             }
             return Products;
         }
-
-        public async Task<bool> ReturnAsync(OutgoingShipmentDTO outgoingShipmentDTO)
+        public async Task ReturnAsync(int Id, IEnumerable<ShipmentDTO> shipments)
         {
-            OutgoingShipment outgoing = _mapper.Map<OutgoingShipment>(outgoingShipmentDTO);
-            var returnShipments = outgoing.OutgoingShipmentDetails;
-            if (returnShipments.Distinct().Count() != outgoing.OutgoingShipmentDetails.Count())
+            var returnShipments = _mapper.Map<IEnumerable<OutgoingShipmentDetail>>(shipments);
+            foreach (var item in returnShipments)
+                item.OutgoingShipmentIdFk = Id;
+
+            if (returnShipments.Distinct().Count() != returnShipments.Count())
                 throw new DuplicateShipmentsException();
-            if (!_unitOfWork.OutgoingShipmentRepository.CheckStatus(outgoing.Id, Helphers.OutgoingShipmentStatus.PENDING))
+            if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
+
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            _unitOfWork.OutgoingShipmentRepository.Return(outgoing.Id, outgoing.OutgoingShipmentDetails);
+            _unitOfWork.OutgoingShipmentRepository.Return(Id, returnShipments);
             await _unitOfWork.SaveChangesAsync();
-
-            return true;
         }
-
+        public IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
+        {
+            IEnumerable<OutgoingShipment> outgoings = _unitOfWork.OutgoingShipmentRepository.GetShipmentsBySalesmnaIdAndDate(salesmanId, date);
+            IEnumerable<OutgoingShipmentInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(outgoings);
+            return result;
+        }
     }
 }

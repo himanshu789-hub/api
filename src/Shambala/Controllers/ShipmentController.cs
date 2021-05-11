@@ -29,13 +29,14 @@ namespace Shambala.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> ReturnAsync([FromBody] OutgoingShipmentDTO outgoingShipmentDTO)
+        public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<ShipmentDTO> shipmentDTOs)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.Select(e => e.Errors.Select(e => e.ErrorMessage)));
             try
             {
-                return Ok(await _outgoingSupervisor.ReturnAsync(outgoingShipmentDTO));
+                await _outgoingSupervisor.ReturnAsync(Id, shipmentDTOs);
+                return Ok();
             }
             catch (System.Exception e)
             {
@@ -68,6 +69,13 @@ namespace Shambala.Controllers
                     return BadRequest(e.Message);
                 throw;
             }
+        }
+        [HttpGet]
+        public IActionResult GetOutgoingBySalesmanIdAndDate([FromQuery] short salesmanId, [FromQuery] System.DateTime date)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
+            return Ok(_outgoingSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using Xunit;
 using Shambala.Core.Profile;
-using Shambala.Core.DTOModels;
+using Shambala.Core.Models.DTOModel;
 using Shambala.Domain;
 using AutoMapper;
 using System.Collections.Generic;
+using Shambala.Core.Helphers;
 namespace Shambala.General.Test
 {
     public class GeneralTest
@@ -23,10 +24,23 @@ namespace Shambala.General.Test
             // Salesman salesman = _mapper.Map<Salesman>(salesmanDTO);
             // Salesman exptectedMapped = new Salesman() { FullName = "Pattrick Beans" };
 
-            ICollection<ShipmentDTO> dtos = new List<ShipmentDTO>();
-            dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
-            dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
-            var result = _mapper.Map<IEnumerable<IncomingShipment>>(dtos);
+            //ICollection<ShipmentDTO> dtos = new List<ShipmentDTO>();
+            //dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
+            //dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
+            
+             ICollection<PostInvoiceDTO> postInvoiceDTOs = new List<PostInvoiceDTO>();
+            postInvoiceDTOs.Add(new PostInvoiceDTO
+            {
+                CaretSize = 30,
+                DateCreated = new System.DateTime(),
+                OutgoingShipmentId = 1,
+                SchemeId = 1,
+                ShopId = 1,
+                SoldItems = new List<SoldItemsDTO>{new SoldItemsDTO(){
+                 FlavourId=1,ProductId=3,Quantity=10
+                }}
+            });
+            var result = _mapper.Map<IEnumerable<Invoice>>(Utility.ToInvoices(postInvoiceDTOs));
             Assert.NotNull(result);
             // Assert.Same(exptectedMapped.FullName, salesman.FullName);
             Console.WriteLine("Shipment Domain Value : " + System.Text.Json.JsonSerializer.Serialize(result));
