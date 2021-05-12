@@ -74,10 +74,11 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void ProductController_getProductsWithDispatchQuantity()
         {
-            int ProductId = 1;
+            string ProductId = "1";
+            string FlavourId = "";
             var param = new Dictionary<string, string>();
-            param.Add("productId", ProductId.ToString());
-
+            param.Add("productId", ProductId);
+            param.Add("flavourId",FlavourId);
             string url = QueryHelpers.AddQueryString("/api/Product/GetProductsWithStockAndDispatch", param);
             System.Console.WriteLine("Url : " + url.ToString());
             var response = await _client.GetAsync(url);

@@ -4,9 +4,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Shambala.Core.Models.DTOModel;
 using System.Collections.Generic;
-
+using System.Linq;
 namespace Shambala.Controllers
-
 {
     public class ProductController : ControllerBase
     {
@@ -15,11 +14,13 @@ namespace Shambala.Controllers
         {
             _productSupervisor = supervisor;
         }
+
         [HttpPost]
-        public async Task<IActionResult> Add(IEnumerable<ShipmentDTO> incomingShipmentDTOs)
+        public async Task<IActionResult> AddAsync([FromBody]IEnumerable<ShipmentDTO> incomingShipmentDTOs)
         {
+            ModelState.Remove("Id");
             if (!ModelState.IsValid)
-                return new BadRequestObjectResult(ModelState.Root.Errors);
+                return new BadRequestObjectResult(ModelState.Values.SelectMany(e=>e.Errors.Select(e=>e.ErrorMessage)));
 
             bool IsAdded = await _productSupervisor.AddAsync(incomingShipmentDTOs);
             if (IsAdded)
@@ -40,9 +41,11 @@ namespace Shambala.Controllers
             throw new System.NotImplementedException();
         }
         [HttpGet]
-        public IActionResult GetProductsWithStockAndDispatch([FromQuery][Required]int productId,[FromQuery] byte? flavourId)
+        public IActionResult GetProductByIdWithStockAndDispatch([FromRoute][Required]int Id)
         {
-            return Ok(_productSupervisor.GetProductsByLeftQuantityAndDispatch(productId,flavourId));
+            if(!ModelState.IsValid)
+            return BadRequest(ModelState.Values.SelectMany(e=>e.Errors.Select(e=>e.ErrorMessage)));
+            return Ok(_productSupervisor.GetProductsByLeftQuantityAndDispatch(Id,null));
         }
 
     }

@@ -43,7 +43,7 @@ namespace Shambala.Repository
 
         public IEnumerable<Product> GetAllWithNoTracking()
         {
-            return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ToList();
+            return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ThenInclude(e => e.FlavourIdFkNavigation).ToList();
         }
 
         public ProductInfoDTO GetProductsInStockWithDispatchQuantity(int ProductId, byte? FlavourId)
@@ -82,7 +82,7 @@ namespace Shambala.Repository
                 QuantityInStock = k.e.Quantity,
                 QuantityInDispatch = k.f?.QuantityInProcrument,
                 FlavourId = k.e.FlavourIdFk,
-                i.Name
+                i.Name,i.CaretSize
             }).Join(_context.Flavour, e => e.FlavourId, f => f.Id, (e, f) => new
             {
                 ProductName = e.Name,
@@ -90,16 +90,17 @@ namespace Shambala.Repository
                 e.QuantityInDispatch,
                 e.QuantityInStock,
                 Id = e.ProductId,
-                e.FlavourId
+                e.FlavourId,e.CaretSize
             })
             .ToList();
             IEnumerable<ProductInfoDTO> ProductInfoDTOs = result.GroupBy(e => e.Id).Select(e => e.First()).GroupJoin(result, e => e.Id, f => f.Id,
             (e, f) => new ProductInfoDTO()
             {
                 Id = e.Id,
+                CaretSize=e.CaretSize,
                 Name = e.ProductName,
                 FlavourInfos = f.Where(g => g.Id == e.Id)
-                   .Select(s => new FlavourInfoDTO() { Id = s.FlavourId, QuantityDispatch = s.QuantityInDispatch ?? 0, QuantityInStock = s.QuantityInStock, Title = s.FlavourName })
+                   .Select(s => new FlavourInfoDTO() { Id = s.FlavourId, QuantityInDispatch = s.QuantityInDispatch ?? 0, QuantityInStock = s.QuantityInStock, Title = s.FlavourName })
             }).ToList();
 
             return ProductInfoDTOs.First();

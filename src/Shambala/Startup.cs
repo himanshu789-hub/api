@@ -32,7 +32,7 @@ namespace Shambala
             .ConfigureSQLInstance(Configuration)
             .AddUnitOfWorkService();
 
-            services.AddCors(options => options.AddPolicy(CorsPolicy, policy => policy.AllowAnyOrigin()));
+            services.AddCors(options => options.AddPolicy(CorsPolicy, policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services
             .AddControllers()
             .AddJsonOptions(options => { 
