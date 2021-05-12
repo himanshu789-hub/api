@@ -30,16 +30,11 @@ namespace Shambala.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllWithoutLimit()
+        public IActionResult GetAll()
         {
             return Ok(_productSupervisor.GetAll());
         }
         
-        [HttpGet]
-        public IActionResult GetAllWithLimit()
-        {
-            throw new System.NotImplementedException();
-        }
         [HttpGet]
         public IActionResult GetProductByIdWithStockAndDispatch([FromRoute][Required]int Id)
         {
