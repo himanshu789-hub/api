@@ -7,9 +7,22 @@ using Microsoft.EntityFrameworkCore;
 
 using Shambala.Core.Models.DTOModel;
 using Shambala.Core.Models.BLLModel;
-
+using Shambala.Core.Helphers;
 namespace Shambala.Repository
 {
+
+    class ProductInfoEquality : IEqualityComparer<ProductInfoDTO>
+    {
+        public bool Equals(ProductInfoDTO x, ProductInfoDTO y)
+        {
+            return x.Id == y.Id;
+        }
+
+        public int GetHashCode(ProductInfoDTO obj)
+        {
+            return obj.GetHashCode();
+        }
+    }
     public class ProductRepository : IProductRepository
     {
         ShambalaContext _context;
@@ -33,91 +46,64 @@ namespace Shambala.Repository
             return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ToList();
         }
 
-        public IEnumerable<ProductInfoDTO> GetProductsInStockWithDispatchQuantity()
+        public ProductInfoDTO GetProductsInStockWithDispatchQuantity(int ProductId, byte? FlavourId)
         {
-            // using (var con = _context.Database.GetDbConnection())
-            // {
-            //     using (var cmd = con.CreateCommand())
-            //     {
-            //         cmd.CommandText = "SELECT OSD.Id,OSD.Product_Id_FK AS 'ProductId',OSD.Flavour_Id_FK AS 'FalvourId'," +
-            //         "(sum(OSD.Total_Quantity_Shiped)-sum(OSD.Total_Quantity_Rejected)) AS 'QuantityDispatch',pfq.Quantity AS 'QuantityInStock' FROM" +
-            //         " shambala.outgoing_shipment_details AS OSD JOIN shambala.outgoing_shipment AS OUTS ON OSD.Outgoing_Shipment_Id_FK=OUTS.Id" +
-            //         " JOIN shambala.product_flavour_quantity AS pfq ON pfq.Flavour_Id_FK=OSD.Flavour_Id_FK AND pfq.Product_Id_FK=OSD.Product_Id_FK WHERE" +
-            //         " OUTS.Status='RETURN' GROUP BY OSD.Product_Id_FK,OSD.Flavour_Id_FK;";
-            //         var reader = cmd.ExecuteReader();
-            //         if (reader.HasRows)
-            //         {
-            //             while (reader.Read())
-            //             {
+            System.Func<ProductFlavourQuantity, bool> expression;
+            if (FlavourId.HasValue)
+                expression = (e) => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId;
+            else
+                expression = (e) => e.ProductIdFk == ProductId;
 
-            //             }
-            //         }
-            //     }
-            // }
-            var result = _context.OutgoingShipment.Where(e => e.Status == "PENDING")
-              .Join(_context.OutgoingShipmentDetails,
-               e => e.Id, i => i.OutgoingShipmentIdFk,
-              (e, i) => new
-              {
-                  Quantity = i.TotalQuantityShiped - i.TotalQuantityRejected,
-                  i.ProductIdFk,
-                  i.FlavourIdFk
-              })
-              .GroupBy(e => new { e.ProductIdFk, e.FlavourIdFk }).Select(e => new
-              {
-                  e.Key.ProductIdFk,
-                  e.Key.FlavourIdFk,
-                  QuantityInProcrument = e.Sum(s => s.Quantity)
-              })
-              .Join(_context.ProductFlavourQuantity, e => new { e.ProductIdFk, e.FlavourIdFk }, k => new { k.ProductIdFk, k.FlavourIdFk }, (k, i) =>
-              new
-              {
-                  FlavourId = k.FlavourIdFk,
-                  ProductId = k.ProductIdFk,
-                  QuantityInProcrument = k.QuantityInProcrument,
-                  QuantityInStock = i.Quantity
-              })
-              .Join(_context.Product, e => e.ProductId, i => i.Id, (k, i) => new
-              {
-                  k.ProductId,
-                  k.QuantityInProcrument,
-                  k.QuantityInStock,
-                  k.FlavourId,
-                  i.Name
-              }).Join(_context.Flavour, e => e.FlavourId, f => f.Id, (e, f) => new
-              {
-                  ProductName = e.Name,
-                  FlavourName = f.Title,
-                  e.QuantityInProcrument,
-                  e.QuantityInStock,
-                  e.ProductId,
-                  e.FlavourId
-              })
-              .ToList();
-            IEnumerable<ProductInfoDTO> ProductInfoDTOs = result.GroupJoin(result, e => e.ProductId, f => f.ProductId, (e, f) => new ProductInfoDTO()
+            var dispatch = _context.OutgoingShipment
+             .Where(e => e.Status == "PENDING")
+               .Join(_context.OutgoingShipmentDetails,
+                e => e.Id, i => i.OutgoingShipmentIdFk,
+               (e, i) => new
+               {
+                   Quantity = i.TotalQuantityShiped - i.TotalQuantityRejected,
+                   i.ProductIdFk,
+                   i.FlavourIdFk
+               })
+               .GroupBy(e => new { e.ProductIdFk, e.FlavourIdFk })
+               .Select(e => new
+               {
+                   e.Key.ProductIdFk,
+                   e.Key.FlavourIdFk,
+                   QuantityInProcrument = e.Sum(s => s.Quantity)
+               }).ToList();
+
+            var list = _context.ProductFlavourQuantity.Where(expression).ToList()
+              .GroupJoin(dispatch, e => new { e.ProductIdFk, e.FlavourIdFk }, f => new { f.ProductIdFk, f.FlavourIdFk }, (e, f) => new { e, f })
+              .SelectMany(e => e.f.DefaultIfEmpty(), (k, f) => new { e = new { k.e.ProductIdFk, k.e.FlavourIdFk, k.e.Quantity }, f }).ToList();
+
+            var result = list.Join(_context.Product, e => e.e.ProductIdFk, i => i.Id, (k, i) => new
             {
+                ProductId = k.e.ProductIdFk,
+                QuantityInStock = k.e.Quantity,
+                QuantityInDispatch = k.f?.QuantityInProcrument,
+                FlavourId = k.e.FlavourIdFk,
+                i.Name
+            }).Join(_context.Flavour, e => e.FlavourId, f => f.Id, (e, f) => new
+            {
+                ProductName = e.Name,
+                FlavourName = f.Title,
+                e.QuantityInDispatch,
+                e.QuantityInStock,
                 Id = e.ProductId,
+                e.FlavourId
+            })
+            .ToList();
+            IEnumerable<ProductInfoDTO> ProductInfoDTOs = result.GroupBy(e => e.Id).Select(e => e.First()).GroupJoin(result, e => e.Id, f => f.Id,
+            (e, f) => new ProductInfoDTO()
+            {
+                Id = e.Id,
                 Name = e.ProductName,
-                FlavourInfos = f.Where(g => g.ProductId == e.ProductId)
-                .Select(s => new FlavourInfoDTO() { Id = s.FlavourId, QuantityDispatch = s.QuantityInProcrument, QuantityInStock = s.QuantityInStock, Title = s.FlavourName })
-            });
-            return ProductInfoDTOs;
-            //   .Join(_context.ProductFlavourQuantity,
-            //    e => new { e.ProductIdFk, e.FlavourIdFk }, k => new { k.ProductIdFk, k.FlavourIdFk },
-            //    (k, i) => new { k.ProductIdFk, k.FlavourIdFk, QuantityInStock = i.Quantity, QuantityInProcrument = k.Quantity })
-            //    .ToList();
+                FlavourInfos = f.Where(g => g.Id == e.Id)
+                   .Select(s => new FlavourInfoDTO() { Id = s.FlavourId, QuantityDispatch = s.QuantityInDispatch ?? 0, QuantityInStock = s.QuantityInStock, Title = s.FlavourName })
+            }).ToList();
 
-            //   .Join(_context.ProductFlavourQuantity,
-            //   e => new { e.ProductIdFk, e.FlavourIdFk }, i => new { i.ProductIdFk, i.FlavourIdFk },
-            //   (e, i) => new
-            //   {
-            //       e.FlavourIdFk,
-            //       e.ProductIdFk,
-            //       e.Quantity
-            //   }).
-
+            return ProductInfoDTOs.First();
         }
-
         public bool ReturnQuantity(IEnumerable<ProductReturnBLL> productReturnBLLs)
         {
             foreach (var item in productReturnBLLs)

@@ -5,7 +5,9 @@ using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Hosting;
 using System.Net.Http;
 using Shambala.Core.Models.DTOModel;
+using System.Collections.Generic;
 using System.Text;
+using Microsoft.AspNetCore.WebUtilities;
 
 namespace Shambala.Controller.Test
 {
@@ -24,7 +26,7 @@ namespace Shambala.Controller.Test
             var response = await _client.GetAsync("/api/scheme/getbyid/1");
             Assert.True(response.IsSuccessStatusCode);
             string res = await response.Content.ReadAsStringAsync();
-            Assert.Empty(res);
+
         }
         [Fact]
         public async void ShipmentCOntroller_get()
@@ -72,9 +74,20 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void ProductController_getProductsWithDispatchQuantity()
         {
-            var response = await _client.GetAsync("/api/GetProductsWithStockAndDispatch");
-            var result = await response.Content.ReadAsStringAsync();
-            System.Console.WriteLine("Products : ", result);
+            int ProductId = 1;
+            var param = new Dictionary<string, string>();
+            param.Add("productId", ProductId.ToString());
+
+            string url = QueryHelpers.AddQueryString("/api/Product/GetProductsWithStockAndDispatch", param);
+            System.Console.WriteLine("Url : " + url.ToString());
+            var response = await _client.GetAsync(url);
+
+            var result = response.Content.ReadAsStringAsync().Result;
+
+            System.Console.WriteLine("Product : " + result);
+
+            response.EnsureSuccessStatusCode();
+
         }
     }
 }

@@ -7,6 +7,6 @@ namespace Shambala.Core.Contracts.Supervisors
     {
         IEnumerable<ProductDTO> GetAll();
         Task<bool> AddAsync(IEnumerable<ShipmentDTO> incomingShipmentDTOs);
-        IEnumerable<ProductInfoDTO> GetProductsByLeftQuantityAndDispatch();
+        ProductInfoDTO GetProductsByLeftQuantityAndDispatch(int productId,byte? flavourId);
     }
 }

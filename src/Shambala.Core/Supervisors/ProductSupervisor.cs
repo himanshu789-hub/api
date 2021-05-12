@@ -37,9 +37,9 @@ namespace Shambala.Core.Supervisors
         {
             return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAllWithNoTracking());
         }
-        public IEnumerable<ProductInfoDTO> GetProductsByLeftQuantityAndDispatch()
+        public ProductInfoDTO GetProductsByLeftQuantityAndDispatch(int ProductId,byte? FlavourId)
         {
-            return _unitOfWork.ProductRepository.GetProductsInStockWithDispatchQuantity();
+            return _unitOfWork.ProductRepository.GetProductsInStockWithDispatchQuantity(ProductId,FlavourId);
         }
 
     }

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
+using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Shambala.Core.Models.DTOModel;
 using System.Collections.Generic;
@@ -32,13 +33,16 @@ namespace Shambala.Controllers
         {
             return Ok(_productSupervisor.GetAll());
         }
+        
+        [HttpGet]
         public IActionResult GetAllWithLimit()
         {
             throw new System.NotImplementedException();
         }
-        public IEnumerable<ProductInfoDTO> GetProductsWithStockAndDispatch()
+        [HttpGet]
+        public IActionResult GetProductsWithStockAndDispatch([FromQuery][Required]int productId,[FromQuery] byte? flavourId)
         {
-            return _productSupervisor.GetProductsByLeftQuantityAndDispatch();
+            return Ok(_productSupervisor.GetProductsByLeftQuantityAndDispatch(productId,flavourId));
         }
 
     }

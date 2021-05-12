@@ -19,7 +19,7 @@ namespace Shambala
         {
             Configuration = configuration;
         }
-
+        string CorsPolicy = "AllowAllOrigin";
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -31,7 +31,13 @@ namespace Shambala
             .AddConnectionOptionServices(Configuration)
             .ConfigureSQLInstance(Configuration)
             .AddUnitOfWorkService();
-            services.AddControllers();
+
+            services.AddCors(options => options.AddPolicy(CorsPolicy, policy => policy.AllowAnyOrigin()));
+            services
+            .AddControllers()
+            .AddJsonOptions(options => { 
+                options.JsonSerializerOptions.PropertyNamingPolicy = null;
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -41,18 +47,18 @@ namespace Shambala
             {
                 app.UseDeveloperExceptionPage();
             }
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
+            app.UseCors(CorsPolicy);
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
-                    name:"default",
-                    pattern:"api/{controller}/{action}/{id:int?}"
+                    name: "default",
+                    pattern: "api/{controller}/{action}/{id:int?}"
                 );
             });
         }

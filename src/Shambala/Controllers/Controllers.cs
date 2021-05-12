@@ -88,14 +88,14 @@ namespace Shambala.Controllers
     }
     public class SalesmanController : GenericController<SalesmanDTO>
     {
-        readonly ISalesmanSupervisor _supeervisor;
+        readonly ISalesmanSupervisor _supervisor;
         public SalesmanController(ISalesmanSupervisor salesmanSupervisor) : base(salesmanSupervisor)
         {
-            _supeervisor = salesmanSupervisor;
+            _supervisor = salesmanSupervisor;
         }
         public IActionResult GetAll()
         {
-            return Ok(_supeervisor.GetAllActive());
+            return Ok(_supervisor.GetAllActive());
         }
     }
 }
