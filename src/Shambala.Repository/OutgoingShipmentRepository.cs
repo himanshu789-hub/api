@@ -29,8 +29,8 @@ namespace Shambala.Repository
         public OutgoingShipment GetByIdWithNoTracking(int Id)
         {
             return _context.OutgoingShipment
-                .Include(e => e.OutgoingShipmentDetails)
                 .Include(e => e.SalesmanIdFkNavigation)
+                .Include(e => e.OutgoingShipmentDetails)
                 .AsNoTracking()
                 .First(e => e.Id == Id);
         }
