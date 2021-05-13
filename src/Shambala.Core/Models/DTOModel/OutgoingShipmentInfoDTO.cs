@@ -6,7 +6,7 @@ namespace Shambala.Core.Models.DTOModel
         public string Name { get; set; }
         public byte CaretSize{get;set;}
     }
-    public class OutgoingShipmentDettailInfo
+    public class OutgoingShipmentDetailInfo
     {
         public  ProductInfo Product { get; set; }
         public  FlavourDTO Flavour { get; set; }

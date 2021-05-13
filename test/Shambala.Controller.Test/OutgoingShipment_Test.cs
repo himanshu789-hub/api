@@ -102,11 +102,11 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void GetOutgoingShipment_SalesmanIdAndDate()
         {
-            int salesmanId = 1;
-            System.DateTime Date = new System.DateTime();
+            int salesmanId = 2;
+            System.DateTime Date = new System.DateTime(2021,5,13);
             var param = new Dictionary<string, string>();
             param.Add("SalesmanId", salesmanId.ToString());
-            param.Add("Date", Date.ToUniversalTime().ToString());
+            param.Add("Date", Date.ToString());
             string uri = QueryHelpers.AddQueryString("api/shipment/GetOutgoingBySalesmanIdAndDate", param);
             System.Console.WriteLine("Url : ",uri.ToString());
             var response = await _client.GetAsync(uri);

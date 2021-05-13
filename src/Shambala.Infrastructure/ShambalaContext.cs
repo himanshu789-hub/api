@@ -200,7 +200,8 @@ namespace Shambala.Infrastructure
                     .HasMaxLength(10)
                     .IsFixedLength();
 
-                entity.Property(e => e.DateCreated).HasColumnType("date");
+                entity.Property(e => e.DateCreated)
+                .HasColumnType("date");
 
                 entity.Property(e => e.SalesmanIdFk)
                     .HasColumnName("Salesman_id_FK")

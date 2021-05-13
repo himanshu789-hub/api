@@ -35,11 +35,11 @@ namespace Shambala.Repository
                 .First(e => e.Id == Id);
         }
 
-        public IEnumerable<OutgoingShipmentDettailInfo> GetProductsById(int orderId)
+        public IEnumerable<OutgoingShipmentDetailInfo> GetProductsById(int orderId)
         {
-            IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails.AsNoTracking()
+            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails.AsNoTracking()
             .Where(e => e.Id == orderId)
-            .Select(e => new OutgoingShipmentDettailInfo
+            .Select(e => new OutgoingShipmentDetailInfo
             {
                 Product = new ProductInfo()
                 {

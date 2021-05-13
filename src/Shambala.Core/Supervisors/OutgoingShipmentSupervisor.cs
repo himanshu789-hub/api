@@ -116,7 +116,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<ProductDTO> GetProductListByOrderId(int orderId)
         {
-            IEnumerable<OutgoingShipmentDettailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
+            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
             ICollection<ProductDTO> Products = new List<ProductDTO>();
             foreach (var item in OutgoingShipmentDettailInfos)
             {

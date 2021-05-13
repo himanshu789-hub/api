@@ -17,7 +17,7 @@ namespace Shambala.Core.Models.DTOModel
     }
     public class OutgoingShipmentInfoDTO : OutgoingShipmentInfoBaseDTO
     {
-        public int SalesmanId { get; set; }
+        public short SalesmanId { get; set; }
     }
     public class OutgoingShipmentWithSalesmanInfoDTO : OutgoingShipmentInfoBaseDTO
     {
@@ -38,6 +38,6 @@ namespace Shambala.Core.Models.DTOModel
     public class PostOutgoingShipmentDTO : OutgoingShipmentPostBaseDTO
     {
         [Required]
-        public int SalesmanId { get; set; }
+        public short SalesmanId { get; set; }
     }
 }
