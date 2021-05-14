@@ -9,6 +9,8 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 namespace Shambala.Controllers
 {
+    using Models;
+    using Core.Models.DTOModel;
     using Core.Helphers;
     public class ShipmentController : ControllerBase
     {
@@ -25,7 +27,12 @@ namespace Shambala.Controllers
             if (!ModelState.IsValid)
                 return new BadRequestObjectResult(ModelState.Values.SelectMany(e => e.Errors));
 
-            return Ok(await _outgoingSupervisor.AddAsync(postOutgoing));
+            OutgoingShipmentWithSalesmanInfoDTO outgoing = await _outgoingSupervisor.AddAsync(postOutgoing);
+
+            if (outgoing == null)
+                return BadRequest(new BadRequestErrorModel() { Code = (int)OutgoingBadErrorCodes.QUANTITIES_OUT_OF_STOCK, Model = _outgoingSupervisor.ProvideOutOfStockQuantities(postOutgoing.Shipments), Message = "Out Of Stock" });
+
+            return Ok(outgoing);
         }
 
         [HttpPut]
@@ -41,17 +48,17 @@ namespace Shambala.Controllers
             catch (System.Exception e)
             {
                 if (e is DuplicateShipmentsException || e is OutgoingShipmentNotOperableException)
-                    return BadRequest(e.Message);
+                    return BadRequest(new BadRequestErrorModel() { Code = (int)OutgoingBadErrorCodes.DUPLICATE, Message = e.Message });
                 else
                     throw;
             }
         }
-        public IActionResult GetProductListByOrderId([FromRoute] int orderId)
+        public IActionResult GetProductListByOrderId([FromRoute] int Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
 
-            return Ok(_outgoingSupervisor.GetProductListByOrderId(orderId));
+            return Ok(_outgoingSupervisor.GetProductListByOrderId(Id));
         }
 
         [HttpPost]
@@ -65,8 +72,10 @@ namespace Shambala.Controllers
             }
             catch (System.Exception e)
             {
-                if (e is OutgoingShipmentNotOperableException || e is DuplicateNameException)
-                    return BadRequest(e.Message);
+                if (e is OutgoingShipmentNotOperableException)
+                    return BadRequest(new BadRequestErrorModel() { Message = e.Message, Code = (int)OutgoingBadErrorCodes.OUTGOINGSHIPMENT_NOT_OPERABLE });
+                if (e is DuplicateNameException)
+                    return BadRequest(new BadRequestErrorModel() { Message = e.Message, Code = (int)OutgoingBadErrorCodes.DUPLICATE_SHIPMENT });
                 throw;
             }
         }

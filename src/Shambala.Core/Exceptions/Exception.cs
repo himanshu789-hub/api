@@ -24,4 +24,14 @@ namespace Shambala.Core.Exception
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    [System.Serializable]
+    public class QuantityOutOfStockException : System.Exception
+    {
+        public QuantityOutOfStockException() { }
+        public QuantityOutOfStockException(string message) : base(message) { }
+        public QuantityOutOfStockException(string message, System.Exception inner) : base(message, inner) { }
+        protected QuantityOutOfStockException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Supervisors
 {
     using Domain;
+    using Models.BLLModel;
     public interface IGSTRate
     {
         byte  GSTRate{get;}
@@ -12,6 +13,7 @@ namespace Shambala.Core.Contracts.Supervisors
     {        
         Task<OutgoingShipmentWithSalesmanInfoDTO>  AddAsync(PostOutgoingShipmentDTO outgoingShipment);
         Task ReturnAsync(int Id,IEnumerable<ShipmentDTO> shipmentDTOs);
+        IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipmentDTOs);
         IEnumerable<ProductDTO> GetProductListByOrderId(int OrderId);
         Task<bool> CompleteAsync(int OutgoingShipmentId,IEnumerable<Invoice> invoices);
         IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date); 

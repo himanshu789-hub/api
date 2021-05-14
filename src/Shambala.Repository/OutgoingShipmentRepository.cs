@@ -20,7 +20,6 @@ namespace Shambala.Repository
         {
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
             var Entity = _context.OutgoingShipment.Add(outgoingShipment);
-
             return Entity.Entity;
         }
 
@@ -37,8 +36,11 @@ namespace Shambala.Repository
 
         public IEnumerable<OutgoingShipmentDetailInfo> GetProductsById(int orderId)
         {
-            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails.AsNoTracking()
-            .Where(e => e.Id == orderId)
+            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails
+            .AsNoTracking()
+            .Include(e => e.ProductIdFkNavigation)
+            .Include(e => e.FlavourIdFkNavigation)
+            .Where(e => e.OutgoingShipmentIdFk == orderId)
             .Select(e => new OutgoingShipmentDetailInfo
             {
                 Product = new ProductInfo()
@@ -83,13 +85,23 @@ namespace Shambala.Repository
             return true;
         }
 
-        public bool Complete(int Id)
+        public bool Complete(int Id, IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
             OutgoingShipment outgoingShipment = _context.OutgoingShipment.FirstOrDefault(e => e.Id == Id);
 
             if (outgoingShipment == null || outgoingShipment.Status != System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN))
                 return false;
+            if (outgoingQuantityRejectedBLLs != null)
+            {
+                _context.Entry(outgoingShipment).Reference(e => e.OutgoingShipmentDetails).Load();
+                foreach (OutgoingQuantityRejectedBLL item in outgoingQuantityRejectedBLLs)
+                {
+                    OutgoingShipmentDetail outgoing = outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.Id == item.Id);
+                    outgoing.TotalQuantityRejected += item.TotalQuantityRejected;
+                    outgoing.TotalQuantityShiped -= item.TotalQuantityRejected;
+                }
+            }
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.COMPLETED);
             return true;
         }

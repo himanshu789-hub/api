@@ -47,6 +47,16 @@ namespace Shambala.Controller.Test
 
         }
         [Fact]
+        public async void GetProductListByOrderId()
+        {
+            int OutgoingShipmentId = 3;
+            var response = await _client.GetAsync($"/api/shipment/GetProductListByOrderId/{OutgoingShipmentId}");
+            string responseJson = await response.Content.ReadAsStringAsync();
+            System.Console.WriteLine("Response :=>" + responseJson);
+            response.EnsureSuccessStatusCode();
+
+        }
+        [Fact]
         public async void OutgoingShipment_Return()
         {
             OutgoingShipmentDetailDTO[] outgoingShipmentDTOs = _outgoingAdded.OutgoingShipmentDetails.ToArray();
@@ -103,12 +113,12 @@ namespace Shambala.Controller.Test
         public async void GetOutgoingShipment_SalesmanIdAndDate()
         {
             int salesmanId = 2;
-            System.DateTime Date = new System.DateTime(2021,5,13);
+            System.DateTime Date = new System.DateTime(2021, 5, 13);
             var param = new Dictionary<string, string>();
             param.Add("SalesmanId", salesmanId.ToString());
             param.Add("Date", Date.ToString());
             string uri = QueryHelpers.AddQueryString("api/shipment/GetOutgoingBySalesmanIdAndDate", param);
-            System.Console.WriteLine("Url : ",uri.ToString());
+            System.Console.WriteLine("Url : ", uri.ToString());
             var response = await _client.GetAsync(uri);
             System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();

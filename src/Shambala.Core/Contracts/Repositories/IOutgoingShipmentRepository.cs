@@ -15,6 +15,6 @@ namespace Shambala.Core.Contracts.Repositories
         IEnumerable<OutgoingShipment> GetShipmentsBySalesmnaIdAndDate(short salesmanId,System.DateTime date);
         IEnumerable<OutgoingShipmentDetailInfo> GetProductsById(int orderId);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
-        bool Complete(int Id);
+        bool Complete(int Id,IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejecteds);
     }
 }

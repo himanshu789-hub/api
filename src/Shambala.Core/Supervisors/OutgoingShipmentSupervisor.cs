@@ -27,7 +27,36 @@ namespace Shambala.Core.Supervisors
         }
 
         public byte GSTRate => _gstRate;
+        public IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipment)
+        {
+            ICollection<ProductOutOfStockBLL> productOutOfStockBLLs = new List<ProductOutOfStockBLL>();
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
 
+            foreach (var item in shipment)
+            {
+                int QuantityShiped = item.TotalRecievedPieces - item.TotalDefectPieces;
+                int ProductId = item.ProductId; int FlavourId = item.FlavourId;
+                if (!((products.SelectMany(e => e.ProductFlavourQuantity).Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).First().Quantity - item.TotalDefectPieces) >= QuantityShiped))
+                    productOutOfStockBLLs.Add(new ProductOutOfStockBLL() { FlavourId = FlavourId, ProductId = ProductId });
+            }
+            if (productOutOfStockBLLs.Count > 0)
+                return productOutOfStockBLLs;
+
+            return null;
+        }
+        void UpdateQuantities(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails)
+        {
+
+            foreach (var item in outgoingShipmentDetails)
+            {
+                int QuantityShiped = item.TotalQuantityShiped - item.TotalQuantityRejected;
+                int ProductId = item.ProductIdFk; int FlavourId = item.FlavourIdFk;
+                if (item.TotalQuantityRejected > 0)
+                    _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, item.TotalQuantityRejected);
+                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, QuantityShiped);
+            }
+
+        }
         public async Task<OutgoingShipmentWithSalesmanInfoDTO> AddAsync(PostOutgoingShipmentDTO postOutgoingShipmentDTO)
         {
             OutgoingShipment OutgoingShipment = _mapper.Map<OutgoingShipment>(postOutgoingShipmentDTO);
@@ -37,12 +66,23 @@ namespace Shambala.Core.Supervisors
             }
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            _unitOfWork.OutgoingShipmentRepository.Add(OutgoingShipment);
-            await _unitOfWork.SaveChangesAsync();
-            return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
+            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.ProvideOutOfStockQuantities(postOutgoingShipmentDTO.Shipments);
+            if (productOutOfStockBLLs == null)
+            {
+                this.UpdateQuantities(OutgoingShipment.OutgoingShipmentDetails);
+                _unitOfWork.OutgoingShipmentRepository.Add(OutgoingShipment);
+                await _unitOfWork.SaveChangesAsync();
+                _unitOfWork.OutgoingShipmentRepository.Load(OutgoingShipment, entity => entity.SalesmanIdFkNavigation);
+                return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
+            }
+            else
+            {
+                _unitOfWork.Rollback();
+                return null;
+            }
         }
 
-        IEnumerable<ProductReturnBLL> GetProductReturnFromShipments(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails, IEnumerable<Invoice> invoiceDTOs)
+        IEnumerable<ProductReturnBLL> GetProductLeftOverFromShipments(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails, IEnumerable<Invoice> invoiceDTOs)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
 
@@ -51,7 +91,8 @@ namespace Shambala.Core.Supervisors
             {
                 int ProductId = OutgoingShipmentDetail.ProductIdFk;
                 int FlavourId = OutgoingShipmentDetail.FlavourIdFk;
-                int QuantityToReturn = invoiceDTOs
+                int QuantityShiped = OutgoingShipmentDetail.TotalQuantityShiped - OutgoingShipmentDetail.TotalQuantityRejected;
+                int QuantityToReturn = QuantityShiped - invoiceDTOs
                 .Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId)
                 .Sum(e => e.QuantityPurchase);
                 productReturnBLLs.Add(new ProductReturnBLL
@@ -97,19 +138,38 @@ namespace Shambala.Core.Supervisors
             int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
             _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
         }
+        IEnumerable<OutgoingQuantityRejectedBLL> CheckQuatityUnderOutgoingShipmentDispatch(OutgoingShipment outgoing, IEnumerable<Invoice> invoices)
+        {
+            ICollection<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs = new List<OutgoingQuantityRejectedBLL>();
+            foreach (var item in outgoing.OutgoingShipmentDetails)
+            {
+                int ProductId = item.Id;
+                int FlavourId = item.FlavourIdFk;
+                int QuantityShiped = item.TotalQuantityShiped;
+                int RejectedQuantity = invoices.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).Sum(e => e.QuantityDefected);
+                if (QuantityShiped - RejectedQuantity < invoices.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).Sum(e => e.QuantityPurchase))
+                    throw new QuantityOutOfStockException();
+                if (RejectedQuantity > 0)
+                    outgoingQuantityRejectedBLLs.Add(new OutgoingQuantityRejectedBLL() { Id = item.Id, TotalQuantityRejected = RejectedQuantity });
+            }
+            return outgoingQuantityRejectedBLLs.Count > 0 ? outgoingQuantityRejectedBLLs : null;
+        }
+
         public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<Invoice> invoices)
         {
             if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.RETURN);
 
             OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(OutgoingShipmentId);
-            IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
-            IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductReturnFromShipments(outgoingShipmentDetails, invoices);
 
+            this.CheckQuatityUnderOutgoingShipmentDispatch(outgoing, invoices);
+            IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
+            IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductLeftOverFromShipments(outgoingShipmentDetails, invoices);
+            IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs = this.CheckQuatityUnderOutgoingShipmentDispatch(outgoing, invoices);
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             this.AddInvoices(invoices);
             _unitOfWork.ProductRepository.ReturnQuantity(productReturnBLLs);
-            _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
+            _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId, outgoingQuantityRejectedBLLs);
             await _unitOfWork.SaveChangesAsync();
             return true;
         }
@@ -117,19 +177,16 @@ namespace Shambala.Core.Supervisors
         public IEnumerable<ProductDTO> GetProductListByOrderId(int orderId)
         {
             IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
-            ICollection<ProductDTO> Products = new List<ProductDTO>();
-            foreach (var item in OutgoingShipmentDettailInfos)
+            if (OutgoingShipmentDettailInfos.Count() == 0)
+                return new List<ProductDTO>();
+            IEnumerable<ProductDTO> Products = OutgoingShipmentDettailInfos.GroupBy(e => e.Product.Id).First()
+            .GroupJoin(OutgoingShipmentDettailInfos, e => e.Product.Id, f => f.Product.Id, (e, f) => new ProductDTO()
             {
-                if (Products.FirstOrDefault(e => e.Id == item.Product.Id) != null)
-                {
-                    var Product = Products.FirstOrDefault(e => e.Id == item.Product.Id);
-                    Product.Flavours.Add(item.Flavour);
-                }
-                else
-                {
-                    Products.Add(new ProductDTO() { CaretSize = item.Product.CaretSize, Id = item.Product.Id, Name = item.Product.Name });
-                }
-            }
+                CaretSize = e.Product.CaretSize,
+                Id = e.Product.Id,
+                Name = e.Product.Name,
+                Flavours = f.Select(s => s.Flavour).ToList()
+            });
             return Products;
         }
         public async Task ReturnAsync(int Id, IEnumerable<ShipmentDTO> shipments)
@@ -153,5 +210,6 @@ namespace Shambala.Core.Supervisors
             IEnumerable<OutgoingShipmentInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(outgoings);
             return result;
         }
+
     }
 }
