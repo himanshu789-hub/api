@@ -3,6 +3,7 @@ using Shambala.Core.Contracts.Supervisors;
 using System.Threading.Tasks;
 using Shambala.Core.Models.DTOModel;
 using System.Data;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Linq;
 using Shambala.Core.Exception;
 using System.ComponentModel.DataAnnotations;
@@ -80,7 +81,7 @@ namespace Shambala.Controllers
             }
         }
         [HttpGet]
-        public IActionResult GetOutgoingBySalesmanIdAndDate([FromQuery] short salesmanId, [FromQuery] System.DateTime date)
+        public IActionResult GetOutgoingBySalesmanIdAndDate([FromQuery][BindRequired] short salesmanId, [FromQuery][BindRequired] System.DateTime date)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
