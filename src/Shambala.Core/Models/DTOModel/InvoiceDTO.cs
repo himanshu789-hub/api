@@ -18,7 +18,7 @@ namespace Shambala.Core.Models.DTOModel
         public short? SchemeId { get; set; }
         
         [Required]
-        public IEnumerable<SoldItemsDTO> SoldItems{get;set;}
+        public IEnumerable<SoldItemsDTO> Invoices{get;set;}
         
     }
     public class SoldItemsDTO

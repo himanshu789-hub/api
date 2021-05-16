@@ -12,16 +12,16 @@ namespace Shambala.Core.Helphers
         {
 
             ICollection<Invoice> Result = new List<Invoice>();
-            foreach (var Invoice in invoices)
+            foreach (var PostInvoice in invoices)
             {
-                foreach (SoldItemsDTO item in Invoice.SoldItems)
+                foreach (SoldItemsDTO item in PostInvoice.Invoices)
                 {
 
                     Invoice NewInvoice = new Invoice();
-                    NewInvoice.CaretSize = Invoice.CaretSize;
-                    NewInvoice.OutgoingShipmentIdFk = Invoice.OutgoingShipmentId;
-                    NewInvoice.SchemeIdFk = Invoice.SchemeId;
-                    NewInvoice.ShopIdFk = Invoice.ShopId;
+                    NewInvoice.CaretSize = PostInvoice.CaretSize;
+                    NewInvoice.OutgoingShipmentIdFk = PostInvoice.OutgoingShipmentId;
+                    NewInvoice.SchemeIdFk = PostInvoice.SchemeId;
+                    NewInvoice.ShopIdFk = PostInvoice.ShopId;
                     
                     NewInvoice.ProductIdFk = item.ProductId;
                     NewInvoice.FlavourIdFk = item.FlavourId;

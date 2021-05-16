@@ -54,6 +54,7 @@ namespace Shambala.Controllers
                     throw;
             }
         }
+        [HttpGet]
         public IActionResult GetProductListByOrderId([FromRoute] int Id)
         {
             if (!ModelState.IsValid)
@@ -63,7 +64,7 @@ namespace Shambala.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CompleteAsync([FromRoute][Required] int Id, [FromBody] IEnumerable<PostInvoiceDTO> postInvoiceDTOs)
+        public async Task<IActionResult> CompleteAsync([FromRoute][BindRequired] int Id, [FromBody] IEnumerable<PostInvoiceDTO> postInvoiceDTOs)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
