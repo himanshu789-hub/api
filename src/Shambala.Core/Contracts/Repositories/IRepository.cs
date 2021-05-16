@@ -14,6 +14,7 @@ namespace Shambala.Core.Contracts.Repositories
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {
         Scheme GetSchemeWithNoTrackingById(short schemeId);
+        IEnumerable<Scheme> GetAll();
     }
     public interface IIncomingShipmentRepository:IGenericRepository<IncomingShipment>
     {

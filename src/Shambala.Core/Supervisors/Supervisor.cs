@@ -25,11 +25,16 @@ namespace Shambala.Core.Supervisors
 
     public class SchemeSupervisor : GenericSupervisor<Scheme, SchemeDTO, ISchemeRepository>, ISchemeSupervisor
     {
+        readonly ISchemeRepository schemeRepository;
         public SchemeSupervisor(IMapper mapper, ISchemeRepository repository) : base(mapper, repository)
         {
-
+            schemeRepository = repository;
         }
 
+        public IEnumerable<SchemeDTO> GetAll()
+        {
+            return _mapper.Map<IEnumerable<SchemeDTO>>(schemeRepository.GetAll());
+        }
     }
 
     public class InvoiceSupervisor : GenericSupervisor<Invoice, PostInvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
@@ -53,9 +58,9 @@ namespace Shambala.Core.Supervisors
         {
         }
 
-        public IEnumerable<ShopDTO> GetAllByName(string name)
+        public IEnumerable<ShopInfoDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.GetAllByName(name));
+            return _mapper.Map<IEnumerable<ShopInfoDTO>>(_repository.GetAllByName(name));
         }
 
         public ShopWithInvoicesDTO GetDetailWithInvoices(int Id)

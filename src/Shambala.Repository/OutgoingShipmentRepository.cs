@@ -108,7 +108,8 @@ namespace Shambala.Repository
 
         public IEnumerable<OutgoingShipment> GetShipmentsBySalesmnaIdAndDate(short salesmanId, DateTime date)
         {
-            return _context.OutgoingShipment.Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated == date).ToList();
+            var DateCreated = date.ToUniversalTime().Date;
+            return _context.OutgoingShipment.Include(e=>e.SalesmanIdFkNavigation).Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date == DateCreated).ToList();
         }
     }
 }

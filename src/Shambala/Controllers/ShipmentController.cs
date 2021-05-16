@@ -59,7 +59,7 @@ namespace Shambala.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
 
-            return Ok(_outgoingSupervisor.GetProductListByOrderId(Id));
+            return Ok(_outgoingSupervisor.GetWithProductListByOrderId(Id));
         }
 
         [HttpPost]

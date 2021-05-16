@@ -24,11 +24,11 @@ namespace Shambala.Core.Profile
         }
         public ApplicationProfiles()
         {
-            
+
             AddMemberConfiguration()
             .AddName<PrePostfixName>(e => e.AddStrings(p => p.DestinationPostfixes, "Fk", "IdFkNavigation"));
 
-            
+
             AddMemberConfiguration()
             .AddName<PrePostfixName>(e => e.AddStrings(p => p.Postfixes, "Fk", "IdFkNavigation"));
 
@@ -37,7 +37,8 @@ namespace Shambala.Core.Profile
             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
             CreateMap<Scheme, SchemeDTO>();
-            CreateMap<Salesman, SalesmanDTO>().ReverseMap();
+            CreateMap<Scheme, SchemeDTO>().ReverseMap();
+
 
 
             CreateMap<OutgoingShipmentStatus, string>()
@@ -45,8 +46,8 @@ namespace Shambala.Core.Profile
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
             CreateMap<OutgoingShipmentDetail, OutgoingShipmentDetailDTO>()
-            .ForMember(e=>e.TotalDefectPieces , map => map.MapFrom(e=>e.TotalQuantityRejected))
-            .ForMember(e=>e.TotalRecievedPieces , map => map.MapFrom(e=>e.TotalQuantityShiped));
+            .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
+            .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped));
 
             CreateMap<OutgoingShipmentDetail, ShipmentDTO>()
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
@@ -72,6 +73,8 @@ namespace Shambala.Core.Profile
 
             CreateMap<Shop, ShopDTO>();
             CreateMap<Shop, ShopDTO>().ReverseMap();
+
+            CreateMap<Shop, ShopInfoDTO>();
 
             CreateMap<Shop, ShopWithInvoicesDTO>();
             CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();

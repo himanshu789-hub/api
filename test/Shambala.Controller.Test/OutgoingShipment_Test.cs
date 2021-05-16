@@ -112,8 +112,8 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void GetOutgoingShipment_SalesmanIdAndDate()
         {
-            int salesmanId = 2;
-            System.DateTime Date = new System.DateTime(2021, 5, 13);
+            int salesmanId = 3;
+            System.DateTime Date = new System.DateTime(2021, 5, 15);
             var param = new Dictionary<string, string>();
             param.Add("SalesmanId", salesmanId.ToString());
             param.Add("Date", Date.ToString());

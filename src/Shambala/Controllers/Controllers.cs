@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Threading.Tasks;
 using Shambala.Core.Models.DTOModel;
 using System.Collections.Generic;
@@ -47,7 +48,7 @@ namespace Shambala.Controllers
             return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
         }
         [HttpGet]
-        public IActionResult GetById([FromRoute] int Id)
+        public IActionResult GetById([FromRoute][BindRequired] int Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Root.Errors);
@@ -58,9 +59,20 @@ namespace Shambala.Controllers
     [Controller]
     public class SchemeController : GenericController<SchemeDTO>
     {
+        readonly ISchemeSupervisor schemeSupervisor;
         public SchemeController(ISchemeSupervisor supervisor) : base(supervisor)
         {
-
+            schemeSupervisor = supervisor;
+        }
+        [HttpGet]
+        public SchemeDTO GetByShopId()
+        {
+        
+        }
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            return Ok(schemeSupervisor.GetAll());
         }
     }
     public class ShopController : GenericController<ShopDTO>
@@ -70,16 +82,16 @@ namespace Shambala.Controllers
         {
             _supervisor = supervisor;
         }
-        public IActionResult GetInvoices([FromRoute] int shopId)
+        public IActionResult GetInvoices([FromRoute][BindRequired] int Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest();
 
-            return Ok(_supervisor.GetDetailWithInvoices(shopId));
+            return Ok(_supervisor.GetDetailWithInvoices(Id));
 
         }
         [HttpGet]
-        public IActionResult GetAllByName([FromQuery] string name)
+        public IActionResult GetAllByName([FromQuery][BindRequired] string name)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
@@ -93,6 +105,7 @@ namespace Shambala.Controllers
         {
             _supervisor = salesmanSupervisor;
         }
+        [HttpGet]
         public IActionResult GetAll()
         {
             return Ok(_supervisor.GetAllActive());

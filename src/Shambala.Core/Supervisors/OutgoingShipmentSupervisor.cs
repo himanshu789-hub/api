@@ -174,11 +174,23 @@ namespace Shambala.Core.Supervisors
             return true;
         }
 
-        public IEnumerable<ProductDTO> GetProductListByOrderId(int orderId)
+        public OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int orderId)
         {
             IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
+            OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(orderId);
+
+            OutgoingShipmentWithProductListDTO outgoingShipmentWithProductListDTO = new OutgoingShipmentWithProductListDTO()
+            {
+                Id = outgoing.Id,
+                DateCreated = outgoing.DateCreated,
+                Status = (OutgoingShipmentStatus)System.Enum.Parse(typeof(OutgoingShipmentStatus), outgoing.Status),
+                Salesman = _mapper.Map<SalesmanDTO>(outgoing.SalesmanIdFkNavigation)
+            };
             if (OutgoingShipmentDettailInfos.Count() == 0)
-                return new List<ProductDTO>();
+            {
+                outgoingShipmentWithProductListDTO.Products = new List<ProductDTO>();
+                return outgoingShipmentWithProductListDTO;
+            }
             IEnumerable<ProductDTO> Products = OutgoingShipmentDettailInfos.GroupBy(e => e.Product.Id).First()
             .GroupJoin(OutgoingShipmentDettailInfos, e => e.Product.Id, f => f.Product.Id, (e, f) => new ProductDTO()
             {
@@ -187,7 +199,8 @@ namespace Shambala.Core.Supervisors
                 Name = e.Product.Name,
                 Flavours = f.Select(s => s.Flavour).ToList()
             });
-            return Products;
+            outgoingShipmentWithProductListDTO.Products = Products;
+            return outgoingShipmentWithProductListDTO;
         }
         public async Task ReturnAsync(int Id, IEnumerable<ShipmentDTO> shipments)
         {
@@ -204,10 +217,10 @@ namespace Shambala.Core.Supervisors
             _unitOfWork.OutgoingShipmentRepository.Return(Id, returnShipments);
             await _unitOfWork.SaveChangesAsync();
         }
-        public IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
+        public IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
             IEnumerable<OutgoingShipment> outgoings = _unitOfWork.OutgoingShipmentRepository.GetShipmentsBySalesmnaIdAndDate(salesmanId, date);
-            IEnumerable<OutgoingShipmentInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(outgoings);
+            IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentWithSalesmanInfoDTO>>(outgoings);
             return result;
         }
 

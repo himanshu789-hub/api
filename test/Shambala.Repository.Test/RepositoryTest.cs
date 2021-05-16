@@ -23,7 +23,7 @@ namespace Shambala.Repository.Test
             using (var context = new ShambalaContext())
             {
                 var repository = new OutgoingShipmentRepository(context);
-                var result = repository.GetShipmentsBySalesmnaIdAndDate(2, new System.DateTime(2021, 5, 13));
+                var result = repository.GetShipmentsBySalesmnaIdAndDate(3, new System.DateTime(2021, 5, 15,4,5,4));
                 System.Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(result));
                 
                 var response = mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(result);

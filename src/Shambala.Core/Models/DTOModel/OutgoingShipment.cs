@@ -15,6 +15,14 @@ namespace Shambala.Core.Models.DTOModel
         [Required]
         public ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
     }
+    public class OutgoingShipmentWithProductListDTO
+    {
+        public int Id { get; set; }
+        public OutgoingShipmentStatus Status { get; set; }
+        public DateTime DateCreated { get; set; }
+        public IEnumerable<ProductDTO> Products{get;set;}
+        public SalesmanDTO Salesman{get;set;}
+    }
     public class OutgoingShipmentInfoDTO : OutgoingShipmentInfoBaseDTO
     {
         public short SalesmanId { get; set; }

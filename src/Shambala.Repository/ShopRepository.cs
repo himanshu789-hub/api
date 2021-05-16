@@ -17,7 +17,7 @@ namespace Shambala.Repository
 
         public IEnumerable<Shop> GetAllByName(string name)
         {
-            return _context.Shop
+            return _context.Shop.Include(e=>e.SchemeIdFkNavigation)
             .Where(e => e.Title.Contains(name))
             .AsNoTracking()
             .ToList();
