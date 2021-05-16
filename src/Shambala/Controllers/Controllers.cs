@@ -65,9 +65,12 @@ namespace Shambala.Controllers
             schemeSupervisor = supervisor;
         }
         [HttpGet]
-        public SchemeDTO GetByShopId()
+        public IActionResult GetByShopId([FromRoute][BindRequired] int Id)
         {
-        
+            SchemeDTO Scheme = schemeSupervisor.GetByShopId(Id);
+            if (Scheme == null)
+                return NoContent();
+            return Ok(Scheme);
         }
         [HttpGet]
         public IActionResult GetAll()

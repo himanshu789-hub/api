@@ -13,6 +13,7 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>
     {
           IEnumerable<SchemeDTO> GetAll();
+          SchemeDTO GetByShopId(int shopId);
     }
     public interface IShopSupervisor : IGenericSupervisor<ShopDTO>
     {

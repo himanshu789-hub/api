@@ -26,14 +26,25 @@ namespace Shambala.Core.Supervisors
     public class SchemeSupervisor : GenericSupervisor<Scheme, SchemeDTO, ISchemeRepository>, ISchemeSupervisor
     {
         readonly ISchemeRepository schemeRepository;
-        public SchemeSupervisor(IMapper mapper, ISchemeRepository repository) : base(mapper, repository)
+        readonly IShopRepository shopRepository;
+        public SchemeSupervisor(IMapper mapper, ISchemeRepository repository, IShopRepository shopRepository) : base(mapper, repository)
         {
             schemeRepository = repository;
+            this.shopRepository = shopRepository;
         }
 
         public IEnumerable<SchemeDTO> GetAll()
         {
             return _mapper.Map<IEnumerable<SchemeDTO>>(schemeRepository.GetAll());
+        }
+
+        public SchemeDTO GetByShopId(int shopId)
+        {
+            Shop shop = this.shopRepository.GetById(shopId);
+            if (shop.SchemeIdFk != 0)
+                return _mapper.Map<SchemeDTO>(schemeRepository.GetById(shop.SchemeIdFk));
+            return null;
+
         }
     }
 

@@ -20,6 +20,7 @@ namespace Shambala.Repository
             return _context.Scheme.ToList();
         }
 
+
         public Scheme GetSchemeWithNoTrackingById(short schemeId) =>
             _context.Scheme.AsNoTracking().First(e => e.Id == schemeId);
 
