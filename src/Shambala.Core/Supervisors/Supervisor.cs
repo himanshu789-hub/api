@@ -2,12 +2,12 @@ using Shambala.Domain;
 using Shambala.Core.Models.DTOModel;
 using Shambala.Core.Contracts.Repositories;
 using Microsoft.Extensions.Logging;
-using Shambala.Core.Contracts.Supervisors;
 using AutoMapper;
 using System.Collections.Generic;
 
 namespace Shambala.Core.Supervisors
 {
+    using Contracts.Supervisors;
     public class SalesmanSupervisor : GenericSupervisor<Salesman, SalesmanDTO, ISalesmanRepository>, ISalesmanSupervisor
     {
         ILogger<SalesmanSupervisor> _logger;
@@ -19,6 +19,16 @@ namespace Shambala.Core.Supervisors
         public IEnumerable<SalesmanDTO> GetAllActive()
         {
             return _mapper.Map<List<SalesmanDTO>>(_repository.GetAllActive());
+        }
+
+        public IEnumerable<SalesmanDTO> GetAllByName(string name)
+        {
+            return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => e.FullName.Equals(name)));
+        }
+
+        public override bool IsNameAlreadyExists(string name, int? Id)
+        {
+            return _repository.IsNameAlreadyExists(name, Id);
         }
 
     }
@@ -38,6 +48,11 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<IEnumerable<SchemeDTO>>(schemeRepository.GetAll());
         }
 
+        public IEnumerable<SchemeDTO> GetAllByName(string name)
+        {
+            return _mapper.Map<IEnumerable<SchemeDTO>>(_repository.FetchList(e => e.Title.Equals(name)));
+        }
+
         public SchemeDTO GetByShopId(int shopId)
         {
             Shop shop = this.shopRepository.GetById(shopId);
@@ -45,6 +60,10 @@ namespace Shambala.Core.Supervisors
                 return _mapper.Map<SchemeDTO>(schemeRepository.GetById(shop.SchemeIdFk));
             return null;
 
+        }
+        public override bool IsNameAlreadyExists(string name, int? Id)
+        {
+            return _repository.IsNameAlreadyExists(name, Id);
         }
     }
 
@@ -67,17 +86,20 @@ namespace Shambala.Core.Supervisors
     {
         public ShopSupervisor(IMapper mapper, IShopRepository repository) : base(mapper, repository)
         {
-        }
 
-        public IEnumerable<ShopInfoDTO> GetAllByName(string name)
-        {
-            return _mapper.Map<IEnumerable<ShopInfoDTO>>(_repository.GetAllByName(name));
         }
-
         public ShopWithInvoicesDTO GetDetailWithInvoices(int Id)
         {
             Shop Shop = _repository.GetWithInvoiceDetail(Id);
             return _mapper.Map<ShopWithInvoicesDTO>(Shop);
+        }
+        public override bool IsNameAlreadyExists(string name, int? Id)
+        {
+            return _repository.IsNameAlreadyExists(name, Id);
+        }
+        public IEnumerable<ShopDTO> GetAllByName(string name)
+        {
+            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.FetchList(e => e.Title.Contains(name)));
         }
     }
 }

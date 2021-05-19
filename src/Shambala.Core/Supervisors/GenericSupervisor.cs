@@ -1,9 +1,15 @@
 using Shambala.Core.Contracts.Supervisors;
 using AutoMapper;
+using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 using Shambala.Core.Contracts.Repositories;
 namespace Shambala.Core.Supervisors
 {
+    public interface IQuerySupervisor<T> where T : class
+    {
+        bool IsNameAlreadyExists(string name, int? Id);
+        IEnumerable<T> GetAllByName(string name);
+    }
     public class GenericSupervisor<T, TDTO, V> : IGenericSupervisor<TDTO> where T : class where TDTO : class where V : IGenericRepository<T>
     {
         protected readonly IMapper _mapper;
@@ -24,18 +30,22 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<TDTO>(DomainEntity);
         }
 
-
         public TDTO GetById(object Id)
         {
 
             return _mapper.Map<TDTO>(_repository.GetById(Id));
         }
 
+        public virtual bool IsNameAlreadyExists(string name, int? Id)
+        {
+            throw new System.NotImplementedException();
+        }
+
         public bool Update(TDTO entityDTO)
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);
             bool IsUpdated = _repository.Update(DomainEntity);
-            if(IsUpdated)
+            if (IsUpdated)
             {
                 _repository.SaveChanges();
             }

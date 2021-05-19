@@ -17,7 +17,7 @@ namespace Shambala.Repository
 
         public IEnumerable<Shop> GetAllByName(string name)
         {
-            return _context.Shop.Include(e=>e.SchemeIdFkNavigation)
+            return _context.Shop.Include(e => e.SchemeIdFkNavigation)
             .Where(e => e.Title.Contains(name))
             .AsNoTracking()
             .ToList();
@@ -26,6 +26,15 @@ namespace Shambala.Repository
         public Shop GetWithInvoiceDetail(int Id)
         {
             return _context.Shop.Include(e => e.Invoice).FirstOrDefault(e => e.Id == Id);
+        }
+
+        public bool IsNameAlreadyExists(string name, int? Id)
+        {
+            bool IsNameExists = false;
+            if (Id.HasValue)
+                IsNameExists = _context.Shop.FirstOrDefault(e => e.Id != Id && e.Title.Equals(name)) != null;
+            IsNameExists = _context.Shop.FirstOrDefault(e => e.Title.Equals(name)) != null;
+            return IsNameExists;
         }
     }
 }

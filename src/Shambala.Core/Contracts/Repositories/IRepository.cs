@@ -6,23 +6,24 @@ namespace Shambala.Core.Contracts.Repositories
     {
 
     }
-    public interface ISalesmanRepository : IGenericRepository<Salesman>
+    public interface ISalesmanRepository : IGenericRepository<Salesman>,IQueryList<Salesman>
     {
-         IEnumerable<Salesman> GetAllActive();  
-        
+        IEnumerable<Salesman> GetAllActive();
+
     }
-    public interface ISchemeRepository : IGenericRepository<Scheme>
+    public interface ISchemeRepository : IGenericRepository<Scheme>,IQueryList<Scheme>
     {
+
         Scheme GetSchemeWithNoTrackingById(short schemeId);
         IEnumerable<Scheme> GetAll();
     }
-    public interface IIncomingShipmentRepository:IGenericRepository<IncomingShipment>
+    public interface IIncomingShipmentRepository : IGenericRepository<IncomingShipment>
     {
-        
+
     }
-    public interface IShopRepository : IGenericRepository<Shop>
+    public interface IShopRepository : IGenericRepository<Shop>,IQueryList<Shop>
     {
-       Shop GetWithInvoiceDetail(int Id);
-       IEnumerable<Shop> GetAllByName(string name);
+        Shop GetWithInvoiceDetail(int Id);
+        IEnumerable<Shop> GetAllByName(string name);
     }
 }

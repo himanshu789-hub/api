@@ -24,5 +24,14 @@ namespace Shambala.Repository
         public Scheme GetSchemeWithNoTrackingById(short schemeId) =>
             _context.Scheme.AsNoTracking().First(e => e.Id == schemeId);
 
+        public bool IsNameAlreadyExists(string name, int? Id)
+        {
+          
+            bool IsNameExists = false;
+            if (Id.HasValue)
+                IsNameExists = _context.Scheme.FirstOrDefault(e => e.Id != Id && e.Title.Equals(name)) != null;
+            IsNameExists = _context.Scheme.FirstOrDefault(e => e.Title.Equals(name)) != null;
+            return IsNameExists;
+        }
     }
 }

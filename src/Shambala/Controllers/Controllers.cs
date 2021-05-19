@@ -41,7 +41,7 @@ namespace Shambala.Controllers
                 bool IsUpdated = _supervisor.Update(dto);
                 if (IsUpdated)
                 {
-                    return Ok();
+                    return NoContent();
                 }
                 return BadRequest("Not Updated");
             }
@@ -54,7 +54,6 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Root.Errors);
             return Ok(_supervisor.GetById(Id));
         }
-
     }
     [Controller]
     public class SchemeController : GenericController<SchemeDTO>
@@ -77,6 +76,19 @@ namespace Shambala.Controllers
         {
             return Ok(schemeSupervisor.GetAll());
         }
+
+        [HttpGet]
+        public IActionResult GetAllByName([BindRequired] string name)
+        {
+            return Ok(schemeSupervisor.GetAllByName(name));
+        }
+        [HttpGet]
+        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Name Value Required");
+            return Ok(schemeSupervisor.IsNameAlreadyExists(name, Id));
+        }
     }
     public class ShopController : GenericController<ShopDTO>
     {
@@ -93,6 +105,14 @@ namespace Shambala.Controllers
             return Ok(_supervisor.GetDetailWithInvoices(Id));
 
         }
+
+        [HttpGet]
+        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Name Value Required");
+            return Ok(_supervisor.IsNameAlreadyExists(name, Id));
+        }
         [HttpGet]
         public IActionResult GetAllByName([FromQuery][BindRequired] string name)
         {
@@ -100,6 +120,7 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
             return Ok(_supervisor.GetAllByName(name));
         }
+        
     }
     public class SalesmanController : GenericController<SalesmanDTO>
     {
@@ -108,10 +129,23 @@ namespace Shambala.Controllers
         {
             _supervisor = salesmanSupervisor;
         }
+
+        [HttpGet]
+        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest("Name Value Required");
+            return Ok(_supervisor.IsNameAlreadyExists(name, Id));
+        }
         [HttpGet]
         public IActionResult GetAll()
         {
             return Ok(_supervisor.GetAllActive());
+        }
+        [HttpGet]
+        public IActionResult GetAllByName([BindRequired] string name)
+        {
+            return Ok(_supervisor.GetAllByName(name));
         }
     }
 }

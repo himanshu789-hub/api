@@ -4,6 +4,8 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Threading.Tasks;
 using Shambala.Domain;
+using System.Collections.Generic;
+
 namespace Shambala.Repository
 {
     public class GenericLoading<T> : ILoadingProperties<T> where T : class
@@ -15,10 +17,10 @@ namespace Shambala.Repository
             _context.Entry(entity).Reference(expression).Load();
         }
     }
-    public class GenericRepository<T> :GenericLoading<T>, IGenericRepository<T> where T : class
+    public class GenericRepository<T> : GenericLoading<T>, IGenericRepository<T> where T : class
     {
         ShambalaContext _context;
-        public GenericRepository(ShambalaContext context):base(context) => _context = context;
+        public GenericRepository(ShambalaContext context) : base(context) => _context = context;
         public T Add(T entity)
         {
             if (typeof(T).GetProperty("IsActive") != null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
@@ -30,6 +32,10 @@ namespace Shambala.Repository
             return AddedEntity.Entity;
         }
 
+        public IEnumerable<T> FetchList(System.Func<T, bool> predicate)
+        {
+            return _context.Set<T>().Where(predicate).ToList();
+        }
 
         public T GetById(object Id)
         {
@@ -53,7 +59,7 @@ namespace Shambala.Repository
 
         public bool Update(T entity)
         {
-            if (typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
+            if (typeof(T).GetProperty("IsActive") != null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
             {
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
             }
@@ -67,5 +73,6 @@ namespace Shambala.Repository
             }
             return false;
         }
+
     }
 }

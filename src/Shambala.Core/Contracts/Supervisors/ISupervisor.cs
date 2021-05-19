@@ -1,28 +1,33 @@
 using Shambala.Core.Models.DTOModel;
-using Shambala.Domain;
 using System.Collections.Generic;
+
 namespace Shambala.Core.Contracts.Supervisors
 {
-    public interface ISalesmanSupervisor : IGenericSupervisor<SalesmanDTO>
+    public interface IFetchSupervisor<TDTO> where TDTO: class
+    {
+        bool IsNameAlreadyExists(string name, int? Id);
+        IEnumerable<TDTO> GetAllByName(string name);
+    }
+    public interface ISalesmanSupervisor : IGenericSupervisor<SalesmanDTO>,IFetchSupervisor<SalesmanDTO>
     {
         IEnumerable<SalesmanDTO> GetAllActive();
     }
     public interface IInvoiceSupervisor : IGenericSupervisor<PostInvoiceDTO>
     {
+
     }
-    public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>
+    public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>,IFetchSupervisor<SchemeDTO>
     {
-          IEnumerable<SchemeDTO> GetAll();
-          SchemeDTO GetByShopId(int shopId);
+        IEnumerable<SchemeDTO> GetAll();
+        SchemeDTO GetByShopId(int shopId);
+
     }
-    public interface IShopSupervisor : IGenericSupervisor<ShopDTO>
+    public interface IShopSupervisor : IGenericSupervisor<ShopDTO>,IFetchSupervisor<ShopDTO>
     {
-        
-        IEnumerable<ShopInfoDTO> GetAllByName(string name);
         ShopWithInvoicesDTO GetDetailWithInvoices(int Id);
     }
     public interface IIncomingShipmentSupervisor : IGenericSupervisor<ShipmentDTO>
     {
-         
+
     }
 }
