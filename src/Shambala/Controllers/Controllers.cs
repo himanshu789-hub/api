@@ -143,8 +143,11 @@ namespace Shambala.Controllers
             return Ok(_supervisor.GetAllActive());
         }
         [HttpGet]
-        public IActionResult GetAllByName([BindRequired] string name)
+        public IActionResult GetAllByName([BindRequired][FromQuery] string name)
         {
+                       if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
+ 
             return Ok(_supervisor.GetAllByName(name));
         }
     }

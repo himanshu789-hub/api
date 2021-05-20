@@ -65,13 +65,10 @@ namespace Shambala.Repository
             }
             if (typeof(T).GetProperty("Id") == null)
                 throw new System.Exception("Id Property Not Found");
-            var EntityId = typeof(T).GetProperty("Id").GetValue(entity);
-            if (this.GetById(EntityId) != null)
-            {
-                _context.Set<T>().Update(entity);
-                return true;
-            }
-            return false;
+
+            _context.Set<T>().Update(entity);
+            return true;
+
         }
 
     }

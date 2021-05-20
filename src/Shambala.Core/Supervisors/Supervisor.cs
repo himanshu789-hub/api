@@ -4,7 +4,7 @@ using Shambala.Core.Contracts.Repositories;
 using Microsoft.Extensions.Logging;
 using AutoMapper;
 using System.Collections.Generic;
-
+using Microsoft.EntityFrameworkCore;
 namespace Shambala.Core.Supervisors
 {
     using Contracts.Supervisors;
@@ -23,7 +23,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<SalesmanDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => e.FullName.Equals(name)));
+            return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => EF.Functions.Like(e.FullName,$"%{name}%")));
         }
 
         public override bool IsNameAlreadyExists(string name, int? Id)
@@ -99,7 +99,7 @@ namespace Shambala.Core.Supervisors
         }
         public IEnumerable<ShopDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.FetchList(e => e.Title.Contains(name)));
+            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.FetchList(e => EF.Functions.Like(e.Title,$"%{name}%")));
         }
     }
 }

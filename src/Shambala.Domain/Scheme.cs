@@ -15,7 +15,7 @@ namespace Shambala.Domain
         public string Title { get; set; }
         public DateTime DateCreated { get; set; }
         public bool IsUserDefinedScheme { get; set; }
-        public byte SchemeType { get; set; }
+        public byte? SchemeType { get; set; }
         public decimal Value { get; set; }
 
         public virtual ICollection<Invoice> Invoice { get; set; }

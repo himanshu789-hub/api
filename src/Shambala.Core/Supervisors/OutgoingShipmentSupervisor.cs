@@ -122,7 +122,7 @@ namespace Shambala.Core.Supervisors
             if (!SchemeId.HasValue)
                 return;
             Scheme scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
-            byte InvoiceSchemeType = scheme.SchemeType;
+            byte? InvoiceSchemeType = scheme.SchemeType;
 
             Product Product = products.FirstOrDefault(e => e.Id == invoice.ProductIdFk);
             decimal Price = Product.PricePerCaret * invoice.QuantityPurchase;
