@@ -23,7 +23,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<SalesmanDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => EF.Functions.Like(e.FullName,$"%{name}%")));
+            return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => EF.Functions.Like(e.FullName, $"%{name}%")));
         }
 
         public override bool IsNameAlreadyExists(string name, int? Id)
@@ -50,13 +50,13 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<SchemeDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<SchemeDTO>>(_repository.FetchList(e => e.Title.Equals(name)));
+            return _mapper.Map<IEnumerable<SchemeDTO>>(_repository.FetchList(e => EF.Functions.Like(e.Title, $"%{name}%")));
         }
 
         public SchemeDTO GetByShopId(int shopId)
         {
             Shop shop = this.shopRepository.GetById(shopId);
-            if (shop.SchemeIdFk != 0)
+            if (shop.SchemeIdFk != null)
                 return _mapper.Map<SchemeDTO>(schemeRepository.GetById(shop.SchemeIdFk));
             return null;
 
@@ -99,7 +99,7 @@ namespace Shambala.Core.Supervisors
         }
         public IEnumerable<ShopDTO> GetAllByName(string name)
         {
-            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.FetchList(e => EF.Functions.Like(e.Title,$"%{name}%")));
+            return _mapper.Map<IEnumerable<ShopDTO>>(_repository.FetchList(e => EF.Functions.Like(e.Title, $"%{name}%")));
         }
     }
 }

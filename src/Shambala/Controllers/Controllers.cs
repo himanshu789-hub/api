@@ -64,7 +64,7 @@ namespace Shambala.Controllers
             schemeSupervisor = supervisor;
         }
         [HttpGet]
-        public IActionResult GetByShopId([FromRoute][BindRequired] int Id)
+        public IActionResult GetByShopId([BindRequired] int Id)
         {
             SchemeDTO Scheme = schemeSupervisor.GetByShopId(Id);
             if (Scheme == null)
@@ -78,8 +78,11 @@ namespace Shambala.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAllByName([BindRequired] string name)
+        public IActionResult GetAllByName([BindRequired][FromQuery] string name)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Root.Errors);
+
             return Ok(schemeSupervisor.GetAllByName(name));
         }
         [HttpGet]
@@ -120,7 +123,7 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
             return Ok(_supervisor.GetAllByName(name));
         }
-        
+
     }
     public class SalesmanController : GenericController<SalesmanDTO>
     {
@@ -145,9 +148,9 @@ namespace Shambala.Controllers
         [HttpGet]
         public IActionResult GetAllByName([BindRequired][FromQuery] string name)
         {
-                       if (!ModelState.IsValid)
+            if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.SelectMany(e => e.ErrorMessage)));
- 
+
             return Ok(_supervisor.GetAllByName(name));
         }
     }

@@ -5,9 +5,11 @@ namespace Shambala.Core.Models.DTOModel
     public class ShopDTO
     {
         public string Title { get; set; }
+        
         public string Address { get; set; }
+
         public short Id { get; set; }
-        public short SchemeId{get;set;}
+        public short? SchemeId{get;set;}
 
     }
     public class ShopInfoDTO : ShopDTO
