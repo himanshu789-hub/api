@@ -6,6 +6,7 @@ namespace Shambala.Domain
     public partial class Credit
     {
         public int Id { get; set; }
+        public DateTime DateRecieved{get;set;}
         public decimal Amount { get; set; }
         public short ShopIdFk { get; set; }
         public int OutgoingShipmentIdFk { get; set; }

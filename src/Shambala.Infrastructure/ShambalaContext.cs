@@ -16,6 +16,7 @@ namespace Shambala.Infrastructure
         }
 
         public virtual DbSet<Flavour> Flavour { get; set; }
+        public virtual DbSet<Credit> Credit{get;set;}
         public virtual DbSet<IncomingShipment> IncomingShipment { get; set; }
         public virtual DbSet<Invoice> Invoice { get; set; }
         public virtual DbSet<OutgoingShipment> OutgoingShipment { get; set; }
