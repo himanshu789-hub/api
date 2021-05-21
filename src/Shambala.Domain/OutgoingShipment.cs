@@ -16,6 +16,7 @@ namespace Shambala.Domain
         public DateTime DateCreated { get; set; }
         public string Status { get; set; }
 
+        public virtual ICollection<Credit> Credits { get; set; }
         public virtual Salesman SalesmanIdFkNavigation { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }
         public virtual ICollection<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }

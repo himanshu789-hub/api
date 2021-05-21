@@ -97,6 +97,41 @@ namespace Shambala.Infrastructure
 
             });
 
+            modelBuilder.Entity<Credit>(entity =>
+            {
+                entity.ToTable("credit");
+
+                entity.HasIndex(e => e.OutgoingShipmentIdFk)
+                    .HasName("Credit_OutgoingShipment_Relationship_idx");
+
+                entity.HasIndex(e => e.ShopIdFk)
+                    .HasName("Credi_Shopt_Relationship_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(6,2)");
+
+                entity.Property(e => e.OutgoingShipmentIdFk)
+                    .HasColumnName("OutgoingShipment_Id_FK")
+                    .HasColumnType("int unsigned");
+
+                entity.Property(e => e.ShopIdFk)
+                    .HasColumnName("Shop_Id_FK")
+                    .HasColumnType("smallint unsigned");
+
+                entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
+                    .WithMany(p => p.Credits)
+                    .HasForeignKey(d => d.OutgoingShipmentIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Credit_OutgoingShipment_Relationship");
+
+                entity.HasOne(d => d.ShopIdFkNavigation)
+                    .WithMany(p => p.Credits)
+                    .HasForeignKey(d => d.ShopIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Credit_Shop_Relationship");
+            });
+
             modelBuilder.Entity<Invoice>(entity =>
             {
                 entity.ToTable("invoice");
