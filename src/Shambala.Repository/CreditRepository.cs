@@ -1,9 +1,13 @@
+
+using System;
+using System.Linq;
+using Shambala.Domain;
+using Shambala.Infrastructure;
 namespace Shambala.Repository
 {
-    using System;
+    using System.Collections.Generic;
+    using System.Threading.Tasks;
     using Core.Contracts.Repositories;
-    using Shambala.Domain;
-    using Shambala.Infrastructure;
 
     public class CreditRepository : ICreditRepository
     {
@@ -14,12 +18,26 @@ namespace Shambala.Repository
             Credit credit = new Credit { Amount = amount, OutgoingShipmentIdFk = outgoingShipmentId, ShopIdFk = shopId, DateRecieved = date.ToUniversalTime() };
             context.Credit.Add(credit);
             return credit;
+        }
 
+        public IEnumerable<Credit> FetchList(Func<Credit, bool> predicate)
+        {
+            return context.Credit.Where(predicate).ToList();
         }
 
         public decimal GetCreditAgggreate(int outgoingShipmentId, short shopId)
         {
-            throw new NotImplementedException();
+            return context.Credit.Where(e => e.OutgoingShipmentIdFk == outgoingShipmentId && e.ShopIdFk == shopId).Sum(e => e.Amount);
+        }
+
+        public int SaveChanges()
+        {
+            return context.SaveChanges();
+        }
+
+        public Task<int> SaveChangesAync()
+        {
+            return context.SaveChangesAsync();
         }
     }
 }

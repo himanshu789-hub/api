@@ -34,4 +34,14 @@ namespace Shambala.Core.Exception
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    [System.Serializable]
+    public class CreditFlorishException : System.Exception
+    {
+        public CreditFlorishException():base("Invalid Credit Amount") { }
+        public CreditFlorishException(string message) : base(message) { }
+        public CreditFlorishException(string message, System.Exception inner) : base(message, inner) { }
+        protected CreditFlorishException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }

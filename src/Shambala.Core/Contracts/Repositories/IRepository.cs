@@ -4,7 +4,7 @@ namespace Shambala.Core.Contracts.Repositories
 {
     public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
-
+        decimal GetAggreate(int outgoingShipmentId,int shopId);
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>,IQueryList<Salesman>
     {

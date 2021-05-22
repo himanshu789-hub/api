@@ -39,7 +39,9 @@ namespace Shambala.Core.Profile
             CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
 
-
+             CreateMap<Credit,CreditDTO>();
+             CreateMap<Credit,CreditDTO>().ReverseMap();
+             
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
