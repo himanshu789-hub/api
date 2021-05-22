@@ -7,7 +7,7 @@ namespace Shambala.Core.Contracts.Supervisors
     {
         CreditDTO Add(CreditDTO credit);
         decimal GetLeftOverCredit(int outgoingShipmentId,short shopId);
-        bool IsCrreditClared(int outgoingShipmentId,short shopId);
+        bool IsCreditCleared(int outgoingShipmentId,short shopId);
         IEnumerable<CreditDTO> GetLog(int outgoingShipmentId,int shopId);
     } 
 

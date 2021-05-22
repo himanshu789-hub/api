@@ -15,6 +15,7 @@ namespace Shambala.UnitOfWork
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction;
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
+        ICreditRepository _creditRepository { get; set; }
         IInvoiceRepository _invoiceRepository { get; set; }
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
         IProductRepository _productRepository { get; set; }
@@ -25,7 +26,7 @@ namespace Shambala.UnitOfWork
         {
             get
             {
-                return _shopRepository = _shopRepository == null ? new ShopRepository(_context) : ShopRepository;
+                return _shopRepository = _shopRepository == null ? new ShopRepository(_context) : _shopRepository;
             }
 
         }
@@ -73,6 +74,15 @@ namespace Shambala.UnitOfWork
                 return _schemeRepository = _schemeRepository == null ? new SchemeRepository(_context) : _schemeRepository;
             }
         }
+
+        public ICreditRepository CreditRepository
+        {
+            get
+            {
+                return _creditRepository = _creditRepository == null ? new CreditRepository(_context) : _creditRepository;
+            }
+        }
+
         ILogger<UnitOfWork> logger;
         public UnitOfWork(ShambalaContext context, ILogger<UnitOfWork> logger)
         {
@@ -105,9 +115,9 @@ namespace Shambala.UnitOfWork
         }
 
 
-        public void BeginTransaction(IsolationLevel levl = IsolationLevel.ReadCommitted)
+        public Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(IsolationLevel levl = IsolationLevel.ReadCommitted)
         {
-            transaction = _context.Database.BeginTransaction(levl);
+            return transaction = _context.Database.BeginTransaction(levl);
         }
 
 

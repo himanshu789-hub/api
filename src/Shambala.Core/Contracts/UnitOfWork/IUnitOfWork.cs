@@ -15,7 +15,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         IIncomingShipmentRepository IncomingShipmentRepository{get;}
         ISchemeRepository SchemeRepository { get; }
         int SaveChanges();
-        void BeginTransaction(IsolationLevel levl);
+        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(IsolationLevel levl);
         Task<int> SaveChangesAsync();
         void Rollback();
     }
