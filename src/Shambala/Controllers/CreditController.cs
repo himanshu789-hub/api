@@ -42,12 +42,4 @@ namespace Shambala.Controllers
     }
 
 
-    public class InvoiceController:ControllerBase
-    {
-           [HttpGet]
-           public IActionResult GetInvoiceDetails([FromQuery][BindRequired]int shopId,System.DateTime? date,InvoiceStatus? status,int? page)
-           {
-               
-           }
-    }
 }

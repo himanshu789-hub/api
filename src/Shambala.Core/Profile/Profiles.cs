@@ -7,6 +7,7 @@ using AutoMapper;
 namespace Shambala.Core.Profile
 {
     using AutoMapper;
+    using Models.BLLModel;
     using Helphers;
     public class ApplicationProfiles : AutoMapper.Profile
     {
@@ -39,9 +40,10 @@ namespace Shambala.Core.Profile
             CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
 
-             CreateMap<Credit,CreditDTO>();
-             CreateMap<Credit,CreditDTO>().ReverseMap();
-             
+            CreateMap<Credit, CreditDTO>();
+            CreateMap<Credit, CreditDTO>().ReverseMap();
+
+            CreateMap<InvoiceDetailBLL, InvoiceDetailDTO>();
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));

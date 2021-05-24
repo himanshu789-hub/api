@@ -28,16 +28,25 @@ namespace Shambala.Repository
         {
             Func<Invoice, bool> predicate = e => e.ShopIdFk == shopId;
             if (date.HasValue)
-                predicate = e => e.ShopIdFk == shopId && e.DateCreated.Date >= date.Value.Date;
+            {
+                var dateSearch = date.Value.Date;
+                predicate = e => e.ShopIdFk == shopId && e.DateCreated.Date >= dateSearch;
+            }
 
             var query = _context.Invoice.Where(predicate)
-            .GroupBy(e => new { e.ShopIdFk, e.OutgoingShipmentIdFk })
-            .Select(e => new { e.Key.OutgoingShipmentIdFk, e.Key.ShopIdFk, SoldPrice = e.Sum(s => s.SellingPrice), CostPrice = e.Sum(s => s.CostPrice) })
-            .Join(_context.Credit
-            .GroupBy(e => new { e.ShopIdFk, e.OutgoingShipmentIdFk })
-            .Select(e => new { e.Key.OutgoingShipmentIdFk, e.Key.ShopIdFk, ClearedPrice = e.Sum(s => s.Amount) }),
-              k => new { k.ShopIdFk, k.OutgoingShipmentIdFk }, l => new { l.ShopIdFk, l.OutgoingShipmentIdFk },
-            (k, l) => new { k.ShopIdFk, k.OutgoingShipmentIdFk, k.CostPrice, k.SoldPrice, DuePrice = (k.SoldPrice - l.ClearedPrice) });
+            .GroupBy(e => e.OutgoingShipmentIdFk)
+            .Select(e => new { e.Key, SoldPrice = e.Sum(s => s.SellingPrice), CostPrice = e.Sum(s => s.CostPrice) })
+            .GroupJoin(_context.Credit.Where(e => e.ShopIdFk == shopId).GroupBy(e => e.OutgoingShipmentIdFk)
+            .Select(e => new { ClearedPrice = e.Sum(s => s.Amount), e.Key }),
+              k => k.Key, l => l.Key,
+            (k, l) => new { Invoice = k, Credit = l })
+            .SelectMany(x => x.Credit.DefaultIfEmpty(), (x, y) => new
+            {
+                SoldPrice = x.Invoice.SoldPrice,
+                x.Invoice.CostPrice,
+                x.Invoice.Key,
+                DuePrice = x.Invoice.SoldPrice - ((y?.ClearedPrice) ?? 0)
+            });
 
             if (status.HasValue)
             {
@@ -46,19 +55,19 @@ namespace Shambala.Repository
                 else
                     query.Where(e => e.SoldPrice - e.DuePrice > 0);
             };
-            query = query.Skip(page - 1 * count).Take(count);
+            //  query = query.Skip((page - 1) * count).Take(count);
 
-            var withSchemeQuery = query.Join(_context.Invoice.Include(e => e.SchemeIdFkNavigation), e => new { e.ShopIdFk, e.OutgoingShipmentIdFk }, m => new { m.ShopIdFk, m.OutgoingShipmentIdFk }, (e, m) =>
-            new InvoiceDetailBLL()
-            {
-                CostPrice = e.CostPrice,
-                DuePrice = e.DuePrice,
-                Scheme = m.SchemeIdFkNavigation,
-                SellingPrice = e.SoldPrice,
-                DateCreated = m.DateCreated,
-                OutgoingShipmentId = m.OutgoingShipmentIdFk,
-                ShopId = e.ShopIdFk
-            });
+            var withSchemeQuery = query.Join(_context.Invoice.Include(e => e.SchemeIdFkNavigation).Where(e => e.ShopIdFk == shopId), e => e.Key, m => m.OutgoingShipmentIdFk, (e, m) =>
+                new InvoiceDetailBLL()
+                {
+                    CostPrice = e.CostPrice,
+                    DuePrice = e.DuePrice,
+                    Scheme = m.SchemeIdFkNavigation,
+                    SellingPrice = e.SoldPrice,
+                    DateCreated = m.DateCreated,
+                    OutgoingShipmentId = m.OutgoingShipmentIdFk,
+                    ShopId = m.ShopIdFk
+                });
 
             if (_context.Database.CurrentTransaction == null)
             {
