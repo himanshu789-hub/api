@@ -12,4 +12,8 @@ namespace Shambala.Core.Helphers
     {
         PENDING,RETURN, COMPLETED
     }
+    public enum InvoiceStatus 
+    {
+        DUE=1,COMPLETED
+    }
 }

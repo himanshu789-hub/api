@@ -13,6 +13,7 @@ namespace Shambala.Domain
         public short? SchemeIdFk { get; set; }
         public byte CaretSize { get; set; }
         public short QuantityPurchase { get; set; }
+        public System.DateTime DateCreated{get;set;}
         
         public byte QuantityDefected { get; set; }
         public byte Gstrate { get; set; }

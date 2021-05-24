@@ -2,9 +2,13 @@ using Shambala.Domain;
 using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Repositories
 {
+    using Models.DTOModel;
+    using Models.BLLModel;
+    using Helphers;
     public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
         decimal GetAggreate(int outgoingShipmentId,int shopId);
+        IEnumerable<InvoiceDetailBLL> GetInvoicesByShopId(int shopId,System.DateTime? date,InvoiceStatus? status,int page,int count);
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>,IQueryList<Salesman>
     {

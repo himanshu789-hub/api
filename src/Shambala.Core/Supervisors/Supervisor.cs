@@ -7,7 +7,10 @@ using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 namespace Shambala.Core.Supervisors
 {
+    using System;
     using Contracts.Supervisors;
+    using Shambala.Core.Helphers;
+
     public class SalesmanSupervisor : GenericSupervisor<Salesman, SalesmanDTO, ISalesmanRepository>, ISalesmanSupervisor
     {
         ILogger<SalesmanSupervisor> _logger;
@@ -73,7 +76,10 @@ namespace Shambala.Core.Supervisors
         {
 
         }
-
+        public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(int shopId, DateTime? date, InvoiceStatus? status, int? page)
+        {
+            return _mapper.Map<IEnumerable<InvoiceDetailDTO>>(_repository.GetInvoicesByShopId(shopId, date, status, page.HasValue ? page.Value : 1, 15));
+        }
     }
     public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, ShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor
     {

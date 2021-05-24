@@ -5,6 +5,7 @@ namespace Shambala.Controllers
 {
     using Core.Contracts.Supervisors;
     using Core.Models.DTOModel;
+    using Core.Helphers;
     public class CreditController : ControllerBase
     {
         ICreditSupervisor creditSupervisor;
@@ -38,5 +39,15 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             return Ok(creditSupervisor.GetLeftOverCredit(shipmentId, shopId));
         }
+    }
+
+
+    public class InvoiceController:ControllerBase
+    {
+           [HttpGet]
+           public IActionResult GetInvoiceDetails([FromQuery][BindRequired]int shopId,System.DateTime? date,InvoiceStatus? status,int? page)
+           {
+               
+           }
     }
 }
