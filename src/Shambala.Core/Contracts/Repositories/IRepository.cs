@@ -9,6 +9,7 @@ namespace Shambala.Core.Contracts.Repositories
     {
         decimal GetAggreate(int outgoingShipmentId,int shopId);
         IEnumerable<InvoiceDetailBLL> GetInvoicesByShopId(int shopId,System.DateTime? date,InvoiceStatus? status,int page,int count);
+        InvoiceDetailWithInfoBLL GetInvoiceByShopAndShipmentId(short shopId,int shipmentId);
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>,IQueryList<Salesman>
     {

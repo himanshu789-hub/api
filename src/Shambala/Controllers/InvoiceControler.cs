@@ -14,11 +14,17 @@ namespace Shambala.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetInvoiceDetail([FromQuery][BindRequired] short shopId, [FromQuery] System.DateTime? date,[FromQuery] int? page,[FromQuery] InvoiceStatus? status)
+        public IActionResult GetInvoiceDetail([FromQuery][BindRequired] short shopId, [FromQuery] System.DateTime? date, [FromQuery] int? page, [FromQuery] InvoiceStatus? status)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors).Select(e => e.ErrorMessage));
             return Ok(invoiceSupervisor.GetInvoiceDetailByShopId(shopId, date, status, page.HasValue ? page.Value : 1));
+        }
+        public IActionResult GetInvoiceWithCreditLog([FromQuery][BindRequired] short shopId, [FromQuery][BindRequired] int shipmentId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors).Select(e => e.ErrorMessage));
+            return Ok(invoiceSupervisor.GetShopInvoiceWithCreditLog(shipmentId, shopId));
         }
     }
 }

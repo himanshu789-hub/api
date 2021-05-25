@@ -16,6 +16,7 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface IInvoiceSupervisor : IGenericSupervisor<PostInvoiceDTO>
     {
            IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(int shopId,System.DateTime? date,InvoiceStatus? status,int page);
+           InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId,short shopId);
     }
     public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>,IFetchSupervisor<SchemeDTO>
     {
