@@ -83,8 +83,8 @@ namespace Shambala.Repository
         {
             var query = QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId, shopId);
             var withProperties = query.Join(
-                context.Invoice.Include(e => e.OutgoingShipmentIdFkNavigation).Include(e => e.SchemeIdFkNavigation)
-                .Include(e => e.ShopIdFkNavigation).Where(e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId).Take(0),
+                context.Invoice.Include(e => e.OutgoingShipmentIdFkNavigation).ThenInclude(e=>e.SalesmanIdFkNavigation).Include(e => e.SchemeIdFkNavigation)
+                .Include(e => e.ShopIdFkNavigation).Where(e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId).Take(1),
                 e => e.OutgoingShipmentId, f => f.OutgoingShipmentIdFk, (e, f) => new InvoiceDetailWithInfoBLL()
                 {
                     DateCreated = f.DateCreated,
