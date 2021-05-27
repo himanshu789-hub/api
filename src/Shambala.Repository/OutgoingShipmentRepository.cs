@@ -34,32 +34,6 @@ namespace Shambala.Repository
                 .First(e => e.Id == Id);
         }
 
-        public IEnumerable<OutgoingShipmentDetailInfo> GetProductsById(int orderId)
-        {
-            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _context.OutgoingShipmentDetails
-            .AsNoTracking()
-            .Include(e => e.ProductIdFkNavigation)
-            .Include(e => e.FlavourIdFkNavigation)
-            .Where(e => e.OutgoingShipmentIdFk == orderId)
-            .Select(e => new OutgoingShipmentDetailInfo
-            {
-                Product = new ProductInfo()
-                {
-                    Id = e.ProductIdFkNavigation.Id,
-                    Name = e.ProductIdFkNavigation.Name,
-                    CaretSize = e.CaretSize
-                },
-                Flavour = new FlavourDTO()
-                {
-                    Id = e.FlavourIdFkNavigation.Id,
-                    Quantity = e.TotalQuantityShiped - e.TotalQuantityRejected,
-                    Title = e.FlavourIdFkNavigation.Title
-                }
-            })
-            .ToList();
-
-            return OutgoingShipmentDettailInfos;
-        }
 
         public bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedValue)
         {
@@ -106,10 +80,5 @@ namespace Shambala.Repository
             return true;
         }
 
-        public IEnumerable<OutgoingShipment> GetShipmentsBySalesmnaIdAndDate(short salesmanId, DateTime date)
-        {
-            var DateCreated = date.ToUniversalTime().Date;
-            return _context.OutgoingShipment.Include(e=>e.SalesmanIdFkNavigation).Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date == DateCreated).ToList();
-        }
     }
 }

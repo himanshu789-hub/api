@@ -14,7 +14,6 @@ namespace Shambala.Domain
         public byte CaretSize { get; set; }
         public short QuantityPurchase { get; set; }
         public System.DateTime DateCreated{get;set;}
-        
         public byte QuantityDefected { get; set; }
         public byte Gstrate { get; set; }
         public decimal CostPrice { get; set; }

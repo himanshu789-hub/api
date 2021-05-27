@@ -6,8 +6,9 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface ICreditSupervisor
     {
         CreditDTO Add(CreditDTO credit);
-        decimal GetLeftOverCredit(int outgoingShipmentId,short shopId);
-        bool IsCreditCleared(int outgoingShipmentId,short shopId);
+            decimal GetLeftOverCredit(int outgoingShipmentId, short shopId);
+        bool IsCreditCleared(int outgoingShipmentId, short shopId);
+
         IEnumerable<CreditDTO> GetLog(int outgoingShipmentId,int shopId);
     } 
 

@@ -4,27 +4,23 @@ using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Supervisors
 {
     using Helphers;
-    public interface IFetchSupervisor<TDTO> where TDTO: class
+    public interface IFetchSupervisor<TDTO> where TDTO : class
     {
         bool IsNameAlreadyExists(string name, int? Id);
         IEnumerable<TDTO> GetAllByName(string name);
     }
-    public interface ISalesmanSupervisor : IGenericSupervisor<SalesmanDTO>,IFetchSupervisor<SalesmanDTO>
+    public interface ISalesmanSupervisor : IGenericSupervisor<SalesmanDTO>, IFetchSupervisor<SalesmanDTO>
     {
         IEnumerable<SalesmanDTO> GetAllActive();
     }
-    public interface IInvoiceSupervisor : IGenericSupervisor<PostInvoiceDTO>
-    {
-           IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(int shopId,System.DateTime? date,InvoiceStatus? status,int page);
-           InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId,short shopId);
-    }
-    public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>,IFetchSupervisor<SchemeDTO>
+    
+    public interface ISchemeSupervisor : IGenericSupervisor<SchemeDTO>, IFetchSupervisor<SchemeDTO>
     {
         IEnumerable<SchemeDTO> GetAll();
         SchemeDTO GetByShopId(int shopId);
 
     }
-    public interface IShopSupervisor : IGenericSupervisor<ShopDTO>,IFetchSupervisor<ShopDTO>
+    public interface IShopSupervisor : IGenericSupervisor<ShopDTO>, IFetchSupervisor<ShopDTO>
     {
         ShopWithInvoicesDTO GetDetailWithInvoices(int Id);
     }

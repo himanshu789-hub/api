@@ -70,17 +70,6 @@ namespace Shambala.Core.Supervisors
         }
     }
 
-    public class InvoiceSupervisor : GenericSupervisor<Invoice, PostInvoiceDTO, IInvoiceRepository>, IInvoiceSupervisor
-    {
-        public InvoiceSupervisor(IMapper mapper, IInvoiceRepository repository) : base(mapper, repository)
-        {
-
-        }
-        public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(int shopId, DateTime? date, InvoiceStatus? status, int page)
-        {
-            return _mapper.Map<IEnumerable<InvoiceDetailDTO>>(_repository.GetInvoicesByShopId(shopId, date, status,page==0?1:page, 15));
-        }
-    }
     public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, ShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor
     {
         public IncomingShipmentSupervisor(IMapper mapper, IIncomingShipmentRepository repository) : base(mapper, repository)

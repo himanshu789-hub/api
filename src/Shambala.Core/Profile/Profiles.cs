@@ -43,7 +43,7 @@ namespace Shambala.Core.Profile
             CreateMap<Credit, CreditDTO>();
             CreateMap<Credit, CreditDTO>().ReverseMap();
 
-            CreateMap<InvoiceDetailBLL, InvoiceDetailDTO>();
+            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
@@ -99,6 +99,12 @@ namespace Shambala.Core.Profile
             .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
             .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title)).ReverseMap();
 
+
+            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailWithInfoBLL>();
+            CreateMap<InvoiceDetailWithInfoBLL,InvoicewithCreditLogBLL>();
+            CreateMap<InvoiceDetailWithInfoBLL,ShopBillInfo>();
+            CreateMap<InvoicewithCreditLogBLL, InvoicewithCreditLogDTO>();
+            CreateMap<ShopBillInfo,InvoiceBillDTO>();
         }
     }
 }

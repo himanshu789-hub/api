@@ -12,20 +12,21 @@ namespace Shambala.Core.Supervisors
     {
         readonly IMapper mapper;
         readonly IUnitOfWork unitOfWork;
-        public CreditSupervisor(IUnitOfWork unitOfWork, IMapper mapper)
+        readonly IReadInvoiceRepository readInvoice;
+        public CreditSupervisor(IUnitOfWork unitOfWork, IMapper mapper, IReadInvoiceRepository readInvoiceRepository)
         {
             this.unitOfWork = unitOfWork;
             this.mapper = mapper;
+            this.readInvoice = readInvoiceRepository;
         }
         public CreditDTO Add(CreditDTO credit)
         {
             int outgoingShipmentId = credit.OutgoingShipmentId;
             short shopId = credit.ShopId;
             unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
-            decimal TotalPrice = unitOfWork.InvoiceRepository.GetAggreate(outgoingShipmentId, shopId);
-            decimal ClearedPrice = unitOfWork.CreditRepository.GetCreditAgggreate(outgoingShipmentId, shopId);
+            decimal DuePrice = readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice;
 
-            if (credit.Amount > TotalPrice - ClearedPrice)
+            if (credit.Amount > DuePrice)
                 throw new CreditFlorishException();
 
             Credit credit1 = unitOfWork.CreditRepository.Add(credit.OutgoingShipmentId, credit.ShopId, credit.Amount, credit.DateRecieved);
@@ -35,10 +36,9 @@ namespace Shambala.Core.Supervisors
 
         public decimal GetLeftOverCredit(int outgoingShipmentId, short shopId)
         {
-            using (var transation =  unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-            {
-                return unitOfWork.InvoiceRepository.GetAggreate(outgoingShipmentId, shopId) - unitOfWork.CreditRepository.GetCreditAgggreate(outgoingShipmentId, shopId);
-            }
+
+            return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice;
+
         }
 
         public IEnumerable<CreditDTO> GetLog(int outgoingShipmentId, int shopId)
@@ -49,10 +49,7 @@ namespace Shambala.Core.Supervisors
 
         public bool IsCreditCleared(int outgoingShipmentId, short shopId)
         {
-            unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
-            if (unitOfWork.InvoiceRepository.GetAggreate(outgoingShipmentId, shopId) == unitOfWork.CreditRepository.GetCreditAgggreate(outgoingShipmentId, shopId))
-                return true;
-            return false;
+            return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice == 0;
         }
     }
 }

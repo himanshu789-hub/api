@@ -13,17 +13,20 @@ namespace Shambala.Core.Supervisors
     using Models.BLLModel;
     using Helphers;
     using System;
+    using Contracts.Repositories;
 
     public class OutgoingShipmentSupervisor : IOutgoingShipmentSupervisor
     {
         IMapper _mapper;
         IUnitOfWork _unitOfWork;
+        readonly IReadOutgoingShipmentRepository readOutgoingShipmentRepository;
         byte _gstRate = 18;
 
-        public OutgoingShipmentSupervisor(IMapper mapper, IUnitOfWork unitOfWork)
+        public OutgoingShipmentSupervisor(IMapper mapper, IUnitOfWork unitOfWork, IReadOutgoingShipmentRepository shipmentReadRepository)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            readOutgoingShipmentRepository = shipmentReadRepository;
         }
 
         public byte GSTRate => _gstRate;
@@ -176,7 +179,7 @@ namespace Shambala.Core.Supervisors
 
         public OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int orderId)
         {
-            IEnumerable<OutgoingShipmentDetailInfo> OutgoingShipmentDettailInfos = _unitOfWork.OutgoingShipmentRepository.GetProductsById(orderId: orderId);
+            IEnumerable<OutgoingShipmentProductInfoDTO> OutgoingShipmentDettailInfos = readOutgoingShipmentRepository.GetProductsById(orderId: orderId);
             OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(orderId);
 
             OutgoingShipmentWithProductListDTO outgoingShipmentWithProductListDTO = new OutgoingShipmentWithProductListDTO()
@@ -219,7 +222,7 @@ namespace Shambala.Core.Supervisors
         }
         public IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
-            IEnumerable<OutgoingShipment> outgoings = _unitOfWork.OutgoingShipmentRepository.GetShipmentsBySalesmnaIdAndDate(salesmanId, date);
+            IEnumerable<OutgoingShipment> outgoings = readOutgoingShipmentRepository.GetShipmentsBySalesmnaIdAndDate(salesmanId, date);
             IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentWithSalesmanInfoDTO>>(outgoings);
             return result;
         }
