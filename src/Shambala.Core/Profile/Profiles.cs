@@ -104,7 +104,8 @@ namespace Shambala.Core.Profile
             CreateMap<InvoiceDetailWithInfoBLL,InvoicewithCreditLogBLL>();
             CreateMap<InvoiceDetailWithInfoBLL,ShopBillInfo>();
             CreateMap<InvoicewithCreditLogBLL, InvoicewithCreditLogDTO>();
-            CreateMap<ShopBillInfo,InvoiceBillDTO>();
+            CreateMap<ShopBillInfo,InvoiceBillDTO>()
+            .ForMember(e=>e.BillingInfo , map => map.MapFrom(e=>e.BillingInfoBLLs));
         }
     }
 }

@@ -55,11 +55,11 @@ namespace Shambala.Repository
             query = query.Skip((page - 1) * count).Take(count);
 
             var withSchemeQuery = query.Join(
-                context.Invoice.Include(e => e.SchemeIdFkNavigation).Where(e => e.ShopIdFk == shopId).Distinct(new DistinctSingleInvoiceShipment()),
+                context.Invoice.FromSqlRaw("SELECT * FROM shambala.invoice WHERE Shop_Id_FK={0} GROUP BY Outgoing_Shipment_Id_FK", shopId)
+                .Include(e => e.SchemeIdFkNavigation),
              e => e.OutgoingShipmentId, m => m.OutgoingShipmentIdFk, (e, m) =>
             new InvoiceAggreagateDetailBLL()
             {
-
                 TotalCostPrice = e.TotalPrice,
                 TotalDuePrice = e.TotalDuePrice,
                 Scheme = m.SchemeIdFkNavigation,
@@ -83,7 +83,7 @@ namespace Shambala.Repository
         {
             var query = QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId, shopId);
             var withProperties = query.Join(
-                context.Invoice.Include(e => e.OutgoingShipmentIdFkNavigation).ThenInclude(e=>e.SalesmanIdFkNavigation).Include(e => e.SchemeIdFkNavigation)
+                context.Invoice.Include(e => e.OutgoingShipmentIdFkNavigation).ThenInclude(e => e.SalesmanIdFkNavigation).Include(e => e.SchemeIdFkNavigation)
                 .Include(e => e.ShopIdFkNavigation).Where(e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId).Take(1),
                 e => e.OutgoingShipmentId, f => f.OutgoingShipmentIdFk, (e, f) => new InvoiceDetailWithInfoBLL()
                 {
@@ -125,7 +125,10 @@ namespace Shambala.Repository
             });
             if (context.Database.CurrentTransaction == null && System.Transactions.Transaction.Current == null)
             {
-                return query.ToList();
+                using (var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                {
+                    return query.ToList();
+                }
             }
             return query.ToList();
         }

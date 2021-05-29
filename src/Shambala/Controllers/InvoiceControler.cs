@@ -26,5 +26,11 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors).Select(e => e.ErrorMessage));
             return Ok(invoiceSupervisor.GetShopInvoiceWithCreditLog(shipmentId, shopId));
         }
+        public IActionResult GetInvoiceBill([FromQuery][BindRequired] short shopId, [FromQuery][BindRequired] int shipmentId)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors).Select(e => e.ErrorMessage));
+            return Ok(invoiceSupervisor.GetInvoiceBill(shipmentId, shopId));
+        }
     }
 }
