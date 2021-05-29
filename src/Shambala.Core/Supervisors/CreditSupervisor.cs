@@ -3,6 +3,7 @@ namespace Shambala.Core.Supervisors
 {
     using System.Collections.Generic;
     using Contracts.Supervisors;
+    using Core.Models.BLLModel;
     using Shambala.Core.Models.DTOModel;
     using Shambala.Domain;
     using Contracts.UnitOfWork;
@@ -49,7 +50,8 @@ namespace Shambala.Core.Supervisors
 
         public bool IsCreditCleared(int outgoingShipmentId, short shopId)
         {
-            return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice == 0;
+            InvoiceAggreagateDetailBLL  detailDTO = readInvoice.GetAggreate(outgoingShipmentId, shopId);
+            return Extensions.CalculateMethods.IsDueCompleted(detailDTO.TotalDuePrice);
         }
     }
 }

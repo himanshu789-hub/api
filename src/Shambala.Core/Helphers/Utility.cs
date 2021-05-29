@@ -31,7 +31,6 @@ namespace Shambala.Core.Helphers
 
             }
             return Result;
-
         }
     }
 }

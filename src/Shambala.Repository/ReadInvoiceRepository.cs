@@ -17,7 +17,7 @@ namespace Shambala.Repository
         {
             this.context = context;
         }
-        public InvoiceAggreagateBLL GetAggreate(int outgoingShipmentId, short shopId)
+        public InvoiceAggreagateDetailBLL GetAggreate(int outgoingShipmentId, short shopId)
         {
             return QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == outgoingShipmentId, shopId).First();
         }
@@ -60,7 +60,7 @@ namespace Shambala.Repository
              e => e.OutgoingShipmentId, m => m.OutgoingShipmentIdFk, (e, m) =>
             new InvoiceAggreagateDetailBLL()
             {
-                TotalCostPrice = e.TotalPrice,
+                TotalCostPrice = e.TotalCostPrice,
                 TotalDuePrice = e.TotalDuePrice,
                 Scheme = m.SchemeIdFkNavigation,
                 TotalSellingPrice = e.TotalSellingPrice,
@@ -92,7 +92,7 @@ namespace Shambala.Repository
                     Scheme = f.SchemeIdFkNavigation,
                     ShopId = e.ShopId,
                     TotalDuePrice = e.TotalDuePrice,
-                    TotalCostPrice = e.TotalPrice,
+                    TotalCostPrice = e.TotalCostPrice,
                     TotalSellingPrice = e.TotalSellingPrice,
                     OutgoingShipment = f.OutgoingShipmentIdFkNavigation,
                     Shop = f.ShopIdFkNavigation

@@ -3,16 +3,6 @@ using System.Collections.Generic;
 namespace Shambala.Core.Models.BLLModel
 {
 
-    public class InvoiceAggreagateBLL
-    {
-        public System.DateTime DateCreated { get; set; }
-        public decimal TotalPrice { get; set; }
-        public decimal TotalSellingPrice { get; set; }
-        public decimal TotalDuePrice { get; set; }
-        public int OutgoingShipmentId { get; set; }
-        public short ShopId { get; set; }
-
-    }
     public class InvoiceAggreagateDetailBLL
     {
         public System.DateTime DateCreated { get; set; }
@@ -22,6 +12,7 @@ namespace Shambala.Core.Models.BLLModel
         public decimal TotalDuePrice { get; set; }
         public int OutgoingShipmentId { get; set; }
         public short ShopId { get; set; }
+
     }
     public class InvoiceDetailWithInfoBLL : InvoiceAggreagateDetailBLL
     {

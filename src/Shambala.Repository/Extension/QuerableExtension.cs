@@ -8,7 +8,7 @@ namespace Shambala.Repository
     using Core.Models.BLLModel;
     static class QuerableMethods
     {
-        public static IEnumerable<InvoiceAggreagateBLL> GetAggreatesQueryableByShopId(ShambalaContext context, Func<Invoice, bool> predicate, short shopId)
+        public static IEnumerable<InvoiceAggreagateDetailBLL> GetAggreatesQueryableByShopId(ShambalaContext context, Func<Invoice, bool> predicate, short shopId)
         {
             return context.Invoice.Where(predicate)
                         .GroupBy(e => e.OutgoingShipmentIdFk)
@@ -17,11 +17,11 @@ namespace Shambala.Repository
                         .Select(e => new { ClearedPrice = e.Sum(s => s.Amount), e.Key }),
                           k => k.Key, l => l.Key,
                         (k, l) => new { Invoice = k, Credit = l })
-                        .SelectMany(x => x.Credit.DefaultIfEmpty(), (x, y) => new InvoiceAggreagateBLL
+                        .SelectMany(x => x.Credit.DefaultIfEmpty(), (x, y) => new InvoiceAggreagateDetailBLL
                         {
                             TotalSellingPrice = x.Invoice.SoldPrice,
                             ShopId = shopId,
-                            TotalPrice = x.Invoice.CostPrice,
+                            TotalCostPrice = x.Invoice.CostPrice,
                             OutgoingShipmentId = x.Invoice.Key,
                             TotalDuePrice = x.Invoice.SoldPrice - ((y?.ClearedPrice) ?? 0)
                         });

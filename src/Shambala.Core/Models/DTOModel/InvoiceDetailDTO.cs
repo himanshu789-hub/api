@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace Shambala.Core.Models.DTOModel
 {
+    using Extensions;
     public class InvoiceDetailDTO
     {
         public int Id { get; set; }
@@ -13,6 +14,7 @@ namespace Shambala.Core.Models.DTOModel
         public int OutgoingShipmentId { get; set; }
         public short ShopId { get; set; }
         public decimal TotalDuePrice { get; set; }
+        public bool IsCompleted { get { return CalculateMethods.IsDueCompleted(this.TotalDuePrice); } }
     }
     public class InvoicewithCreditLogDTO : InvoiceDetailDTO
     {
