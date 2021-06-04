@@ -11,6 +11,7 @@ namespace Shambala.Domain
         public int TotalQuantityShiped { get; set; }
         public int TotalQuantityRejected { get; set; }
         public int OutgoingShipmentIdFk { get; set; }
+        public int TotalQuantityReturned{get;set;}
         public byte FlavourIdFk { get; set; }
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }
@@ -18,7 +19,7 @@ namespace Shambala.Domain
 
         public bool Equals(OutgoingShipmentDetail other)
         {
-            return this.OutgoingShipmentIdFk != other.OutgoingShipmentIdFk && this.FlavourIdFk != other.FlavourIdFk && this.ProductIdFk != other.ProductIdFk;
+            return this.OutgoingShipmentIdFk == other.OutgoingShipmentIdFk && this.FlavourIdFk == other.FlavourIdFk && this.ProductIdFk == other.ProductIdFk;
         }
     }
 }

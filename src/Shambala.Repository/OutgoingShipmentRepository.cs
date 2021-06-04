@@ -51,8 +51,9 @@ namespace Shambala.Repository
                 .First(e => e.FlavourIdFk == item.FlavourIdFk && e.ProductIdFk == item.ProductIdFk);
                 int ReturnQuantity = item.TotalQuantityShiped;
                 int DefectedQuantity = item.TotalQuantityRejected;
-                ShipmentDetail.TotalQuantityShiped += (ReturnQuantity - DefectedQuantity);
+                ShipmentDetail.TotalQuantityShiped -= (ReturnQuantity - DefectedQuantity);
                 ShipmentDetail.TotalQuantityRejected += DefectedQuantity;
+                ShipmentDetail.TotalQuantityReturned = ReturnQuantity;
             }
             outgoing.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN);
             _context.Attach(outgoing).State = EntityState.Modified;
@@ -73,7 +74,6 @@ namespace Shambala.Repository
                 {
                     OutgoingShipmentDetail outgoing = outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.Id == item.Id);
                     outgoing.TotalQuantityRejected += item.TotalQuantityRejected;
-                    outgoing.TotalQuantityShiped -= item.TotalQuantityRejected;
                 }
             }
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.COMPLETED);
