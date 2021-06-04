@@ -9,6 +9,7 @@ namespace Shambala.Core.Contracts.Repositories
     using Models.BLLModel;
     public interface IOutgoingShipmentRepository : ILoadingProperties<OutgoingShipment>
     {
+        
         OutgoingShipment Add(OutgoingShipment outgoingShipment);
         bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetail> outgoingShipment);
         OutgoingShipment GetByIdWithNoTracking(int Id);
