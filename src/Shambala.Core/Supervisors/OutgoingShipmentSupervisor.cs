@@ -198,7 +198,7 @@ namespace Shambala.Core.Supervisors
             outgoingShipmentWithProductListDTO.Products = Products;
             return outgoingShipmentWithProductListDTO;
         }
-        public async Task ReturnAsync(int Id, IEnumerable<OutgoingShipmentDetailDTO> shipments)
+        public async Task ReturnAsync(int Id, IEnumerable<OutgoingShipmentDetailReturnDTO> shipments)
         {
             var returnShipments = _mapper.Map<IEnumerable<OutgoingShipmentDetail>>(shipments);
             foreach (var item in returnShipments)

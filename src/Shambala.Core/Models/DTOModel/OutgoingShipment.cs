@@ -20,8 +20,8 @@ namespace Shambala.Core.Models.DTOModel
         public int Id { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
         public DateTime DateCreated { get; set; }
-        public IEnumerable<ProductDTO> Products{get;set;}
-        public SalesmanDTO Salesman{get;set;}
+        public IEnumerable<ProductDTO> Products { get; set; }
+        public SalesmanDTO Salesman { get; set; }
     }
     public class OutgoingShipmentInfoDTO : OutgoingShipmentInfoBaseDTO
     {
@@ -36,7 +36,15 @@ namespace Shambala.Core.Models.DTOModel
     {
         [Required]
         public int OutgoingShipmentId { get; set; }
+        public int TotalQuantityReturned { get; set; }
+    }
+    public class OutgoingShipmentDetailReturnDTO
+    {
+        public int ProductId { get; set; }
+        [Required]
+        public byte FlavourId { get; set; }
         public int TotalQuantityReturned{get;set;}
+        public int TotalQuantityDefected{get;set;} 
     }
     public class OutgoingShipmentPostBaseDTO
     {

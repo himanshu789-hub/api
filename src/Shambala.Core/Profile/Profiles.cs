@@ -70,6 +70,8 @@ namespace Shambala.Core.Profile
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
 
+            CreateMap<OutgoingShipmentDetail,OutgoingShipmentDetailReturnDTO>().ReverseMap();
+
             CreateMap<OutgoingShipment, OutgoingShipmentWithSalesmanInfoDTO>();
 
             CreateMap<IncomingShipment, ShipmentDTO>();

@@ -37,7 +37,7 @@ namespace Shambala.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<ShipmentDTO> shipmentDTOs)
+        public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.Select(e => e.Errors.Select(e => e.ErrorMessage)));

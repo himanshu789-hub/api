@@ -12,7 +12,7 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface  IOutgoingShipmentSupervisor:IGSTRate
     {        
         Task<OutgoingShipmentWithSalesmanInfoDTO>  AddAsync(PostOutgoingShipmentDTO outgoingShipment);
-        Task ReturnAsync(int Id,IEnumerable<OutgoingShipmentDetailDTO> shipmentDTOs);
+        Task ReturnAsync(int Id,IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs);
         IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipmentDTOs);
         OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int OrderId);
         Task<bool> CompleteAsync(int OutgoingShipmentId,IEnumerable<Invoice> invoices);
