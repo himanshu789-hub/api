@@ -26,10 +26,8 @@ namespace Shambala.Core.Supervisors
             short shopId = credit.ShopId;
             unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
             decimal DuePrice = readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice;
-
             if (credit.Amount > DuePrice)
                 throw new CreditFlorishException();
-
             Credit credit1 = unitOfWork.CreditRepository.Add(credit.OutgoingShipmentId, credit.ShopId, credit.Amount, credit.DateRecieved);
             unitOfWork.SaveChanges();
             return mapper.Map<CreditDTO>(credit1);

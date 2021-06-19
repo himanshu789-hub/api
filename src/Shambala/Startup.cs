@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SpaServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -35,9 +36,11 @@ namespace Shambala
             services.AddCors(options => options.AddPolicy(CorsPolicy, policy => policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader()));
             services
             .AddControllers()
-            .AddJsonOptions(options => { 
+            .AddJsonOptions(options =>
+            {
                 options.JsonSerializerOptions.PropertyNamingPolicy = null;
             });
+            services.AddSpaStaticFiles(spa => spa.RootPath = "ClientApp/build");
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -49,11 +52,12 @@ namespace Shambala
             }
             app.UseHttpsRedirection();
 
+            if (!env.IsDevelopment())
+            {
+                app.UseSpaStaticFiles();
+            }
             app.UseRouting();
-
-            app.UseCors(CorsPolicy);
             app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
@@ -61,6 +65,16 @@ namespace Shambala
                     pattern: "api/{controller}/{action}/{id:int?}"
                 );
             });
+            if (env.IsDevelopment())
+            {
+
+                app.UseSpa(spa =>
+                {
+                    spa.Options.SourcePath = "../../../shambala_ui";
+                    spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
+
+                });
+            }
         }
     }
 }

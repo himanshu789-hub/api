@@ -10,7 +10,6 @@ namespace Shambala.Core.Models.DTOModel
         [Required]
         public DateTime DateRecieved { get; set; }
 
-
         [Required]
         public decimal Amount { get; set; }
 

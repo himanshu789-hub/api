@@ -8,15 +8,37 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="3.1.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="3.1.1" />
     <PackageReference Include="NLog.Web.AspNetCore" Version="4.9.0" />
   </ItemGroup>
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <SpaRoot>.\..\..\..\shambala_ui\</SpaRoot>
   </PropertyGroup>
-<ItemGroup>
+  <ItemGroup>
     <Content Update="nlog.config" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
+  <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
+    <!-- Ensure Node.js is installed -->
+    <Exec Command="node --version" ContinueOnError="true">
+      <Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+    </Exec>
+    <Error Condition="'$(ErrorCode)' != '0'" Text="Node.js is required to build and run this project. To continue, please install Node.js from https://nodejs.org/, and then restart your command prompt or IDE." />
+    <Message Importance="high" Text="Restoring dependencies using 'npm'. This may take several minutes..." />
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
+  </Target>
+
+
+
+  <Target Name="CopyCustomContent" AfterTargets="AfterPublish">
+    <ItemGroup>
+      <SpaBuildFiles Include="$(SpaRoot)build\**\*.*" />
+    </ItemGroup>
+  
+    <!-- <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" /> -->
+    <Copy SourceFiles="@(SpaBuildFiles)" DestinationFiles="@(SpaBuildFiles->'$(PublishDir)\ClientApp\%(RecursiveDir)%(Filename)%(Extension)')" />
+  </Target>
 </Project>

@@ -14,11 +14,14 @@ namespace Shambala.Controllers
         [HttpPost]
         public IActionResult Add([FromBody] CreditDTO credit)
         {
+             if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
+
             return Ok(creditSupervisor.Add(credit));
         }
 
         [HttpGet]
-        public IActionResult GetLogs([FromQuery][BindRequired] int shipmentId, [FromQuery][BindRequired] short shopId)
+        public IActionResult GetLogs([FromQuery] int shipmentId, [FromQuery] short shopId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));

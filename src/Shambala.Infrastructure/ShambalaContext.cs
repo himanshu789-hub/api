@@ -106,7 +106,7 @@ namespace Shambala.Infrastructure
                     .HasName("Credit_OutgoingShipment_Relationship_idx");
 
                 entity.HasIndex(e => e.ShopIdFk)
-                    .HasName("Credi_Shopt_Relationship_idx");
+                    .HasName("Credit_Shop_Relationship_idx");
 
                 entity.Property(e => e.Id).HasColumnType("int unsigned");
 

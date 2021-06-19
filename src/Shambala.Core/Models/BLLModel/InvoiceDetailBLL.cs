@@ -2,8 +2,7 @@ using Shambala.Domain;
 using System.Collections.Generic;
 namespace Shambala.Core.Models.BLLModel
 {
-
-    public class InvoiceAggreagateDetailBLL
+       public class InvoiceAggreagateDetailBLL
     {
         public System.DateTime DateCreated { get; set; }
         public decimal TotalCostPrice { get; set; }

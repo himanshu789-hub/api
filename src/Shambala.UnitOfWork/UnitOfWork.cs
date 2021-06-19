@@ -99,6 +99,7 @@ namespace Shambala.UnitOfWork
                 {
                     value = _context.SaveChanges();
                     transaction.Commit();
+                    
                     _isTransactionCommited = true;
                 }
                 catch (System.Exception e)
