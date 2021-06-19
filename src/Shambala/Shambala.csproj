@@ -31,14 +31,12 @@
     <Exec WorkingDirectory="$(SpaRoot)" Command="npm install" />
   </Target>
 
-
-
   <Target Name="CopyCustomContent" AfterTargets="AfterPublish">
     <ItemGroup>
       <SpaBuildFiles Include="$(SpaRoot)build\**\*.*" />
     </ItemGroup>
-  
-    <!-- <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" /> -->
-    <Copy SourceFiles="@(SpaBuildFiles)" DestinationFiles="@(SpaBuildFiles->'$(PublishDir)\ClientApp\%(RecursiveDir)%(Filename)%(Extension)')" />
+
+    <Exec WorkingDirectory="$(SpaRoot)" Command="npm run build" />
+    <Copy SourceFiles="@(SpaBuildFiles)" DestinationFiles="@(SpaBuildFiles->'$(PublishDir)\ClientApp\build\%(RecursiveDir)%(Filename)%(Extension)')" />
   </Target>
 </Project>

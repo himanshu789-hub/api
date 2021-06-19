@@ -65,16 +65,13 @@ namespace Shambala
                     pattern: "api/{controller}/{action}/{id:int?}"
                 );
             });
-            if (env.IsDevelopment())
+
+            app.UseSpa(spa =>
             {
-
-                app.UseSpa(spa =>
-                {
-                    spa.Options.SourcePath = "../../../shambala_ui";
+                spa.Options.SourcePath = "../../../shambala_ui";
+                if (env.IsDevelopment())
                     spa.UseProxyToSpaDevelopmentServer("http://localhost:3000");
-
-                });
-            }
+            });
         }
     }
 }
