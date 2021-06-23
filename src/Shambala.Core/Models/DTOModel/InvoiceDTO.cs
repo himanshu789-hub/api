@@ -2,18 +2,20 @@ using System.ComponentModel.DataAnnotations;
 using System.Collections.Generic;
 namespace Shambala.Core.Models.DTOModel
 {
+    using Helphers;
+
     public class PostInvoiceDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public short ShopId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public byte CaretSize { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public System.DateTime DateCreated { get; set; }
         public short? SchemeId { get; set; }
         
@@ -24,38 +26,38 @@ namespace Shambala.Core.Models.DTOModel
     public class SoldItemsDTO
     {
         
-        [Required]
+        [RequiredWithNonDefault]
         public short Quantity { get; set; }
        
-        [Required]
+        [RequiredWithNonDefault]
         public int ProductId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public byte FlavourId { get; set; }
     }
     public class InvoiceDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public short ShopId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public byte CaretSize { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public System.DateTime DateCreated { get; set; }
         
         public short? SchemeId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public int Quantity { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public int ProductId { get; set; }
         
-        [Required]
+        [RequiredWithNonDefault]
         public int FlavourId { get; set; }
     }
 }

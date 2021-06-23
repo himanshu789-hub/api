@@ -7,9 +7,9 @@ namespace Shambala.Core.Models.DTOModel
 {
     public abstract class OutgoingShipmentInfoBaseDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public int Id { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
         [Required]
@@ -30,32 +30,34 @@ namespace Shambala.Core.Models.DTOModel
     }
     public class OutgoingShipmentWithSalesmanInfoDTO : OutgoingShipmentInfoBaseDTO
     {
+        [RequiredWithNonDefault]
         public SalesmanDTO Salesman { get; set; }
     }
     public class OutgoingShipmentDetailDTO : ShipmentDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
         public int TotalQuantityReturned { get; set; }
     }
     public class OutgoingShipmentDetailReturnDTO
     {
+        [RequiredWithNonDefault]
         public int ProductId { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public byte FlavourId { get; set; }
         public int TotalQuantityReturned{get;set;}
         public int TotalQuantityDefected{get;set;} 
     }
     public class OutgoingShipmentPostBaseDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public IEnumerable<ShipmentDTO> Shipments { get; set; }
     }
     public class PostOutgoingShipmentDTO : OutgoingShipmentPostBaseDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public short SalesmanId { get; set; }
     }
 }

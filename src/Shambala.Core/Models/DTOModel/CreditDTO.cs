@@ -1,22 +1,24 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+
 namespace Shambala.Core.Models.DTOModel
 {
+    using Helphers;
     public class CreditDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public int Id { get; set; }
 
-        [Required]
+        [RequiredWithNonDefault]
         public DateTime DateRecieved { get; set; }
 
-        [Required]
+        [RequiredWithNonDefault]
         public decimal Amount { get; set; }
 
-        [Required]
+        [RequiredWithNonDefault]
         public short ShopId { get; set; }
 
-        [Required]
+        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
 
     }

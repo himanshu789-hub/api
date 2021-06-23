@@ -1,6 +1,7 @@
 using AutoMapper;
 namespace Shambala.Core.Supervisors
 {
+    using Core.Helphers;
     using System.Collections.Generic;
     using Contracts.Supervisors;
     using Core.Models.BLLModel;
@@ -49,7 +50,7 @@ namespace Shambala.Core.Supervisors
         public bool IsCreditCleared(int outgoingShipmentId, short shopId)
         {
             InvoiceAggreagateDetailBLL  detailDTO = readInvoice.GetAggreate(outgoingShipmentId, shopId);
-            return Extensions.CalculateMethods.IsDueCompleted(detailDTO.TotalDuePrice);
+            return Utility.IsDueCompleted(detailDTO.TotalDuePrice);
         }
     }
 }

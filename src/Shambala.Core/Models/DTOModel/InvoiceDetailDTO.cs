@@ -3,18 +3,31 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 namespace Shambala.Core.Models.DTOModel
 {
-    using Extensions;
+    using Helphers;
     public class InvoiceDetailDTO
     {
+        [RequiredWithNonDefault]
         public int Id { get; set; }
+        
+        [RequiredWithNonDefault]
         public System.DateTime DateCreated { get; set; }
+        
+        [RequiredWithNonDefault]
         public decimal TotalCostPrice { get; set; }
+        
         public SchemeDTO Scheme { get; set; }
+        
+        [RequiredWithNonDefault]
         public decimal TotalSellingPrice { get; set; }
+        
+        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
+        
+        [RequiredWithNonDefault]
         public short ShopId { get; set; }
+        
         public decimal TotalDuePrice { get; set; }
-        public bool IsCompleted { get { return CalculateMethods.IsDueCompleted(this.TotalDuePrice); } }
+        public bool IsCompleted { get { return Utility.IsDueCompleted(this.TotalDuePrice); } }
     }
     public class InvoicewithCreditLogDTO : InvoiceDetailDTO
     {

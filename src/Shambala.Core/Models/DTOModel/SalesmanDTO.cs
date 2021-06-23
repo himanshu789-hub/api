@@ -1,13 +1,14 @@
 using System.ComponentModel.DataAnnotations;
 namespace Shambala.Core.Models.DTOModel
 {
+    using Helphers;
     public class SalesmanDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public short Id { get; set; }
-        [Required]
+        [Required,MinLength(1)]
         public string FullName { get; set; }
-
+        
         public bool IsActive { get; set; }
     }
 

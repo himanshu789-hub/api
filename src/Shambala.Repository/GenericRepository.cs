@@ -24,11 +24,10 @@ namespace Shambala.Repository
         public T Add(T entity)
         {
             if (typeof(T).GetProperty("IsActive") != null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
-            {
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
-            }
+                
             var AddedEntity = _context.Set<T>().Add(entity);
-
+        
             return AddedEntity.Entity;
         }
 

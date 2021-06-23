@@ -7,6 +7,10 @@ namespace Shambala.Core.Helphers
     using Models.DTOModel;
     public class Utility
     {
+        static public bool IsDueCompleted(decimal DuePrice)
+        {
+            return DuePrice == 0;
+        }
 
         public static IEnumerable<Invoice> ToInvoices(IEnumerable<PostInvoiceDTO> invoices)
         {
@@ -22,7 +26,7 @@ namespace Shambala.Core.Helphers
                     NewInvoice.OutgoingShipmentIdFk = PostInvoice.OutgoingShipmentId;
                     NewInvoice.SchemeIdFk = PostInvoice.SchemeId;
                     NewInvoice.ShopIdFk = PostInvoice.ShopId;
-                    
+
                     NewInvoice.ProductIdFk = item.ProductId;
                     NewInvoice.FlavourIdFk = item.FlavourId;
                     NewInvoice.QuantityPurchase = item.Quantity;

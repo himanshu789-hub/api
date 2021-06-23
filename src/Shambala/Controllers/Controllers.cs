@@ -30,7 +30,7 @@ namespace Shambala.Controllers
                 }
                 return Ok("Not Added");
             }
-            return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
+            return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e=>e.ErrorMessage)));
         }
         [HttpPut]
         public IActionResult Update([FromBody] T dto)

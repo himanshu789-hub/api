@@ -2,21 +2,22 @@ using System;
 using System.ComponentModel.DataAnnotations;
 namespace Shambala.Core.Models.DTOModel
 {
+    using Helphers;
     public class ShipmentDTO
     {
-        [Required]
+        [RequiredWithNonDefault]
         public int Id { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public short TotalRecievedPieces { get; set; }
         [Required]
         public short TotalDefectPieces { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public byte CaretSize { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public int ProductId { get; set; }
-        [Required]
+        [RequiredWithNonDefault]
         public byte FlavourId { get; set; }
     }
 }
