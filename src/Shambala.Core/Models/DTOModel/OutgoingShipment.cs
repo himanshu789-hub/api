@@ -45,6 +45,7 @@ namespace Shambala.Core.Models.DTOModel
         public int ProductId { get; set; }
         [RequiredWithNonDefault]
         public byte FlavourId { get; set; }
+        [RequiredWithNonDefault]
         public int TotalQuantityReturned{get;set;}
         public int TotalQuantityDefected{get;set;} 
     }

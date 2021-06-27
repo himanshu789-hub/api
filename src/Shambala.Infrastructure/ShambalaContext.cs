@@ -322,6 +322,7 @@ namespace Shambala.Infrastructure
                     .IsRequired()
                     .HasMaxLength(20);
                 entity.Property(e => e.PricePerCaret).HasColumnType("decimal(6,2)");
+            
             });
 
             modelBuilder.Entity<ProductFlavourQuantity>(entity =>
@@ -342,12 +343,21 @@ namespace Shambala.Infrastructure
                     .HasColumnType("int unsigned");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint unsigned");
-
+               
+               
+                
                 entity.HasOne(d => d.FlavourIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
                     .HasForeignKey(d => d.FlavourIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("flavour_Relationship");
+
+                    
+                entity.HasOne(d => d.ProductIdFkNavigation)
+                    .WithMany(p => p.ProductFlavourQuantity)
+                    .HasForeignKey(d => d.ProductIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Product_Relationship");
             });
 
             modelBuilder.Entity<Salesman>(entity =>

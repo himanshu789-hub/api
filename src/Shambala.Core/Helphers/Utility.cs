@@ -26,10 +26,11 @@ namespace Shambala.Core.Helphers
                     NewInvoice.OutgoingShipmentIdFk = PostInvoice.OutgoingShipmentId;
                     NewInvoice.SchemeIdFk = PostInvoice.SchemeId;
                     NewInvoice.ShopIdFk = PostInvoice.ShopId;
-
+                    NewInvoice.DateCreated = PostInvoice.DateCreated.ToUniversalTime();
                     NewInvoice.ProductIdFk = item.ProductId;
                     NewInvoice.FlavourIdFk = item.FlavourId;
                     NewInvoice.QuantityPurchase = item.Quantity;
+                    
                     Result.Add(NewInvoice);
                 }
 

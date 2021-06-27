@@ -110,7 +110,6 @@ namespace Shambala.Core.Supervisors
             IEnumerable<Product> Products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
             foreach (Invoice invoice in invoices)
             {
-
                 ApplySchemeOverInvoice(invoice, Products);
                 _unitOfWork.InvoiceRepository.Add(invoice);
             }
@@ -118,24 +117,27 @@ namespace Shambala.Core.Supervisors
         void ApplySchemeOverInvoice(Invoice invoice, IEnumerable<Product> products)
         {
             short? SchemeId = invoice.SchemeIdFk;
-            if (!SchemeId.HasValue)
-                return;
-            Scheme scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
-            byte? InvoiceSchemeType = scheme.SchemeType;
 
+            Scheme scheme = null;
+            if (SchemeId != null)
+                scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
+            byte? InvoiceSchemeType = scheme?.SchemeType;
             Product Product = products.FirstOrDefault(e => e.Id == invoice.ProductIdFk);
-            decimal Price = Product.PricePerCaret * invoice.QuantityPurchase;
+            decimal Price = (Product.PricePerCaret / Product.CaretSize) * invoice.QuantityPurchase;
             // add Cost Price
             invoice.CostPrice = Price;
-
+            invoice.CaretSize = Product.CaretSize;
             invoice.SellingPrice = invoice.CostPrice;
-            if (InvoiceSchemeType == (byte)SchemeType.Percentage)
+            if (InvoiceSchemeType != null)
             {
-                invoice.SellingPrice *= (1 - scheme.Value);
-                return;
+                if (InvoiceSchemeType == (byte)SchemeType.Percentage)
+                {
+                    invoice.SellingPrice *= (1 - scheme.Value);
+                    return;
+                }
+                int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
+                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
             }
-            int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
-            _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
         }
         IEnumerable<OutgoingQuantityRejectedBLL> CheckQuatityUnderOutgoingShipmentDispatch(OutgoingShipment outgoing, IEnumerable<Invoice> invoices)
         {
