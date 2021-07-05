@@ -14,7 +14,7 @@ namespace Shambala.Controllers
         [HttpGet]
         IActionResult GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
         {
-            return OK(creditSupervisor.GetLeftOverCredit(debits));
+            return Ok(creditSupervisor.GetLeftOverCredit(debits));
         }
     }
 }

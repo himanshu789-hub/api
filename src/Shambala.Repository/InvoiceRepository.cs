@@ -18,6 +18,12 @@ namespace Shambala.Repository
         public InvoiceRepository(ShambalaContext context) : base(context)
         {
             _context = context;
-        }       
+        }
+
+        public void MakeCompleted(int Id)
+        {
+            Invoice invoice = base.GetById(Id);
+            invoice.IsCleared = true;
+        }
     }
 }

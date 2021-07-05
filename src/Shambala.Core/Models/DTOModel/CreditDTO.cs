@@ -24,7 +24,9 @@ namespace Shambala.Core.Models.DTOModel
     }
     public class ShopCreditOrDebitDTO
     { 
+        [RequiredWithNonDefault]
         public short ShopId{get;set;}
+        [RequiredWithNonDefault]
         public decimal Amount{get;set;}
     }
 }

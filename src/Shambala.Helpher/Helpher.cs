@@ -3,18 +3,33 @@ using Shambala.Domain;
 using System.Linq.Expressions;
 namespace Shambala.Helpher
 {
+    public class InvoiceTolerance
+    {
+        class BalanceInfo
+        {
+            public decimal Price { get; set; }
+            public decimal Debit { get; set; }
+        }
+        public static decimal ToleranceValue = 0.0M;
+        public static bool IsCleared(decimal Price, decimal debit)
+        {
+            BalanceInfo balanceInfo = new BalanceInfo { Debit = debit, Price = Price };
+            return ExpressionMethods.IsCleared<BalanceInfo>("Price","Debit").Compile().Invoke(balanceInfo);
+        }
+    }
     public class ExpressionMethods
     {
-        public static Expression<Func<T, bool>> IsCleared<T>(string debtPrice, string duePrice) where T : class
+        public static Expression<Func<T, bool>> IsCleared<T>(string totalPrice, string duePrice) where T : class
         {
 
             var invoice = ParameterExpression.Parameter(typeof(T));
-            var leftParameter = Expression.PropertyOrField(invoice, debtPrice);
+            var leftParameter = Expression.PropertyOrField(invoice, totalPrice);
             var rightParameter = Expression.PropertyOrField(invoice, duePrice);
 
-            Expression binaryExpression = Expression.LessThanOrEqual(Expression.Subtract(leftParameter, rightParameter), ParameterExpression.Constant(0));
+            Expression binaryExpression = Expression.LessThanOrEqual(Expression.Subtract(leftParameter, rightParameter), ParameterExpression.Constant(InvoiceTolerance.ToleranceValue));
             return Expression.Lambda<Func<T, bool>>(binaryExpression, invoice);
         }
+
         public static Expression<TFunc> Negate<TFunc>(Expression<TFunc> expression)
         {
             var param = expression.Parameters;

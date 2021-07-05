@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Shambala.Core.Models.BLLModel
 {
        public class InvoiceAggreagateDetailBLL
-    {
+      {
         public int Id{get;set;}
         public System.DateTime DateCreated { get; set; }
         public decimal TotalPrice { get; set; }

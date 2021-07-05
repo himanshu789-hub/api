@@ -6,28 +6,18 @@ namespace Shambala.Core.Supervisors
     using Contracts.Repositories;
     using Shambala.Core.Models.DTOModel;
     using Shambala.Core.Models.BLLModel;
+    using Core.Helphers;
     public class CreditSupervisor : ICreditSupervisor
     {
-        readonly IDebitReadRepository debitRead;
-        public CreditSupervisor(IDebitReadRepository readRepository)
+        readonly IReadInvoiceRepository debitRead;
+        public CreditSupervisor(IReadInvoiceRepository readRepository)
         {
             debitRead = readRepository;
         }
         public IEnumerable<ShopCreditOrDebitDTO> GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
         {
-            IList<ShopCreditOrDebitDTO> creditOrDebitDTOs = new List<ShopCreditOrDebitDTO>();
-            IEnumerable<InvoiceAggreagateDetailBLL> result = debitRead.GetLeftOverCreditByShopIds(debits.Select(e => e.ShopId).ToArray());
-            foreach (var debit in debits)
-            {
-                if (result.Any(e => e.ShopId == debit.ShopId))
-                {
-                    decimal totalCrditAmount = result.Where(e => e.ShopId == debit.ShopId && !e.IsCleared).Sum(e => e.TotalPrice - e.TotalDueCleared);
-                    if (totalCrditAmount < debit.Amount)
-                    {
-                        creditOrDebitDTOs.Add(new ShopCreditOrDebitDTO() { Amount = totalCrditAmount, ShopId = debit.ShopId });
-                    }
-                }
-            }
+            IEnumerable<InvoiceAggreagateDetailBLL> result = debitRead.GetNotClearedAggregateByShopIds(debits.Select(e => e.ShopId).ToArray());
+            IEnumerable<ShopCreditOrDebitDTO> creditOrDebitDTOs = Utility.CheckDebitUnderGivenBalance(debits,result);
             return creditOrDebitDTOs;
         }
     }

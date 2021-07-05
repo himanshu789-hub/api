@@ -12,10 +12,10 @@ using System;
 
 namespace Shambala.Repository
 {
-    public class ReadCreditRepository : IDebitReadRepository
+    public class ReadDebitRepository : IDebitReadRepository
     {
         readonly ShambalaContext context;
-        public ReadCreditRepository(ShambalaContext context)
+        public ReadDebitRepository(ShambalaContext context)
         {
             this.context = context;
         }
@@ -32,10 +32,5 @@ namespace Shambala.Repository
             return query.ToList();
         }
 
-        public IEnumerable<InvoiceAggreagateDetailBLL> GetLeftOverCreditByShopIds(short[] shopIds)
-        {
-            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, (e) => !e.IsCleared, shopIds);
-            return query.ToList();
-        }
     }
 }

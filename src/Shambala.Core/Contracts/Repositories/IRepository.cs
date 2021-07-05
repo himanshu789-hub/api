@@ -7,14 +7,14 @@ namespace Shambala.Core.Contracts.Repositories
     using Helphers;
     public interface IInvoiceRepository : IGenericRepository<Invoice>
     {
-       
+        void MakeCompleted(int Id);
     }
-    public interface ISalesmanRepository : IGenericRepository<Salesman>,IQueryList<Salesman>
+    public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {
         IEnumerable<Salesman> GetAllActive();
 
     }
-    public interface ISchemeRepository : IGenericRepository<Scheme>,IQueryList<Scheme>
+    public interface ISchemeRepository : IGenericRepository<Scheme>, IQueryList<Scheme>
     {
 
         Scheme GetSchemeWithNoTrackingById(short schemeId);
@@ -24,7 +24,7 @@ namespace Shambala.Core.Contracts.Repositories
     {
 
     }
-    public interface IShopRepository : IGenericRepository<Shop>,IQueryList<Shop>
+    public interface IShopRepository : IGenericRepository<Shop>, IQueryList<Shop>
     {
         Shop GetWithInvoiceDetail(int Id);
         IEnumerable<Shop> GetAllByName(string name);

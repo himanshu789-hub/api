@@ -15,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<ISchemeRepository,SchemeRepository>();
             services.AddScoped<IShopRepository,ShopRepository>();
           
-            services.AddScoped<IDebitReadRepository,ReadCreditRepository>();
+            services.AddScoped<IDebitReadRepository,ReadDebitRepository>();
             services.AddScoped<IReadInvoiceRepository,ReadInvoiceRepository>();
             services.AddScoped<IReadOutgoingShipmentRepository,ReadOutgoingShipmentRepository>();
             

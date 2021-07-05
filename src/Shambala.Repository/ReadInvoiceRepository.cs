@@ -112,5 +112,19 @@ namespace Shambala.Repository
             }
             return withProperties.First();
         }
+
+        
+        public IEnumerable<InvoiceAggreagateDetailBLL> GetNotClearedAggregateByShopIds(short[] shopIds)
+        {
+            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, (e) => !e.IsCleared, shopIds);
+            if (context.Database.CurrentTransaction == null && System.Transactions.Transaction.Current == null)
+            {
+                using (var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                {
+                    return query.ToList();
+                }
+            }
+            return query.ToList();
+        }
     }
 }

@@ -19,13 +19,15 @@ namespace Shambala.Core.Supervisors
     {
         IMapper _mapper;
         IUnitOfWork _unitOfWork;
+        readonly IReadInvoiceRepository readInvoiceRepository;
         readonly IReadOutgoingShipmentRepository readOutgoingShipmentRepository;
         byte _gstRate = 18;
 
-        public OutgoingShipmentSupervisor(IMapper mapper, IUnitOfWork unitOfWork, IReadOutgoingShipmentRepository shipmentReadRepository)
+        public OutgoingShipmentSupervisor(IMapper mapper, IUnitOfWork unitOfWork, IReadOutgoingShipmentRepository shipmentReadRepository, IReadInvoiceRepository readInvoiceRepository)
         {
             _mapper = mapper;
             _unitOfWork = unitOfWork;
+            this.readInvoiceRepository = readInvoiceRepository;
             readOutgoingShipmentRepository = shipmentReadRepository;
         }
 
@@ -104,56 +106,61 @@ namespace Shambala.Core.Supervisors
             }
             return productReturnBLLs;
         }
-
-        void AddInvoices(IEnumerable<Invoice> invoices)
-        {
-            IEnumerable<Product> Products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
-            foreach (Invoice invoice in invoices)
-            {
-                ApplySchemeOverInvoice(invoice, Products);
-                _unitOfWork.InvoiceRepository.Add(invoice);
-            }
-        }
         void ApplySchemeOverInvoice(Invoice invoice, IEnumerable<Product> products)
         {
-            short? SchemeId = invoice.SchemeIdFk;
+            //     short? SchemeId = invoice.SchemeIdFk;
 
-            Scheme scheme = null;
-            if (SchemeId != null)
-                scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
-            byte? InvoiceSchemeType = scheme?.SchemeType;
-            Product Product = products.FirstOrDefault(e => e.Id == invoice.ProductIdFk);
-            decimal Price = (Product.PricePerCaret / Product.CaretSize) * invoice.QuantityPurchase;
-            // add Cost Price
-            invoice.CostPrice = Price;
-            invoice.CaretSize = Product.CaretSize;
-            invoice.SellingPrice = invoice.CostPrice;
-            if (InvoiceSchemeType != null)
-            {
-                if (InvoiceSchemeType == (byte)SchemeType.Percentage)
-                {
-                    invoice.SellingPrice *= (1 - scheme.Value);
-                    return;
-                }
-                int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
-                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
-            }
+            //     Scheme scheme = null;
+            //     if (SchemeId != null)
+            //         scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
+            //     byte? InvoiceSchemeType = scheme?.SchemeType;
+            //     Product Product = products.FirstOrDefault(e => e.Id == invoice.ProductIdFk);
+            //     decimal Price = (Product.PricePerCaret / Product.CaretSize) * invoice.QuantityPurchase;
+            //     // add Cost Price
+            //     invoice.CostPrice = Price;
+            //     invoice.CaretSize = Product.CaretSize;
+            //     invoice.SellingPrice = invoice.CostPrice;
+            //     if (InvoiceSchemeType != null)
+            //     {
+            //         if (InvoiceSchemeType == (byte)SchemeType.Percentage)
+            //         {
+            //             invoice.SellingPrice *= (1 - scheme.Value);
+            //             return;
+            //         }
+            //         int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
+            //         _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
+            //     }
+            throw new System.NotImplementedException();
         }
-        IEnumerable<OutgoingQuantityRejectedBLL> CheckQuatityUnderOutgoingShipmentDispatch(OutgoingShipment outgoing, IEnumerable<Invoice> invoices)
+        bool ClearCredit(ShipmentLedgerDetail shipmentLedgerDetail)
         {
-            ICollection<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs = new List<OutgoingQuantityRejectedBLL>();
-            foreach (var item in outgoing.OutgoingShipmentDetails)
+            IEnumerable<LedgerWithPastDebitDTO> ledgers = shipmentLedgerDetail.Ledgers;
+            IEnumerable<ShopCreditOrDebitDTO> shopRecievedCredits = _mapper.Map<IEnumerable<ShopCreditOrDebitDTO>>(ledgers);
+            IEnumerable<InvoiceAggreagateDetailBLL> notClearedInvoice = readInvoiceRepository.GetNotClearedAggregateByShopIds(shopRecievedCredits.Select(e => e.ShopId).ToArray());
+            IEnumerable<ShopCreditOrDebitDTO> creditLeftOverDTO = Utility.CheckDebitUnderGivenBalance(shopRecievedCredits, notClearedInvoice);
+            bool IsAllOk = creditLeftOverDTO.Count() == 0;
+            if (IsAllOk)
             {
-                int ProductId = item.Id;
-                int FlavourId = item.FlavourIdFk;
-                int QuantityShiped = item.TotalQuantityShiped;
-                int RejectedQuantity = invoices.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).Sum(e => e.QuantityDefected);
-                if ((QuantityShiped - item.TotalQuantityReturned - RejectedQuantity) < invoices.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).Sum(e => e.QuantityPurchase))
-                    throw new QuantityOutOfStockException();
-                if (RejectedQuantity > 0)
-                    outgoingQuantityRejectedBLLs.Add(new OutgoingQuantityRejectedBLL() { Id = item.Id, TotalQuantityRejected = RejectedQuantity });
+                foreach (var ledger in ledgers)
+                {
+                    decimal totalRecievedDue = ledger.OldDebit;
+                    foreach (var invoice in notClearedInvoice.Where(e => e.ShopId == ledger.ShopId).OrderBy(e => e.Id))
+                    {
+                        if (totalRecievedDue > 0)
+                        {
+                            decimal totalDueLeft = invoice.TotalPrice - invoice.TotalDueCleared;
+                            decimal amountToCleared = totalDueLeft >= totalRecievedDue ? totalRecievedDue : totalDueLeft;
+                            _unitOfWork.DebitRepository.Add(shipmentLedgerDetail.Id, ledger.ShopId, amountToCleared, shipmentLedgerDetail.DateCreated);
+                            totalRecievedDue -= amountToCleared;
+                            if (Shambala.Helpher.InvoiceTolerance.IsCleared(invoice.TotalPrice, invoice.TotalDueCleared + amountToCleared))
+                            {
+                                _unitOfWork.InvoiceRepository.MakeCompleted(invoice.Id);
+                            }
+                        }
+                    }
+                }
             }
-            return outgoingQuantityRejectedBLLs.Count > 0 ? outgoingQuantityRejectedBLLs : null;
+            return IsAllOk;
         }
 
         public async Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail)
@@ -162,17 +169,22 @@ namespace Shambala.Core.Supervisors
             if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.RETURN);
 
+            IEnumerable<ShopCreditOrDebitDTO> shopRecievedCredits = _mapper.Map<IEnumerable<ShopCreditOrDebitDTO>>(shipmentLedgerDetail.Ledgers);
+
             OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(OutgoingShipmentId);
 
-            this.CheckQuatityUnderOutgoingShipmentDispatch(outgoing, invoices);
+
             IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
-            IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs = this.CheckQuatityUnderOutgoingShipmentDispatch(outgoing, invoices);
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            this.AddInvoices(invoices);
-            _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId, outgoingQuantityRejectedBLLs);
+            if (!this.ClearCredit(shipmentLedgerDetail))
+            {
+                return false;
+            }
+            _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
             await _unitOfWork.SaveChangesAsync();
             return true;
+
         }
 
         public OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int orderId)
@@ -235,7 +247,7 @@ namespace Shambala.Core.Supervisors
             decimal givenLedgerTotal = 0;
             foreach (var ledger in ledgerDTOs)
                 givenLedgerTotal += (ledger.Credit + ledger.Debit);
-            
+
             IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
             foreach (var shipmentDetail in outgoingShipment.OutgoingShipmentDetails)
             {
