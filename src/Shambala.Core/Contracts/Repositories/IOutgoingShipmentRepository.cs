@@ -14,7 +14,6 @@ namespace Shambala.Core.Contracts.Repositories
         bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetail> outgoingShipment);
         OutgoingShipment GetByIdWithNoTracking(int Id);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
-        bool Complete(int Id,IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejecteds);
-        
+        bool Complete(int Id);
     }
 }

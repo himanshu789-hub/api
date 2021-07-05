@@ -1,56 +1,34 @@
-using AutoMapper;
+using System.Collections.Generic;
+using System.Linq;
 namespace Shambala.Core.Supervisors
 {
-    using Core.Helphers;
-    using System.Collections.Generic;
     using Contracts.Supervisors;
-    using Core.Models.BLLModel;
-    using Shambala.Core.Models.DTOModel;
-    using Shambala.Domain;
-    using Contracts.UnitOfWork;
     using Contracts.Repositories;
-    using Exception;
+    using Shambala.Core.Models.DTOModel;
+    using Shambala.Core.Models.BLLModel;
     public class CreditSupervisor : ICreditSupervisor
     {
-        readonly IMapper mapper;
-        readonly IUnitOfWork unitOfWork;
-        readonly IReadInvoiceRepository readInvoice;
-        public CreditSupervisor(IUnitOfWork unitOfWork, IMapper mapper, IReadInvoiceRepository readInvoiceRepository)
+        readonly IDebitReadRepository debitRead;
+        public CreditSupervisor(IDebitReadRepository readRepository)
         {
-            this.unitOfWork = unitOfWork;
-            this.mapper = mapper;
-            this.readInvoice = readInvoiceRepository;
+            debitRead = readRepository;
         }
-        public CreditDTO Add(CreditDTO credit)
+        public IEnumerable<ShopCreditOrDebitDTO> GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
         {
-            int outgoingShipmentId = credit.OutgoingShipmentId;
-            short shopId = credit.ShopId;
-            unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
-            decimal DuePrice = readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice;
-            if (credit.Amount > DuePrice)
-                throw new CreditFlorishException();
-            Credit credit1 = unitOfWork.CreditRepository.Add(credit.OutgoingShipmentId, credit.ShopId, credit.Amount, credit.DateRecieved);
-            unitOfWork.SaveChanges();
-            return mapper.Map<CreditDTO>(credit1);
-        }
-
-        public decimal GetLeftOverCredit(int outgoingShipmentId, short shopId)
-        {
-
-            return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDuePrice;
-
-        }
-
-        public IEnumerable<CreditDTO> GetLog(int outgoingShipmentId, int shopId)
-        {
-            var logs = unitOfWork.CreditRepository.FetchList(e => e.OutgoingShipmentIdFk == outgoingShipmentId && e.ShopIdFk == shopId);
-            return mapper.Map<IEnumerable<CreditDTO>>(logs);
-        }
-
-        public bool IsCreditCleared(int outgoingShipmentId, short shopId)
-        {
-            InvoiceAggreagateDetailBLL  detailDTO = readInvoice.GetAggreate(outgoingShipmentId, shopId);
-            return Utility.IsDueCompleted(detailDTO.TotalDuePrice);
+            IList<ShopCreditOrDebitDTO> creditOrDebitDTOs = new List<ShopCreditOrDebitDTO>();
+            IEnumerable<InvoiceAggreagateDetailBLL> result = debitRead.GetLeftOverCreditByShopIds(debits.Select(e => e.ShopId).ToArray());
+            foreach (var debit in debits)
+            {
+                if (result.Any(e => e.ShopId == debit.ShopId))
+                {
+                    decimal totalCrditAmount = result.Where(e => e.ShopId == debit.ShopId && !e.IsCleared).Sum(e => e.TotalPrice - e.TotalDueCleared);
+                    if (totalCrditAmount < debit.Amount)
+                    {
+                        creditOrDebitDTOs.Add(new ShopCreditOrDebitDTO() { Amount = totalCrditAmount, ShopId = debit.ShopId });
+                    }
+                }
+            }
+            return creditOrDebitDTOs;
         }
     }
 }

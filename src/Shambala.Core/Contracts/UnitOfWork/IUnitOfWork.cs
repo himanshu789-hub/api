@@ -10,7 +10,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         IInvoiceRepository InvoiceRepository { get; }
         IOutgoingShipmentRepository OutgoingShipmentRepository { get; }
         IProductRepository ProductRepository { get; }
-        ICreditRepository CreditRepository{get;}
+        IDebitRepository DebitRepository{get;}
         ISalesmanRepository SalesmanRepository { get; }
         IIncomingShipmentRepository IncomingShipmentRepository{get;}
         ISchemeRepository SchemeRepository { get; }

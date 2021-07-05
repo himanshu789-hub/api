@@ -15,7 +15,8 @@ namespace Shambala.Core.Contracts.Supervisors
         Task ReturnAsync(int Id,IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs);
         IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipmentDTOs);
         OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int OrderId);
-        Task<bool> CompleteAsync(int OutgoingShipmentId,IEnumerable<Invoice> invoices);
+        Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail);
+        LedgerStatus CheckShipmentAmountById(IEnumerable<LedgerDTO> ledgerDTOs,int Id);
         IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date); 
     }
 }

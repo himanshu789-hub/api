@@ -33,7 +33,7 @@ namespace Shambala.Core.Models.DTOModel
     {
         public OutgoingShipmentWithSalesmanInfoDTO OutgoingShipment { get; set; }
         public ShopDTO Shop { get; set; }
-        public IEnumerable<CreditDTO> Credits { get; set; }
+        public IEnumerable<DebitDTO> Credits { get; set; }
 
     }
     public class InvoiceBillDTO : InvoiceDetailDTO

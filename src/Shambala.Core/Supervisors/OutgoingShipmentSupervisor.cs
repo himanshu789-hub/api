@@ -156,8 +156,9 @@ namespace Shambala.Core.Supervisors
             return outgoingQuantityRejectedBLLs.Count > 0 ? outgoingQuantityRejectedBLLs : null;
         }
 
-        public async Task<bool> CompleteAsync(int OutgoingShipmentId, IEnumerable<Invoice> invoices)
+        public async Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail)
         {
+            int OutgoingShipmentId = shipmentLedgerDetail.Id;
             if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(OutgoingShipmentId, Helphers.OutgoingShipmentStatus.RETURN))
                 throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.RETURN);
 
@@ -227,5 +228,26 @@ namespace Shambala.Core.Supervisors
             return result;
         }
 
+        public LedgerStatus CheckShipmentAmountById(IEnumerable<LedgerDTO> ledgerDTOs, int Id)
+        {
+            OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
+            decimal totalShipmentPrice = 0;
+            decimal givenLedgerTotal = 0;
+            foreach (var ledger in ledgerDTOs)
+                givenLedgerTotal += (ledger.Credit + ledger.Debit);
+            
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+            foreach (var shipmentDetail in outgoingShipment.OutgoingShipmentDetails)
+            {
+                Product product = products.First(e => e.Id == shipmentDetail.ProductIdFk);
+                int quantityToCalculate = shipmentDetail.TotalQuantityShiped - shipmentDetail.TotalQuantityReturned;
+                totalShipmentPrice += CalculateTotalAmountOfProduct(product.CaretSize, product.PricePerCaret, quantityToCalculate);
+            }
+            return new LedgerStatus() { Result = givenLedgerTotal == totalShipmentPrice, TotalShipmentPrice = totalShipmentPrice, YourAmount = givenLedgerTotal };
+        }
+        decimal CalculateTotalAmountOfProduct(int caretSize, decimal pricePerCaret, int quantity)
+        {
+            return (pricePerCaret / caretSize) * quantity;
+        }
     }
 }

@@ -12,16 +12,16 @@ using System;
 
 namespace Shambala.Repository
 {
-    public class ReadCreditRepository : ICreditReadRepository
+    public class ReadCreditRepository : IDebitReadRepository
     {
         readonly ShambalaContext context;
         public ReadCreditRepository(ShambalaContext context)
         {
             this.context = context;
         }
-        public IEnumerable<Credit> GetCreditLogs(short shopId, int shipmentId)
+        public IEnumerable<Debit> GetDebitLogs(short shopId, int shipmentId)
         {
-            var query = context.Credit.Where(e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == shipmentId);
+            var query = context.Debit.Where(e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == shipmentId);
             if (context.Database.CurrentTransaction == null && System.Transactions.Transaction.Current == null)
             {
                 using (var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
@@ -29,6 +29,12 @@ namespace Shambala.Repository
                     return query.ToList();
                 }
             }
+            return query.ToList();
+        }
+
+        public IEnumerable<InvoiceAggreagateDetailBLL> GetLeftOverCreditByShopIds(short[] shopIds)
+        {
+            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, (e) => !e.IsCleared, shopIds);
             return query.ToList();
         }
     }

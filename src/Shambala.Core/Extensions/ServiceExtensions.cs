@@ -20,7 +20,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IProductSupervisor, ProductSupervisor>();
             services.AddScoped<IOutgoingShipmentSupervisor, OutgoingShipmentSupervisor>();
             services.AddScoped<ISchemeSupervisor, SchemeSupervisor>();
-            services.AddScoped<ICreditSupervisor,CreditSupervisor>();
+            services.AddScoped<IDebitSupervisor,DebitSupervisor>();
             services.AddScoped<ISalesmanSupervisor, SalesmanSupervisor>();
             services.AddScoped<IIncomingShipmentSupervisor, IncomingShipmentSupervisor>();
             services.AddScoped<IInvoiceSupervisor, InvoiceSupervisor>();

@@ -1,41 +1,31 @@
 
+
 using System.Collections.Generic;
 using AutoMapper;
+using System.Linq;
+
 namespace Shambala.Core.Helphers
 {
     using Domain;
     using Models.DTOModel;
+    using Models.BLLModel;
     public class Utility
     {
         static public bool IsDueCompleted(decimal DuePrice)
         {
             return DuePrice == 0;
         }
-
-        public static IEnumerable<Invoice> ToInvoices(IEnumerable<PostInvoiceDTO> invoices)
+        static public IEnumerable<int> CheckDebitUnderGivenBalance(IEnumerable<ShopCreditOrDebitDTO> recieveBalances, IEnumerable<LeftOverCreditBLL> leftOverCreditBLLs)
         {
-
-            ICollection<Invoice> Result = new List<Invoice>();
-            foreach (var PostInvoice in invoices)
+            ICollection<int> ShopIds = new List<int>();
+            foreach (var recieveBalance in recieveBalances)
             {
-                foreach (SoldItemsDTO item in PostInvoice.Invoices)
-                {
-
-                    Invoice NewInvoice = new Invoice();
-                    NewInvoice.CaretSize = PostInvoice.CaretSize;
-                    NewInvoice.OutgoingShipmentIdFk = PostInvoice.OutgoingShipmentId;
-                    NewInvoice.SchemeIdFk = PostInvoice.SchemeId;
-                    NewInvoice.ShopIdFk = PostInvoice.ShopId;
-                    NewInvoice.DateCreated = PostInvoice.DateCreated.ToUniversalTime();
-                    NewInvoice.ProductIdFk = item.ProductId;
-                    NewInvoice.FlavourIdFk = item.FlavourId;
-                    NewInvoice.QuantityPurchase = item.Quantity;
-                    
-                    Result.Add(NewInvoice);
-                }
-
+                decimal totalCredit = leftOverCreditBLLs.Where(e => e.ShopId == recieveBalance.ShopId).Sum(e => e.Credit);
+                if (recieveBalance.Amount > totalCredit)
+                    ShopIds.Add(recieveBalance.ShopId);
             }
-            return Result;
+            return ShopIds;
         }
+        
     }
 }

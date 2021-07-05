@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 namespace Shambala.Core.Models.DTOModel
 {
     using Helphers;
-    public class CreditDTO
+    public class DebitDTO
     {
         [RequiredWithNonDefault]
         public int Id { get; set; }
@@ -21,5 +21,10 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
 
+    }
+    public class ShopCreditOrDebitDTO
+    { 
+        public short ShopId{get;set;}
+        public decimal Amount{get;set;}
     }
 }

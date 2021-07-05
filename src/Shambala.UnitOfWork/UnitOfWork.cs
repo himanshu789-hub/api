@@ -15,7 +15,7 @@ namespace Shambala.UnitOfWork
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction;
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
-        ICreditRepository _creditRepository { get; set; }
+        IDebitRepository _debitRepository { get; set; }
         IInvoiceRepository _invoiceRepository { get; set; }
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
         IProductRepository _productRepository { get; set; }
@@ -75,11 +75,11 @@ namespace Shambala.UnitOfWork
             }
         }
 
-        public ICreditRepository CreditRepository
+        public IDebitRepository DebitRepository
         {
             get
             {
-                return _creditRepository = _creditRepository == null ? new CreditRepository(_context) : _creditRepository;
+                return _debitRepository = _debitRepository == null ? new DebitRepository(_context) : _debitRepository;
             }
         }
 

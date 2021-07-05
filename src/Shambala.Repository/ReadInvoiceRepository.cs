@@ -3,6 +3,7 @@ using System.Linq;
 using System;
 using System.Collections.Generic;
 
+using System.Linq.Expressions;
 namespace Shambala.Repository
 {
     using Core.Contracts.Repositories;
@@ -10,6 +11,7 @@ namespace Shambala.Repository
     using Shambala.Core.Helphers;
     using Shambala.Core.Models.BLLModel;
     using Shambala.Domain;
+    using Helpher;
     public class ReadInvoiceRepository : IReadInvoiceRepository
     {
         readonly ShambalaContext context;
@@ -19,7 +21,7 @@ namespace Shambala.Repository
         }
         public InvoiceAggreagateDetailBLL GetAggreate(int outgoingShipmentId, short shopId)
         {
-            return QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == outgoingShipmentId, shopId).First();
+            return QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == outgoingShipmentId, new short[]{shopId}).First();
         }
         class DistinctSingleInvoiceShipment : IEqualityComparer<Invoice>
         {
@@ -34,25 +36,29 @@ namespace Shambala.Repository
             }
         }
 
-        public IEnumerable<InvoiceAggreagateDetailBLL> GetAllInvoiceByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page, int count)
+        public IEnumerable<InvoiceAggreagateDetailBLL> GetAllInvoiceByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page, int? count)
         {
-            Func<Invoice, bool> predicate = e => e.ShopIdFk == shopId;
+            Expression<Func<Invoice, bool>> expr = e => e.ShopIdFk == shopId;
+
             if (date.HasValue)
             {
                 var dateSearch = date.Value.Date;
-                predicate = e => e.ShopIdFk == shopId && e.DateCreated.Date >= dateSearch;
+                expr = (e) => e.DateCreated.Date >= dateSearch;
             }
 
-            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, predicate, shopId);
+            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, expr, new short[] { shopId }).AsQueryable();
 
             if (status.HasValue)
             {
                 if (status.Value == InvoiceStatus.COMPLETED)
-                    query.Where(e => e.TotalSellingPrice - e.TotalDuePrice == 0);
+                {
+                    query.Where(e => e.IsCleared);
+                }
                 else
-                    query.Where(e => e.TotalSellingPrice - e.TotalDuePrice > 0);
+                    query.Where(e => !e.IsCleared);
             };
-            query = query.Skip((page - 1) * count).Take(count);
+            if (count != null)
+                query = query.Skip((page - 1) * count.Value).Take(count.Value);
 
             var withSchemeQuery = query.Join(
                 context.Invoice.FromSqlRaw("SELECT * FROM shambala.invoice WHERE Shop_Id_FK={0} GROUP BY Outgoing_Shipment_Id_FK", shopId)
@@ -60,13 +66,13 @@ namespace Shambala.Repository
              e => e.OutgoingShipmentId, m => m.OutgoingShipmentIdFk, (e, m) =>
             new InvoiceAggreagateDetailBLL()
             {
-                TotalCostPrice = e.TotalCostPrice,
-                TotalDuePrice = e.TotalDuePrice,
+                TotalDueCleared = e.TotalDueCleared,
                 Scheme = m.SchemeIdFkNavigation,
-                TotalSellingPrice = e.TotalSellingPrice,
+                TotalPrice = e.TotalPrice,
                 DateCreated = m.DateCreated,
                 OutgoingShipmentId = m.OutgoingShipmentIdFk,
-                ShopId = m.ShopIdFk
+                ShopId = m.ShopIdFk,
+                IsCleared = e.IsCleared
             });
 
             if (context.Database.CurrentTransaction == null && System.Transactions.Transaction.Current == null)
@@ -79,9 +85,9 @@ namespace Shambala.Repository
             return withSchemeQuery.ToList();
         }
 
-        public InvoiceDetailWithInfoBLL GetSingleInvoiceAllDetailByShopIdAndShipmentId(short shopId, int shipmentId)
+        public InvoiceDetailWithInfoBLL GetAllInvoiceDetailOfShopByShipmentId(short shopId, int shipmentId)
         {
-            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId, shopId);
+            var query = QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId, new short[] { shopId });
             var withProperties = query.Join(
                 context.Invoice.Include(e => e.OutgoingShipmentIdFkNavigation).ThenInclude(e => e.SalesmanIdFkNavigation).Include(e => e.SchemeIdFkNavigation)
                 .Include(e => e.ShopIdFkNavigation).Where(e => e.OutgoingShipmentIdFk == shipmentId && e.ShopIdFk == shopId).Take(1),
@@ -91,9 +97,8 @@ namespace Shambala.Repository
                     OutgoingShipmentId = f.OutgoingShipmentIdFk,
                     Scheme = f.SchemeIdFkNavigation,
                     ShopId = e.ShopId,
-                    TotalDuePrice = e.TotalDuePrice,
-                    TotalCostPrice = e.TotalCostPrice,
-                    TotalSellingPrice = e.TotalSellingPrice,
+                    TotalDueCleared = e.TotalDueCleared,
+                    TotalPrice = e.TotalPrice,
                     OutgoingShipment = f.OutgoingShipmentIdFkNavigation,
                     Shop = f.ShopIdFkNavigation
                 });
@@ -106,31 +111,6 @@ namespace Shambala.Repository
                 }
             }
             return withProperties.First();
-        }
-
-        public IEnumerable<InvoiceBillingInfoBLL> GetBill(short shopId, int shipmentId)
-        {
-            var query = context.Invoice.Include(e => e.ProductIdFkNavigation).Include(e => e.FlavourIdFkNavigation).Where(e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == shipmentId)
-            .Select(e => new InvoiceBillingInfoBLL
-            {
-                CaretSize = e.CaretSize,
-                DateCreated = e.DateCreated,
-                CostPrice = e.CostPrice,
-                FlavourName = e.FlavourIdFkNavigation.Title,
-                Gstrate = e.Gstrate,
-                ProductName = e.ProductIdFkNavigation.Name,
-                QuantityDefected = e.QuantityDefected,
-                QuantityPurchase = e.QuantityPurchase,
-                SellingPrice = e.SellingPrice
-            });
-            if (context.Database.CurrentTransaction == null && System.Transactions.Transaction.Current == null)
-            {
-                using (var transaction = context.Database.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-                {
-                    return query.ToList();
-                }
-            }
-            return query.ToList();
         }
     }
 }

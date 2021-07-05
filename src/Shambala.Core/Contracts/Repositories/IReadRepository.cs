@@ -14,12 +14,12 @@ namespace Shambala.Core.Contracts.Repositories
     public interface IReadInvoiceRepository
     {
         InvoiceAggreagateDetailBLL GetAggreate(int outgoingShipmentId, short shopId);
-        IEnumerable<InvoiceAggreagateDetailBLL> GetAllInvoiceByShopId(short shopId, System.DateTime? date, InvoiceStatus? status, int page, int count);
-        InvoiceDetailWithInfoBLL GetSingleInvoiceAllDetailByShopIdAndShipmentId(short shopId, int shipmentId);
-        IEnumerable<InvoiceBillingInfoBLL> GetBill(short shopId, int shipmentId);
+        IEnumerable<InvoiceAggreagateDetailBLL> GetAllInvoiceByShopId(short shopId, System.DateTime? date, InvoiceStatus? status, int page, int? count);
+        InvoiceDetailWithInfoBLL GetAllInvoiceDetailOfShopByShipmentId(short shopId, int shipmentId);
     }
-    public interface ICreditReadRepository
+    public interface IDebitReadRepository
     {
-        IEnumerable<Credit> GetCreditLogs(short shopId,int shipmentId);
+        IEnumerable<Debit> GetDebitLogs(short shopId, int shipmentId);
+        IEnumerable<InvoiceAggreagateDetailBLL> GetLeftOverCreditByShopIds(short[] shopIds);
     }
 }

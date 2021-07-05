@@ -16,7 +16,7 @@ namespace Shambala.Infrastructure
         {
         }
 
-        public virtual DbSet<Credit> Credit { get; set; }
+        public virtual DbSet<Debit> Debit { get; set; }
         public virtual DbSet<Flavour> Flavour { get; set; }
         public virtual DbSet<IncomingShipment> IncomingShipment { get; set; }
         public virtual DbSet<Invoice> Invoice { get; set; }
@@ -39,9 +39,9 @@ namespace Shambala.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Credit>(entity =>
+            modelBuilder.Entity<Debit>(entity =>
             {
-                entity.ToTable("credit");
+                entity.ToTable("debit");
 
                 entity.HasIndex(e => e.OutgoingShipmentIdFk)
                     .HasName("Credit_OutgoingShipment_Relationship_idx");
@@ -64,13 +64,13 @@ namespace Shambala.Infrastructure
                     .HasColumnType("smallint unsigned");
 
                 entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
-                    .WithMany(p => p.Credits)
+                    .WithMany(p => p.Debits)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Credit_OutgoingShipment_Relationship");
 
                 entity.HasOne(d => d.ShopIdFkNavigation)
-                    .WithMany(p => p.Credits)
+                    .WithMany(p => p.Debits)
                     .HasForeignKey(d => d.ShopIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Credit_Shop_Relationship");
@@ -94,7 +94,7 @@ namespace Shambala.Infrastructure
             modelBuilder.Entity<IncomingShipment>(entity =>
             {
                 entity.ToTable("incoming_shipment");
-              
+
                 entity.HasIndex(e => e.FlavourIdFk)
                     .HasName("IncmingShipment_Flavour_idx");
 
@@ -135,8 +135,6 @@ namespace Shambala.Infrastructure
             {
                 entity.ToTable("invoice");
 
-                entity.HasIndex(e => e.FlavourIdFk)
-                    .HasName("Flavour_Invoice_Relationship_idx");
 
                 entity.HasIndex(e => e.Id)
                     .HasName("Id_UNIQUE")
@@ -145,24 +143,20 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.OutgoingShipmentIdFk)
                     .HasName("Outgoing_Shipment_Invoice_Relationship_idx");
 
-                entity.HasIndex(e => e.ProductIdFk)
-                    .HasName("Product_Invoice_Relationship_idx");
-
                 entity.HasIndex(e => e.SchemeIdFk)
                     .HasName("Scheme_Invoice_Relationship_idx");
 
+                entity.Property(e => e.IsCleared).HasColumnType("bit");
                 entity.HasIndex(e => e.ShopIdFk)
                     .HasName("Invoice_Shop_Relationship_idx");
 
                 entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
 
-                entity.Property(e => e.CostPrice).HasColumnType("decimal(8,2)");
+                entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
 
-                entity.Property(e => e.FlavourIdFk)
-                    .HasColumnName("Flavour_Id_FK")
-                    .HasColumnType("tinyint unsigned");
+
 
                 entity.Property(e => e.Gstrate).HasColumnName("GSTRate");
 
@@ -170,41 +164,21 @@ namespace Shambala.Infrastructure
                     .HasColumnName("Outgoing_Shipment_Id_FK")
                     .HasColumnType("int unsigned");
 
-                entity.Property(e => e.ProductIdFk)
-                    .HasColumnName("Product_Id_FK")
-                    .HasColumnType("int unsigned");
-
-                entity.Property(e => e.QuantityDefected).HasColumnType("tinyint unsigned");
-
-                entity.Property(e => e.QuantityPurchase).HasColumnType("smallint unsigned");
-
                 entity.Property(e => e.SchemeIdFk)
                     .HasColumnName("Scheme_Id_FK")
                     .HasColumnType("smallint unsigned");
 
-                entity.Property(e => e.SellingPrice).HasColumnType("decimal(8,2)");
 
                 entity.Property(e => e.ShopIdFk)
                     .HasColumnName("Shop_Id_FK")
                     .HasColumnType("smallint unsigned");
 
-                entity.HasOne(d => d.FlavourIdFkNavigation)
-                    .WithMany(p => p.Invoice)
-                    .HasForeignKey(d => d.FlavourIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Flavour_Invoice_Relationship");
 
                 entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
                     .WithMany(p => p.Invoice)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Invoice_Relationship");
-
-                entity.HasOne(d => d.ProductIdFkNavigation)
-                    .WithMany(p => p.Invoice)
-                    .HasForeignKey(d => d.ProductIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Product_Invoice_Relationship");
 
                 entity.HasOne(d => d.SchemeIdFkNavigation)
                     .WithMany(p => p.Invoice)
@@ -322,7 +296,7 @@ namespace Shambala.Infrastructure
                     .IsRequired()
                     .HasMaxLength(20);
                 entity.Property(e => e.PricePerCaret).HasColumnType("decimal(6,2)");
-            
+
             });
 
             modelBuilder.Entity<ProductFlavourQuantity>(entity =>
@@ -343,16 +317,16 @@ namespace Shambala.Infrastructure
                     .HasColumnType("int unsigned");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint unsigned");
-               
-               
-                
+
+
+
                 entity.HasOne(d => d.FlavourIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
                     .HasForeignKey(d => d.FlavourIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("flavour_Relationship");
 
-                    
+
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
                     .HasForeignKey(d => d.ProductIdFk)

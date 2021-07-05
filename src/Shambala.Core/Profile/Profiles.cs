@@ -40,8 +40,8 @@ namespace Shambala.Core.Profile
             CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
 
-            CreateMap<Credit, CreditDTO>();
-            CreateMap<Credit, CreditDTO>().ReverseMap();
+            CreateMap<Debit, DebitDTO>();
+            CreateMap<Debit, DebitDTO>().ReverseMap();
 
             CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
 

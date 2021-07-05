@@ -4,13 +4,14 @@ namespace Shambala.Core.Models.BLLModel
 {
        public class InvoiceAggreagateDetailBLL
     {
+        public int Id{get;set;}
         public System.DateTime DateCreated { get; set; }
-        public decimal TotalCostPrice { get; set; }
+        public decimal TotalPrice { get; set; }
         public Scheme Scheme { get; set; }
-        public decimal TotalSellingPrice { get; set; }
-        public decimal TotalDuePrice { get; set; }
+        public decimal TotalDueCleared { get; set; }
         public int OutgoingShipmentId { get; set; }
         public short ShopId { get; set; }
+        public bool IsCleared{get;set;}
 
     }
     public class InvoiceDetailWithInfoBLL : InvoiceAggreagateDetailBLL
@@ -20,7 +21,7 @@ namespace Shambala.Core.Models.BLLModel
     }
     public class InvoicewithCreditLogBLL : InvoiceDetailWithInfoBLL
     {
-        public IEnumerable<Credit> Credits { get; set; }
+        public IEnumerable<Debit> Debits { get; set; }
     }
     public class InvoiceBillingInfoBLL
     {

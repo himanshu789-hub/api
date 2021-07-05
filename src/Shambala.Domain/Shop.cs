@@ -15,7 +15,7 @@ namespace Shambala.Domain
         public short? SchemeIdFk { get; set; }
         public short Id { get; set; }
         
-        public virtual ICollection<Credit> Credits { get; set; }
+        public virtual ICollection<Debit> Debits { get; set; }
 
         public virtual Scheme SchemeIdFkNavigation { get; set; }
         public virtual ICollection<Invoice> Invoice { get; set; }

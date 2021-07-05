@@ -60,22 +60,13 @@ namespace Shambala.Repository
             return true;
         }
 
-        public bool Complete(int Id, IEnumerable<OutgoingQuantityRejectedBLL> outgoingQuantityRejectedBLLs)
+        public bool Complete(int Id)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
             OutgoingShipment outgoingShipment = _context.OutgoingShipment.FirstOrDefault(e => e.Id == Id);
 
             if (outgoingShipment == null || outgoingShipment.Status != System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN))
                 return false;
-            if (outgoingQuantityRejectedBLLs != null)
-            {
-                _context.Entry(outgoingShipment).Reference(e => e.OutgoingShipmentDetails).Load();
-                foreach (OutgoingQuantityRejectedBLL item in outgoingQuantityRejectedBLLs)
-                {
-                    OutgoingShipmentDetail outgoing = outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.Id == item.Id);
-                    outgoing.TotalQuantityRejected += item.TotalQuantityRejected;
-                }
-            }
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.COMPLETED);
             return true;
         }

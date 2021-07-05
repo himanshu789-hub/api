@@ -15,6 +15,12 @@ namespace Shambala.Core.Models.DTOModel
         [Required]
         public ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
     }
+    public class LedgerStatus 
+    {
+        public bool Result{get;set;}
+        public decimal YourAmount{get;set;}
+        public decimal TotalShipmentPrice{get;set;}
+    }
     public class OutgoingShipmentWithProductListDTO
     {
         public int Id { get; set; }

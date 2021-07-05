@@ -1,15 +1,12 @@
+
 using System.Collections.Generic;
-namespace Shambala.Core.Contracts.Supervisors
+namespace Shambala.Core.Supervisors
 {
-    using Domain;
-    using Models.DTOModel;
+    using Shambala.Core.Models.BLLModel;
+    using Shambala.Core.Models.DTOModel;
+    
     public interface ICreditSupervisor
     {
-        CreditDTO Add(CreditDTO credit);
-            decimal GetLeftOverCredit(int outgoingShipmentId, short shopId);
-        bool IsCreditCleared(int outgoingShipmentId, short shopId);
-
-        IEnumerable<CreditDTO> GetLog(int outgoingShipmentId,int shopId);
-    } 
-
+     IEnumerable<ShopCreditOrDebitDTO> GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits);
+    }
 }

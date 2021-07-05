@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Shambala.Domain
 {
-    public partial class Credit
+    public partial class Debit
     {
         public int Id { get; set; }
         public DateTime DateRecieved{get;set;}

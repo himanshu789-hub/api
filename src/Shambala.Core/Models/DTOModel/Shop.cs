@@ -20,6 +20,6 @@ namespace Shambala.Core.Models.DTOModel
     }
     public class ShopWithInvoicesDTO : ShopDTO
     {
-        public ICollection<PostInvoiceDTO> Invoice { get; set; }
+        public ICollection<ShipmentLedgerDetail> Invoice { get; set; }
     }
 }
