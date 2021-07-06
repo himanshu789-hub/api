@@ -16,20 +16,7 @@ namespace Shambala.Repository.Test
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
             mapper = config.CreateMapper();
         }
-        
-        [Fact]
-        public void OutgoingShipment_GetAllBySalesmanIdAndDate()
-        {
-            using (var context = new ShambalaContext())
-            {
-                var repository = new OutgoingShipmentRepository(context);
-                var result = repository.GetShipmentsBySalesmnaIdAndDate(3, new System.DateTime(2021, 5, 15,4,5,4));
-                System.Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(result));
-                
-                var response = mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(result);
-                System.Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(response));
-            }
-        }
+
         [Fact]
         public void OutgoingShipment_GetOrderById()
         {
@@ -37,11 +24,10 @@ namespace Shambala.Repository.Test
             {
                 var repository = new OutgoingShipmentRepository(context);
                 var result = repository.GetByIdWithNoTracking(3);
-                
+
                 var response = mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(result);
                 System.Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(response));
             }
         }
-        
     }
 }

@@ -132,29 +132,29 @@ namespace Shambala.Supervisor.Test
             //     }
             // }
         }
-        [Fact]
-        public void GetProductByOrderId_Working()
-        {
-            using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
-            var logger = logFactory.CreateLogger<ProductSupervisor>();
+        // [Fact]
+        // public void GetProductByOrderId_Working()
+        // {
+        //     using var logFactory = LoggerFactory.Create(builder => builder.AddNLog("../../../nlog.config"));
+        //     var logger = logFactory.CreateLogger<ProductSupervisor>();
 
-            var unitOfWorkLogger = logFactory.CreateLogger<UnitOfWork.UnitOfWork>();
-            using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
-            {
-                var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
-                using (var context = new ShambalaContext(options))
-                {
-                    using (var unitOfWork = new UnitOfWork.UnitOfWork(context, unitOfWorkLogger))
-                    {
-                        var supervisor = new OutgoingShipmentSupervisor(_mapper, unitOfWork);
-                        var products = supervisor.GetProductListByOrderId(1);
-                        Assert.NotNull(products);
-                        string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(products);
-                        logger.LogInformation(serialize);
-                    }
-                }
-            }
-        }
+        //     var unitOfWorkLogger = logFactory.CreateLogger<UnitOfWork.UnitOfWork>();
+        //     using (var connection = new MySql.Data.MySqlClient.MySqlConnection(_connection))
+        //     {
+        //         var options = new DbContextOptionsBuilder<ShambalaContext>().UseMySQL(connection).Options;
+        //         using (var context = new ShambalaContext(options))
+        //         {
+        //             using (var unitOfWork = new UnitOfWork.UnitOfWork(context, unitOfWorkLogger))
+        //             {
+        //                 var supervisor = new OutgoingShipmentSupervisor(_mapper, unitOfWork);
+        //                 var products = supervisor.GetProductListByOrderId(1);
+        //                 Assert.NotNull(products);
+        //                 string serialize = Newtonsoft.Json.JsonConvert.SerializeObject(products);
+        //                 logger.LogInformation(serialize);
+        //             }
+        //         }
+        //     }
+        // }
 
 
     }

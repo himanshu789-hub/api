@@ -89,22 +89,28 @@ namespace Shambala.Controller.Test
         public async void OutgoingShipment_Completed()
         {
             int OutgoingShipmentId = _outgoingAdded.Id;
-            ICollection<PostInvoiceDTO> postInvoiceDTOs = new List<PostInvoiceDTO>();
-            postInvoiceDTOs.Add(new PostInvoiceDTO
+            ShipmentLedgerDetail shipmentLedger = new ShipmentLedgerDetail
             {
-                CaretSize = 30,
                 DateCreated = new System.DateTime(),
-                OutgoingShipmentId = OutgoingShipmentId,
-                SchemeId = 1,
-                ShopId = 1,
-                SoldItems = new List<SoldItemsDTO>{new SoldItemsDTO(){
-                 FlavourId=1,ProductId=3,Quantity=10
-                }}
-            });
-            var json = System.Text.Json.JsonSerializer.Serialize(postInvoiceDTOs);
+                Id = OutgoingShipmentId,
+                Ledgers = DTOData.shipmentLedgerDetail.Ledgers
+            };
+            var json = System.Text.Json.JsonSerializer.Serialize(shipmentLedger);
             System.Console.WriteLine(json);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
             string url = $"/api/shipment/complete/{OutgoingShipmentId}";
+            var response = await _client.PostAsync(url, data);
+            System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
+            response.EnsureSuccessStatusCode();
+        }
+
+        [Fact]
+        public async void OutgoingShipment_CheckAmount()
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(DTOData.shipmentLedgerDetail.Ledgers);
+            System.Console.WriteLine(json);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            string url = $"/api/shipment/checkamount/{1}";
             var response = await _client.PostAsync(url, data);
             System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();
