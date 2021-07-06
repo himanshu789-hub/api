@@ -64,14 +64,14 @@ namespace Shambala.Controllers
         }
 
         [HttpPost]
-        public IActionResult CheckAmount([BindRequired]int Id, IEnumerable<LedgerDTO> ledgers)
+        public IActionResult CheckAmount([BindRequired]int Id,[MinLength(1)][FromBody] IEnumerable<LedgerDTO> ledgers)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             return Ok(_outgoingSupervisor.CheckShipmentAmountById(ledgers,Id));
         }
         [HttpPost]
-        public async Task<IActionResult> CompleteAsync([FromBody] ShipmentLedgerDetail shipmentLedgerDetail)
+        public async Task<IActionResult> CompleteAsync([Required][FromBody] ShipmentLedgerDetail shipmentLedgerDetail)
         {
 
             if (!ModelState.IsValid)

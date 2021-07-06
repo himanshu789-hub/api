@@ -30,8 +30,7 @@ namespace Shambala.Controller.Test
             var json = System.Text.Json.JsonSerializer.Serialize(shopCredits);
             //System.Console.WriteLine(json);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _client.PostAsync("/api/credit/getleftover", data);
+            var response = await _client.PostAsync("/api/credit/checkleftover", data);
             string responseJson = await response.Content.ReadAsStringAsync();
             System.Console.WriteLine("Response :=>" + responseJson);
             response.EnsureSuccessStatusCode();

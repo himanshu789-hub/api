@@ -88,17 +88,17 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void OutgoingShipment_Completed()
         {
-            int OutgoingShipmentId = _outgoingAdded.Id;
+            int OutgoingShipmentId = DTOData.shipmentLedgerDetail.Id;
             ShipmentLedgerDetail shipmentLedger = new ShipmentLedgerDetail
             {
-                DateCreated = new System.DateTime(),
+                DateCreated = DateTime.Now,
                 Id = OutgoingShipmentId,
                 Ledgers = DTOData.shipmentLedgerDetail.Ledgers
             };
             var json = System.Text.Json.JsonSerializer.Serialize(shipmentLedger);
             System.Console.WriteLine(json);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            string url = $"/api/shipment/complete/{OutgoingShipmentId}";
+            string url = $"/api/shipment/complete";
             var response = await _client.PostAsync(url, data);
             System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();
@@ -110,7 +110,7 @@ namespace Shambala.Controller.Test
             var json = System.Text.Json.JsonSerializer.Serialize(DTOData.shipmentLedgerDetail.Ledgers);
             System.Console.WriteLine(json);
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            string url = $"/api/shipment/checkamount/{1}";
+            string url = $"/api/shipment/checkamount/{DTOData.shipmentLedgerDetail.Id}";
             var response = await _client.PostAsync(url, data);
             System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();

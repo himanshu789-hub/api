@@ -1,5 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+
 namespace Shambala.Controllers
 {
     using Core.Models.DTOModel;
@@ -11,9 +14,12 @@ namespace Shambala.Controllers
         {
             this.creditSupervisor = creditSupervisor;
         }
-        [HttpGet]
-        IActionResult GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
+        [HttpPost]
+        public IActionResult CheckLeftOver([FromBody][MinLength(1)] IEnumerable<ShopCreditOrDebitDTO> debits)
         {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
+
             return Ok(creditSupervisor.GetLeftOverCredit(debits));
         }
     }

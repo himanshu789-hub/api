@@ -25,6 +25,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IIncomingShipmentSupervisor, IncomingShipmentSupervisor>();
             services.AddScoped<IInvoiceSupervisor, InvoiceSupervisor>();
             services.AddScoped<IShopSupervisor, ShopSupervisor>();
+            services.AddScoped<ICreditSupervisor, CreditSupervisor>();
+            
             
             return services;
         }

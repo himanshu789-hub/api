@@ -21,7 +21,7 @@ namespace Shambala.Repository
         }
         public InvoiceAggreagateDetailBLL GetAggreate(int outgoingShipmentId, short shopId)
         {
-            return QuerableMethods.GetAggreatesQueryableByShopId(context, e => e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == outgoingShipmentId, new short[]{shopId}).First();
+            return QuerableMethods.GetAggreatesQueryableByShopId(context, e => !e.IsCleared && e.ShopIdFk == shopId && e.OutgoingShipmentIdFk == outgoingShipmentId, new short[] { shopId }).First();
         }
         class DistinctSingleInvoiceShipment : IEqualityComparer<Invoice>
         {
@@ -113,7 +113,7 @@ namespace Shambala.Repository
             return withProperties.First();
         }
 
-        
+
         public IEnumerable<InvoiceAggreagateDetailBLL> GetNotClearedAggregateByShopIds(short[] shopIds)
         {
             var query = QuerableMethods.GetAggreatesQueryableByShopId(context, (e) => !e.IsCleared, shopIds);

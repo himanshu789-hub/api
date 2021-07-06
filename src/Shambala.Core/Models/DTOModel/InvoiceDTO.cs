@@ -9,7 +9,7 @@ namespace Shambala.Core.Models.DTOModel
         public int Id { get; set; }
         [RequiredWithNonDefault]
         public System.DateTime DateCreated { get; set; }
-        [Required]
+        [Required,MinLength(1)]
         public IEnumerable<LedgerWithPastDebitDTO> Ledgers { get; set; }
     }
     public class LedgerDTO

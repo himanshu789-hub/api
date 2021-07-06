@@ -244,6 +244,7 @@ namespace Shambala.Core.Supervisors
         {
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
             decimal totalShipmentPrice = 0;
+            
             decimal givenLedgerTotal = 0;
             foreach (var ledger in ledgerDTOs)
                 givenLedgerTotal += (ledger.Credit + ledger.Debit);

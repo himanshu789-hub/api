@@ -18,15 +18,12 @@ namespace Shambala.Core.Helphers
         static public IEnumerable<ShopCreditOrDebitDTO> CheckDebitUnderGivenBalance(IEnumerable<ShopCreditOrDebitDTO> recieveBalances, IEnumerable<InvoiceAggreagateDetailBLL> leftOverCreditBLLs)
         {
             IList<ShopCreditOrDebitDTO> leftOverCredit = new List<ShopCreditOrDebitDTO>();
-            foreach (var debit in recieveBalances)
+            foreach (var receieveDebt in recieveBalances)
             {
-                if (leftOverCreditBLLs.Any(e => e.ShopId == debit.ShopId))
+                decimal totalCreditAmount = leftOverCreditBLLs.Where(e => e.ShopId == receieveDebt.ShopId && !e.IsCleared).Sum(e => e.TotalPrice - e.TotalDueCleared);
+                if (totalCreditAmount < receieveDebt.Amount)
                 {
-                    decimal totalCreditAmount = leftOverCreditBLLs.Where(e => e.ShopId == debit.ShopId && !e.IsCleared).Sum(e => e.TotalPrice - e.TotalDueCleared);
-                    if (totalCreditAmount < debit.Amount)
-                    {
-                        leftOverCredit.Add(new ShopCreditOrDebitDTO() { Amount = totalCreditAmount, ShopId = debit.ShopId });
-                    }
+                    leftOverCredit.Add(new ShopCreditOrDebitDTO() { Amount = totalCreditAmount, ShopId = receieveDebt.ShopId });
                 }
             }
             return leftOverCredit;

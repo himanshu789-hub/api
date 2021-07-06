@@ -4,7 +4,7 @@ using Shambala.Core.Models.DTOModel;
 
 namespace Shambala.Controller.Test
 {
-    public class DTOData
+     class DTOData
     {
        internal static ShipmentLedgerDetail shipmentLedgerDetail = new ShipmentLedgerDetail
         {
