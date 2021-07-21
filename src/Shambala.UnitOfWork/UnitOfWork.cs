@@ -6,23 +6,25 @@ using System.Threading.Tasks;
 using System.Data;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 namespace Shambala.UnitOfWork
 {
     public class UnitOfWork : IUnitOfWork
     {
+        public IDbContextTransaction CurrentTransaction { get { return transaction; } }
         bool _isTransactionRollback = false;
         bool _isTransactionCommited = false;
-        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction;
+        IDbContextTransaction transaction;
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
         IDebitRepository _debitRepository { get; set; }
-       // IInvoiceRepository _invoiceRepository { get; set; }
+        // IInvoiceRepository _invoiceRepository { get; set; }
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
         IProductRepository _productRepository { get; set; }
         ISalesmanRepository _salesRepository { get; set; }
         IIncomingShipmentRepository _incomingShipmentRepository { get; set; }
         ISchemeRepository _schemeRepository { get; set; }
-        IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository{get;set;}
+        IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository { get; set; }
         public IShopRepository ShopRepository
         {
             get
@@ -85,8 +87,9 @@ namespace Shambala.UnitOfWork
         }
         public IOutgoingShipmentDetailRepository OutgoingShipmentDetailRepository
         {
-            get{
-                return _outgoingShipmentDetailRepository = _outgoingShipmentDetailRepository==null?new OutgoingShipmentDetailRepository(_context):_outgoingShipmentDetailRepository;
+            get
+            {
+                return _outgoingShipmentDetailRepository = _outgoingShipmentDetailRepository == null ? new OutgoingShipmentDetailRepository(_context) : _outgoingShipmentDetailRepository;
             }
         }
         ILogger<UnitOfWork> logger;
@@ -105,7 +108,7 @@ namespace Shambala.UnitOfWork
                 {
                     value = _context.SaveChanges();
                     transaction.Commit();
-                    
+
                     _isTransactionCommited = true;
                 }
                 catch (System.Exception e)

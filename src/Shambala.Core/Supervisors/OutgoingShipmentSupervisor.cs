@@ -32,21 +32,6 @@ namespace Shambala.Core.Supervisors
         }
 
         public byte GSTRate => _gstRate;
-        public IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipment, IEnumerable<Product> products)
-        {
-            ICollection<ProductOutOfStockBLL> productOutOfStockBLLs = new List<ProductOutOfStockBLL>();
-            foreach (var item in shipment)
-            {
-                int QuantityShiped = item.TotalRecievedPieces - item.TotalDefectPieces;
-                int ProductId = item.ProductId; int FlavourId = item.FlavourId;
-                if (!((products.SelectMany(e => e.ProductFlavourQuantity).Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).First().Quantity - item.TotalDefectPieces) >= QuantityShiped))
-                    productOutOfStockBLLs.Add(new ProductOutOfStockBLL() { FlavourId = FlavourId, ProductId = ProductId });
-            }
-            if (productOutOfStockBLLs.Count > 0)
-                return productOutOfStockBLLs;
-
-            return null;
-        }
         void UpdateQuantities(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
         {
 
@@ -71,7 +56,7 @@ namespace Shambala.Core.Supervisors
 
             using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.ProvideOutOfStockQuantities(postOutgoingShipmentDTO.Shipments);
+                IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.CheckPostShipment(postOutgoingShipmentDTO.Shipments);
                 if (productOutOfStockBLLs == null)
                 {
                     this.UpdateQuantities(OutgoingShipment.OutgoingShipmentDetails);
@@ -88,7 +73,7 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
         }
 
-        IEnumerable<ProductReturnBLL> GetProductLeftOverFromShipments(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
+        IEnumerable<ProductReturnBLL> GetReturnProductFromShipments(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
 
@@ -187,21 +172,48 @@ namespace Shambala.Core.Supervisors
             outgoingShipmentWithProductListDTO.Products = Products;
             return outgoingShipmentWithProductListDTO;
         }
-        public async Task ReturnAsync(int Id, IEnumerable<OutgoingShipmentDetailReturnDTO> shipments)
+        public IEnumerable<ProductOutOfStockBLL> CheckReturnShipment(int Id, IEnumerable<ShipmentDTO> shipments)
         {
-            var returnShipments = _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(shipments);
-            foreach (var item in returnShipments)
-                item.OutgoingShipmentIdFk = Id;
+            if (_unitOfWork.CurrentTransaction == null)
+            {
+                using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                {
+                    return this.GetOverReturnShipment(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id), shipments);
+                }
+            }
+            return this.GetOverReturnShipment(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id), shipments);
+        }
+        IEnumerable<ProductOutOfStockBLL> GetOverReturnShipment(OutgoingShipment outgoingShipment, IEnumerable<ShipmentDTO> shipments)
+        {
+            ICollection<ProductOutOfStockBLL> productOutOfs = new List<ProductOutOfStockBLL>();
+            foreach (ShipmentDTO shipmentDTO in shipments)
+            {
+                int ProductId = shipmentDTO.ProductId;
+                short FlavourId = shipmentDTO.FlavourId;
+                OutgoingShipmentDetails outgoingShipmentDetail = outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId);
+                if (outgoingShipmentDetail == null)
+                    throw new ShipmentNotVaidException();
+                short ShipedQuantity = outgoingShipmentDetail.TotalQuantityReturned;
+                if (shipmentDTO.TotalRecievedPieces > ShipedQuantity)
+                    productOutOfs.Add(new ProductOutOfStockBLL() { FlavourId = FlavourId, ProductId = ProductId, Quantity = ShipedQuantity });
+            }
+            return productOutOfs.Count() > 0 ? productOutOfs : null;
+        }
+        public async Task<bool> ReturnShipmentAsync(int Id, IEnumerable<ShipmentDTO> recieveShipments)
+        {
 
-            if (returnShipments.Distinct().Count() != returnShipments.Count())
+            if (IsShipmentsUnique(recieveShipments))
                 throw new DuplicateShipmentsException();
-            IEnumerable<ProductReturnBLL> productReturnBLLs = this.GetProductLeftOverFromShipments(returnShipments);
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
-                throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
-            if (productReturnBLLs.Count() > 0)
-                _unitOfWork.ProductRepository.ReturnQuantity(productReturnBLLs);
+            OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
+            IEnumerable<ProductOutOfStockBLL> productReturnOverShipeds = this.GetOverReturnShipment(outgoingShipment, recieveShipments);
+            if (productReturnOverShipeds != null)
+                throw new ShipmentReturnQuantityExceedException();
+
+            // if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
+            //     throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
+
             _unitOfWork.OutgoingShipmentRepository.Return(Id, returnShipments);
             await _unitOfWork.SaveChangesAsync();
         }
@@ -222,68 +234,100 @@ namespace Shambala.Core.Supervisors
             return (_mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id)));
         }
 
-        public bool Update(int Id, IEnumerable<ShipmentDTO> shipments)
+        public bool Update(int Id, IEnumerable<ShipmentDTO> recieveShipments)
         {
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
-            IEnumerable<ShipmentDTO> oldShipments = _mapper.Map<IEnumerable<ShipmentDTO>>(outgoingShipment.OutgoingShipmentDetails);
             IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
-            IEnumerable<ShipmentDTO> newShipments = shipments.Except(oldShipments);
-            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.ProvideOutOfStockQuantities(newShipments, products);
-            if (productOutOfStockBLLs.Count() > 0)
+
+            //check quantity available            
+            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.GetOutOfStockList(outgoingShipment, recieveShipments, products);
+            if (productOutOfStockBLLs != null)
             {
-                return false;
+                throw new QuantityOutOfStockException();
             }
+
+            IEnumerable<ShipmentDTO> currentShipments = _mapper.Map<IEnumerable<ShipmentDTO>>(outgoingShipment.OutgoingShipmentDetails);
+            IEnumerable<ShipmentDTO> newShipments = recieveShipments.Except(currentShipments);
+
             foreach (var newShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(newShipments))
             {
                 int ProductId = newShipment.ProductIdFk; short FlavourId = newShipment.FlavourIdFk;
                 newShipment.OutgoingShipmentIdFk = Id;
-
                 products.First(e => e.Id == ProductId).ProductFlavourQuantity.First(e => e.FlavourIdFk == FlavourId);
+                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, newShipment.TotalQuantityShiped + newShipment.TotalQuantityRejected);
                 _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipment);
             }
 
-            IEnumerable<ShipmentDTO> deleteShipments = oldShipments.Except(shipments);
+            IEnumerable<ShipmentDTO> deleteShipments = currentShipments.Except(recieveShipments);
             foreach (var deleteShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(deleteShipments))
             {
                 _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
             }
-            IEnumerable<ShipmentDTO> updateShipments = oldShipments.Intersect(shipments);
+
+            IEnumerable<ShipmentDTO> updateShipments = currentShipments.Intersect(recieveShipments);
             foreach (var updateShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(updateShipments))
             {
+                int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
+                short CurrentQuantity = currentShipments.First(e => e.ProductId == ProductId && e.FlavourId == FlavourId).TotalRecievedPieces;
+                short NewQuantity = updateShipment.TotalQuantityShiped;
+
+                if (NewQuantity == CurrentQuantity)
+                    continue;
+
+                updateShipment.TotalQuantityShiped = NewQuantity;
+                _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
+
+                if (NewQuantity > CurrentQuantity)
+                    _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, NewQuantity - CurrentQuantity);
+                else
+                    _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, CurrentQuantity - NewQuantity);
 
             }
-            throw new System.NotImplementedException();
+            return true;
         }
-        public bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
+        bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
         {
             return shipments.Distinct().Count() == shipments.Count();
         }
-        public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(int? Id, IEnumerable<ShipmentDTO> shipments)
+        public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(IEnumerable<ShipmentDTO> shipments, int? Id = null)
         {
             if (IsShipmentsUnique(shipments))
                 throw new DuplicateShipmentsException();
-
-            _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
-            OutgoingShipment outgoingShipment = null;
-            if (Id != null)
+            if (_unitOfWork.CurrentTransaction == null)
             {
-                outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id.Value);
+                using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+                {
+                    IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+                    OutgoingShipment outgoing = Id == null ? null : _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id.Value);
+                    return GetOutOfStockList(outgoing, shipments, products);
+                }
             }
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
-            foreach (ShipmentDTO shipment in shipments)
+            IEnumerable<Product> productList = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+            OutgoingShipment outgoingShipment = Id == null ? null : _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id.Value);
+            return GetOutOfStockList(outgoingShipment, shipments, productList);
+        }
+        IEnumerable<ProductOutOfStockBLL> GetOutOfStockList(OutgoingShipment outgoingShipment, IEnumerable<ShipmentDTO> recieveShipments, IEnumerable<Product> products)
+        {
+            ICollection<ProductOutOfStockBLL> productOutOfStocks = new List<ProductOutOfStockBLL>();
+
+            foreach (ShipmentDTO shipment in recieveShipments)
             {
                 int ProductId = shipment.ProductId;
                 short FlavourId = shipment.FlavourId;
-                int ProductQuantity = products.SelectMany(e => e.ProductFlavourQuantity).Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).First().Quantity;
+                int ProductQuantity = products.First(e => e.Id == ProductId).ProductFlavourQuantity.Where(e => e.FlavourIdFk == FlavourId).First().Quantity;
                 if (outgoingShipment != null)
                 {
-                    ProductQuantity += outgoingShipment.OutgoingShipmentDetails.First(e => e.FlavourIdFk == FlavourId && e.ProductIdFk == ProductId).TotalQuantityShiped;
+                    ProductQuantity += outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.FlavourIdFk == FlavourId && e.ProductIdFk == ProductId)?.TotalQuantityShiped ?? 0;
+                }
+                if (shipment.TotalRecievedPieces > ProductQuantity)
+                {
+                    productOutOfStocks.Add(new ProductOutOfStockBLL() { FlavourId = FlavourId, ProductId = ProductId, Quantity = ProductQuantity });
                 }
             }
+            return productOutOfStocks.Count() > 0 ? productOutOfStocks : null;
         }
-
         public OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id)
         {
             if (Id == 0)
@@ -351,5 +395,6 @@ namespace Shambala.Core.Supervisors
             }
             return outgoingShipmentPriceDetail;
         }
+
     }
 }

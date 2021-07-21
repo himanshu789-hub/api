@@ -67,7 +67,6 @@ namespace Shambala.Repository
 
             _context.Set<T>().Update(entity);
             return true;
-
         }
 
     }

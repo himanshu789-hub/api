@@ -70,11 +70,9 @@ namespace Shambala.Repository
         public OutgoingShipment GetAllDetailById(int Id)
         {
             return _context.OutgoingShipment.Include(e => e.SalesmanIdFkNavigation)
-            .Include(e => e.OutgoingShipmentDetails)
-            .ThenInclude(e=>e.ProductIdFkNavigation)
             .Include(e=>e.OutgoingShipmentDetails)
-            .ThenInclude(e=>e.FlavourIdFkNavigation)
-            .Include(e=>e.OutgoingShipmentDetails)
+            .Include(e => e.OutgoingShipmentDetails).ThenInclude(e=>e.ProductIdFkNavigation)
+            .Include(e=>e.OutgoingShipmentDetails).ThenInclude(e=>e.FlavourIdFkNavigation)
             .Include(e => e.CustomCaratPrice)
             .First(e => e.Id == Id);
         }

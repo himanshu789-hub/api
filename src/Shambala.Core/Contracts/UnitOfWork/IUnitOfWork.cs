@@ -7,14 +7,15 @@ namespace Shambala.Core.Contracts.UnitOfWork
     public interface IUnitOfWork : IDisposable
     {
         IShopRepository ShopRepository { get; }
-       // IInvoiceRepository InvoiceRepository { get; }
+        // IInvoiceRepository InvoiceRepository { get; }
         IOutgoingShipmentRepository OutgoingShipmentRepository { get; }
         IProductRepository ProductRepository { get; }
-        IDebitRepository DebitRepository{get;}
+        IDebitRepository DebitRepository { get; }
         ISalesmanRepository SalesmanRepository { get; }
-        IIncomingShipmentRepository IncomingShipmentRepository{get;}
+        IIncomingShipmentRepository IncomingShipmentRepository { get; }
         ISchemeRepository SchemeRepository { get; }
-        IOutgoingShipmentDetailRepository OutgoingShipmentDetailRepository{get;}
+        IOutgoingShipmentDetailRepository OutgoingShipmentDetailRepository { get; }
+        Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction CurrentTransaction { get; }
         int SaveChanges();
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(IsolationLevel levl);
         Task<int> SaveChangesAsync();

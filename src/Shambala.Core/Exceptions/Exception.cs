@@ -44,4 +44,24 @@ namespace Shambala.Core.Exception
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    [System.Serializable]
+    public class ShipmentNotVaidException : System.Exception
+    {
+        public ShipmentNotVaidException():base("Product In Shipment Not Exists") { }
+        public ShipmentNotVaidException(string message) : base(message) { }
+        public ShipmentNotVaidException(string message, System.Exception inner) : base(message, inner) { }
+        protected ShipmentNotVaidException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
+    [System.Serializable]
+    public class ShipmentReturnQuantityExceedException : System.Exception
+    {
+        public ShipmentReturnQuantityExceedException():base("Shipment Return Quantity Exceeded") { }
+        public ShipmentReturnQuantityExceedException(string message) : base(message) { }
+        public ShipmentReturnQuantityExceedException(string message, System.Exception inner) : base(message, inner) { }
+        protected ShipmentReturnQuantityExceedException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }
