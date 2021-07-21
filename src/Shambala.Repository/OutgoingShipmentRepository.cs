@@ -7,8 +7,6 @@ using Shambala.Core.Helphers;
 using System.Linq;
 using Shambala.Core.Models.BLLModel;
 using Shambala.Core.Models.DTOModel;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-using System;
 
 namespace Shambala.Repository
 {
@@ -22,8 +20,6 @@ namespace Shambala.Repository
             var Entity = _context.OutgoingShipment.Add(outgoingShipment);
             return Entity.Entity;
         }
-
-
 
         public OutgoingShipment GetByIdWithNoTracking(int Id)
         {
@@ -39,7 +35,7 @@ namespace Shambala.Repository
         {
             return _context.OutgoingShipment.AsNoTracking().First(e => e.Id == Id).Status == System.Enum.GetName(typeof(OutgoingShipmentStatus), expectedValue);
         }
-        public bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetail> returnShipments)
+        public bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetails> returnShipments)
         {
             string name = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
 
@@ -47,12 +43,12 @@ namespace Shambala.Repository
 
             foreach (var item in returnShipments)
             {
-                OutgoingShipmentDetail ShipmentDetail = outgoing.OutgoingShipmentDetails
+                OutgoingShipmentDetails ShipmentDetail = outgoing.OutgoingShipmentDetails
                 .First(e => e.FlavourIdFk == item.FlavourIdFk && e.ProductIdFk == item.ProductIdFk);
-                int ReturnQuantity = item.TotalQuantityShiped;
-                int DefectedQuantity = item.TotalQuantityRejected;
-                ShipmentDetail.TotalQuantityShiped -= (ReturnQuantity - DefectedQuantity);
-                ShipmentDetail.TotalQuantityRejected += DefectedQuantity;
+                short ReturnQuantity = item.TotalQuantityShiped;
+                short DefectedQuantity = item.TotalQuantityRejected;
+                ShipmentDetail.TotalQuantityShiped -= (short)(ReturnQuantity - DefectedQuantity);
+                ShipmentDetail.TotalQuantityRejected += (byte)DefectedQuantity;
                 ShipmentDetail.TotalQuantityReturned = ReturnQuantity;
             }
             outgoing.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN);
@@ -71,5 +67,16 @@ namespace Shambala.Repository
             return true;
         }
 
+        public OutgoingShipment GetAllDetailById(int Id)
+        {
+            return _context.OutgoingShipment.Include(e => e.SalesmanIdFkNavigation)
+            .Include(e => e.OutgoingShipmentDetails)
+            .ThenInclude(e=>e.ProductIdFkNavigation)
+            .Include(e=>e.OutgoingShipmentDetails)
+            .ThenInclude(e=>e.FlavourIdFkNavigation)
+            .Include(e=>e.OutgoingShipmentDetails)
+            .Include(e => e.CustomCaratPrice)
+            .First(e => e.Id == Id);
+        }
     }
 }

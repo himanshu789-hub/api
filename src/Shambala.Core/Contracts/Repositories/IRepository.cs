@@ -5,16 +5,16 @@ namespace Shambala.Core.Contracts.Repositories
     using Models.DTOModel;
     using Models.BLLModel;
     using Helphers;
-    public interface IInvoiceRepository : IGenericRepository<Invoice>
-    {
-        void MakeCompleted(int Id);
-    }
+    // public interface IInvoiceRepository : IGenericRepository<Invoice>
+    // {
+    //     void MakeCompleted(int Id);
+    // }
     public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {
         IEnumerable<Salesman> GetAllActive();
 
     }
-    public interface ISchemeRepository : IGenericRepository<Scheme>, IQueryList<Scheme>
+    public interface ISchemeRepository : IGenericRepository<Scheme>
     {
 
         Scheme GetSchemeWithNoTrackingById(short schemeId);

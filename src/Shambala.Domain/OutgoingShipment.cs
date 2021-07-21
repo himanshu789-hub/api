@@ -1,14 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
 namespace Shambala.Domain
 {
     public partial class OutgoingShipment
     {
         public OutgoingShipment()
         {
-            Invoice = new HashSet<Invoice>();
-            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetail>();
+            CustomCaratPrice = new HashSet<CustomCaratPrice>();
+            Debit = new HashSet<Debit>();
+            OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetails>();
         }
 
         public int Id { get; set; }
@@ -16,10 +21,9 @@ namespace Shambala.Domain
         public DateTime DateCreated { get; set; }
         public string Status { get; set; }
 
-        public virtual ICollection<Debit> Debits { get; set; }
         public virtual Salesman SalesmanIdFkNavigation { get; set; }
-        public virtual ICollection<Invoice> Invoice { get; set; }
-        public virtual ICollection<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }
-
+        public virtual ICollection<CustomCaratPrice> CustomCaratPrice { get; set; }
+        public virtual ICollection<Debit> Debit { get; set; }
+        public virtual ICollection<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
     }
 }

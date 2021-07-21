@@ -17,15 +17,15 @@ namespace Shambala.Repository
 
         public IEnumerable<Shop> GetAllByName(string name)
         {
-            return _context.Shop.Include(e => e.SchemeIdFkNavigation)
-            .Where(e => e.Title.Contains(name))
+            return _context.Shop.Where(e => e.Title.Contains(name))
             .AsNoTracking()
             .ToList();
         }
 
         public Shop GetWithInvoiceDetail(int Id)
         {
-            return _context.Shop.Include(e => e.Invoice).FirstOrDefault(e => e.Id == Id);
+            //   return _context.Shop.Include(e => e.Invoice).FirstOrDefault(e => e.Id == Id);
+            throw new System.NotImplementedException();
         }
 
         public bool IsNameAlreadyExists(string name, int? Id)

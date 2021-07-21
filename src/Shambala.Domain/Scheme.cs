@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
+
 namespace Shambala.Domain
 {
     public partial class Scheme
     {
-        public Scheme()
-        {
-            Invoice = new HashSet<Invoice>();
-            Shop = new HashSet<Shop>();
-        }
-
         public short Id { get; set; }
-        public string Title { get; set; }
         public DateTime DateCreated { get; set; }
-        public bool IsUserDefinedScheme { get; set; }
-        public byte? SchemeType { get; set; }
-        public decimal Value { get; set; }
-
-        public virtual ICollection<Invoice> Invoice { get; set; }
-        public virtual ICollection<Shop> Shop { get; set; }
+        public byte? Quantity { get; set; }
+        public int? ProductIdFk { get; set; }
     }
 }

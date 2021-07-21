@@ -49,15 +49,15 @@ namespace Shambala.Core.Profile
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
-            CreateMap<OutgoingShipmentDetail, OutgoingShipmentDetailDTO>()
+            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
             .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped));
 
-            CreateMap<OutgoingShipmentDetail, ShipmentDTO>()
+            CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
             .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
-            CreateMap<OutgoingShipmentDetail, ShipmentDTO>()
+            CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
             .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
             .ReverseMap();
@@ -70,7 +70,7 @@ namespace Shambala.Core.Profile
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
 
-            CreateMap<OutgoingShipmentDetail, OutgoingShipmentDetailReturnDTO>().ReverseMap();
+            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailReturnDTO>().ReverseMap();
 
             CreateMap<OutgoingShipment, OutgoingShipmentWithSalesmanInfoDTO>();
 

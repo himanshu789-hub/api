@@ -16,12 +16,13 @@ namespace Shambala.UnitOfWork
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
         IDebitRepository _debitRepository { get; set; }
-        IInvoiceRepository _invoiceRepository { get; set; }
+       // IInvoiceRepository _invoiceRepository { get; set; }
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
         IProductRepository _productRepository { get; set; }
         ISalesmanRepository _salesRepository { get; set; }
         IIncomingShipmentRepository _incomingShipmentRepository { get; set; }
         ISchemeRepository _schemeRepository { get; set; }
+        IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository{get;set;}
         public IShopRepository ShopRepository
         {
             get
@@ -37,13 +38,13 @@ namespace Shambala.UnitOfWork
                 return _incomingShipmentRepository = _incomingShipmentRepository == null ? new IncomingShipmentRepository(context: _context) : _incomingShipmentRepository;
             }
         }
-        public IInvoiceRepository InvoiceRepository
-        {
-            get
-            {
-                return _invoiceRepository = _invoiceRepository == null ? new InvoiceRepository(_context) : _invoiceRepository;
-            }
-        }
+        // public IInvoiceRepository InvoiceRepository
+        // {
+        //     get
+        //     {
+        //         return _invoiceRepository = _invoiceRepository == null ? new InvoiceRepository(_context) : _invoiceRepository;
+        //     }
+        // }
 
         public IOutgoingShipmentRepository OutgoingShipmentRepository
         {
@@ -82,7 +83,12 @@ namespace Shambala.UnitOfWork
                 return _debitRepository = _debitRepository == null ? new DebitRepository(_context) : _debitRepository;
             }
         }
-
+        public IOutgoingShipmentDetailRepository OutgoingShipmentDetailRepository
+        {
+            get{
+                return _outgoingShipmentDetailRepository = _outgoingShipmentDetailRepository==null?new OutgoingShipmentDetailRepository(_context):_outgoingShipmentDetailRepository;
+            }
+        }
         ILogger<UnitOfWork> logger;
         public UnitOfWork(ShambalaContext context, ILogger<UnitOfWork> logger)
         {

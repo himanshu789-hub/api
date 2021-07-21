@@ -11,12 +11,15 @@ namespace Shambala.Core.Contracts.Supervisors
     }
     public interface  IOutgoingShipmentSupervisor:IGSTRate
     {        
+        bool Update(int Id,IEnumerable<ShipmentDTO> shipments);
         Task<OutgoingShipmentWithSalesmanInfoDTO>  AddAsync(PostOutgoingShipmentDTO outgoingShipment);
         Task ReturnAsync(int Id,IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs);
-        IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipmentDTOs);
+        IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipmentDTOs,IEnumerable<Product> products);
         OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int OrderId);
         Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail);
-        LedgerStatus CheckShipmentAmountById(IEnumerable<LedgerDTO> ledgerDTOs,int Id);
-        IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date); 
+        IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date);
+        OutgoingShipmentWithSalesmanInfoDTO GetOutgoingShipmentWithSalesmanInfoDTO(int Id);
+        IEnumerable<ProductOutOfStockBLL> CheckPostShipment(int? Id,IEnumerable<ShipmentDTO> shipment);
+        OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id); 
     }
 }

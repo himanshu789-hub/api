@@ -1,10 +1,14 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Shambala.Domain;
+
+// Code scaffolded by EF Core assumes nullable reference types (NRTs) are not used or disabled.
+// If you have enabled NRTs for your project, then un-comment the following line:
+// #nullable disable
 
 namespace Shambala.Infrastructure
 {
+    using Domain;
     public partial class ShambalaContext : DbContext
     {
         public ShambalaContext()
@@ -16,12 +20,13 @@ namespace Shambala.Infrastructure
         {
         }
 
+        public virtual DbSet<Credit> Credit { get; set; }
+        public virtual DbSet<CustomCaratPrice> CustomCaratPrice { get; set; }
         public virtual DbSet<Debit> Debit { get; set; }
         public virtual DbSet<Flavour> Flavour { get; set; }
         public virtual DbSet<IncomingShipment> IncomingShipment { get; set; }
-        public virtual DbSet<Invoice> Invoice { get; set; }
         public virtual DbSet<OutgoingShipment> OutgoingShipment { get; set; }
-        public virtual DbSet<OutgoingShipmentDetail> OutgoingShipmentDetails { get; set; }
+        public virtual DbSet<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
         public virtual DbSet<Product> Product { get; set; }
         public virtual DbSet<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
         public virtual DbSet<Salesman> Salesman { get; set; }
@@ -32,13 +37,89 @@ namespace Shambala.Infrastructure
         {
             if (!optionsBuilder.IsConfigured)
             {
-                //To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None");
+#warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
+                optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev");
             }
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Credit>(entity =>
+            {
+                entity.ToTable("credit");
+
+                entity.HasIndex(e => e.ShopIdFk)
+                    .HasName("Credit_Shop_Relationship_idx");
+
+                entity.Property(e => e.Amount).HasColumnType("decimal(6,2)");
+
+                entity.Property(e => e.DateCreated).HasColumnType("date");
+
+                entity.Property(e => e.OutgoingShipmentIdFk)
+                    .HasColumnName("OutgoingShipment_Id_FK")
+                    .HasColumnType("int unsigned");
+
+                entity.Property(e => e.ShopIdFk)
+                    .HasColumnName("Shop_Id_FK")
+                    .HasColumnType("smallint unsigned");
+
+                entity.HasOne(d => d.ShopIdFkNavigation)
+                    .WithMany(p => p.Credit)
+                    .HasForeignKey(d => d.ShopIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Credit_Shop_Relationships");
+            });
+
+            modelBuilder.Entity<CustomCaratPrice>(entity =>
+            {
+                entity.ToTable("custom_carat_price");
+
+                entity.HasIndex(e => e.FlavourIdFk)
+                    .HasName("Flavour_CustomCaratPriceRelationship");
+
+                entity.HasIndex(e => e.OutgoinShipmentIdFk)
+                    .HasName("OutgoingShipment_CustomPrice_Relationship_idx");
+
+                entity.HasIndex(e => e.ProductIdFk)
+                    .HasName("Product_CustomCaratPrice_Relationship_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
+
+                entity.Property(e => e.FlavourIdFk)
+                    .HasColumnName("Flavour_Id_FK")
+                    .HasColumnType("tinyint unsigned");
+
+                entity.Property(e => e.OutgoinShipmentIdFk)
+                    .HasColumnName("OutgoinShipment_Id_FK")
+                    .HasColumnType("int unsigned");
+
+                entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
+
+                entity.Property(e => e.ProductIdFk)
+                    .HasColumnName("Product_Id_FK")
+                    .HasColumnType("int unsigned");
+
+                entity.Property(e => e.Quantity).HasColumnType("smallint unsigned");
+
+                entity.HasOne(d => d.FlavourIdFkNavigation)
+                    .WithMany(p => p.CustomCaratPrice)
+                    .HasForeignKey(d => d.FlavourIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Flavour_CustomCaratPriceRelationship");
+
+                entity.HasOne(d => d.OutgoinShipmentIdFkNavigation)
+                    .WithMany(p => p.CustomCaratPrice)
+                    .HasForeignKey(d => d.OutgoinShipmentIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("OutgoingShipment_CustomPrice_Relationship");
+
+                entity.HasOne(d => d.ProductIdFkNavigation)
+                    .WithMany(p => p.CustomCaratPrice)
+                    .HasForeignKey(d => d.ProductIdFk)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("Product_CustomCaratPrice_Relationship");
+            });
+
             modelBuilder.Entity<Debit>(entity =>
             {
                 entity.ToTable("debit");
@@ -49,7 +130,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ShopIdFk)
                     .HasName("Credit_Shop_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(6,2)");
 
@@ -64,13 +145,13 @@ namespace Shambala.Infrastructure
                     .HasColumnType("smallint unsigned");
 
                 entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
-                    .WithMany(p => p.Debits)
+                    .WithMany(p => p.Debit)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Credit_OutgoingShipment_Relationship");
 
                 entity.HasOne(d => d.ShopIdFkNavigation)
-                    .WithMany(p => p.Debits)
+                    .WithMany(p => p.Debit)
                     .HasForeignKey(d => d.ShopIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Credit_Shop_Relationship");
@@ -105,7 +186,9 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("IncomingShipment_Product_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
+
+                entity.Property(e => e.DateCreated).HasColumnType("date");
 
                 entity.Property(e => e.FlavourIdFk)
                     .HasColumnName("Flavour_Id_FK")
@@ -131,68 +214,6 @@ namespace Shambala.Infrastructure
                     .HasConstraintName("IncomingShipment_Product_Relationship");
             });
 
-            modelBuilder.Entity<Invoice>(entity =>
-            {
-                entity.ToTable("invoice");
-
-
-                entity.HasIndex(e => e.Id)
-                    .HasName("Id_UNIQUE")
-                    .IsUnique();
-
-                entity.HasIndex(e => e.OutgoingShipmentIdFk)
-                    .HasName("Outgoing_Shipment_Invoice_Relationship_idx");
-
-                entity.HasIndex(e => e.SchemeIdFk)
-                    .HasName("Scheme_Invoice_Relationship_idx");
-
-                entity.Property(e => e.IsCleared).HasColumnType("bit");
-                entity.HasIndex(e => e.ShopIdFk)
-                    .HasName("Invoice_Shop_Relationship_idx");
-
-                entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
-
-                entity.Property(e => e.Price).HasColumnType("decimal(8,2)");
-
-                entity.Property(e => e.DateCreated).HasColumnType("date");
-
-
-
-                entity.Property(e => e.Gstrate).HasColumnName("GSTRate");
-
-                entity.Property(e => e.OutgoingShipmentIdFk)
-                    .HasColumnName("Outgoing_Shipment_Id_FK")
-                    .HasColumnType("int unsigned");
-
-                entity.Property(e => e.SchemeIdFk)
-                    .HasColumnName("Scheme_Id_FK")
-                    .HasColumnType("smallint unsigned");
-
-
-                entity.Property(e => e.ShopIdFk)
-                    .HasColumnName("Shop_Id_FK")
-                    .HasColumnType("smallint unsigned");
-
-
-                entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
-                    .WithMany(p => p.Invoice)
-                    .HasForeignKey(d => d.OutgoingShipmentIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Outgoing_Shipment_Invoice_Relationship");
-
-                entity.HasOne(d => d.SchemeIdFkNavigation)
-                    .WithMany(p => p.Invoice)
-                    .HasForeignKey(d => d.SchemeIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Scheme_Invoice_Relationship");
-
-                entity.HasOne(d => d.ShopIdFkNavigation)
-                    .WithMany(p => p.Invoice)
-                    .HasForeignKey(d => d.ShopIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("Invoice_Shop_Relationship");
-            });
-
             modelBuilder.Entity<OutgoingShipment>(entity =>
             {
                 entity.ToTable("outgoing_shipment");
@@ -200,7 +221,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.SalesmanIdFk)
                     .HasName("OUtgoingShipment_Salesman_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
 
@@ -220,7 +241,7 @@ namespace Shambala.Infrastructure
                     .HasConstraintName("OUtgoingShipment_Salesman_Relationship");
             });
 
-            modelBuilder.Entity<OutgoingShipmentDetail>(entity =>
+            modelBuilder.Entity<OutgoingShipmentDetails>(entity =>
             {
                 entity.ToTable("outgoing_shipment_details");
 
@@ -237,7 +258,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("Outgoing_Shipment_Details_Product_RelationShip_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int unsigned");
 
                 entity.Property(e => e.FlavourIdFk)
                     .HasColumnName("Flavour_Id_FK")
@@ -247,9 +268,19 @@ namespace Shambala.Infrastructure
                     .HasColumnName("Outgoing_Shipment_Id_FK")
                     .HasColumnType("int unsigned");
 
+                entity.Property(e => e.PricePerCarat)
+                    .HasColumnName("Price_Per_Carat")
+                    .HasColumnType("decimal(6,2)");
+
                 entity.Property(e => e.ProductIdFk)
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int unsigned");
+
+                entity.Property(e => e.SchemeTotalPrice)
+                    .HasColumnName("Scheme_Total_Price")
+                    .HasColumnType("decimal(6,2)");
+
+                entity.Property(e => e.SchemeTotalQuantity).HasColumnName("Scheme_Total_Quantity");
 
                 entity.Property(e => e.TotalQuantityRejected)
                     .HasColumnName("Total_Quantity_Rejected")
@@ -295,8 +326,8 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(20);
-                entity.Property(e => e.PricePerCaret).HasColumnType("decimal(6,2)");
 
+                entity.Property(e => e.PricePerCaret).HasColumnType("decimal(6,2)");
             });
 
             modelBuilder.Entity<ProductFlavourQuantity>(entity =>
@@ -305,6 +336,9 @@ namespace Shambala.Infrastructure
 
                 entity.HasIndex(e => e.FlavourIdFk)
                     .HasName("Flavour_Id_FK_idx");
+
+                entity.HasIndex(e => e.ProductIdFk)
+                    .HasName("Product_Relationship_idx");
 
                 entity.Property(e => e.Id).ValueGeneratedOnAdd();
 
@@ -318,14 +352,11 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint unsigned");
 
-
-
                 entity.HasOne(d => d.FlavourIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
                     .HasForeignKey(d => d.FlavourIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("flavour_Relationship");
-
 
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
@@ -357,17 +388,15 @@ namespace Shambala.Infrastructure
                     .HasName("Id_UNIQUE")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("smallint unsigned").ValueGeneratedOnAdd();
+                entity.HasIndex(e => e.ProductIdFk)
+                    .HasName("Product_Id_FK_UNIQUE")
+                    .IsUnique();
+
+                entity.Property(e => e.Id).HasColumnType("smallint unsigned");
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
 
-                entity.Property(e => e.IsUserDefinedScheme).HasColumnType("bit(1)");
-
-                entity.Property(e => e.Title)
-                    .IsRequired()
-                    .HasMaxLength(60);
-
-                entity.Property(e => e.Value).HasColumnType("decimal(4,2)");
+                entity.Property(e => e.ProductIdFk).HasColumnName("Product_Id_FK");
             });
 
             modelBuilder.Entity<Shop>(entity =>
@@ -378,25 +407,13 @@ namespace Shambala.Infrastructure
                     .HasName("Id_UNIQUE")
                     .IsUnique();
 
-                entity.HasIndex(e => e.SchemeIdFk)
-                    .HasName("Scheme_Id_FK_idx");
-
-                entity.Property(e => e.Id).HasColumnType("smallint unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("smallint unsigned");
 
                 entity.Property(e => e.Address).HasMaxLength(80);
-
-                entity.Property(e => e.SchemeIdFk)
-                    .HasColumnName("Scheme_Id_FK")
-                    .HasColumnType("smallint unsigned");
 
                 entity.Property(e => e.Title)
                     .IsRequired()
                     .HasMaxLength(40);
-
-                entity.HasOne(d => d.SchemeIdFkNavigation)
-                    .WithMany(p => p.Shop)
-                    .HasForeignKey(d => d.SchemeIdFk)
-                    .HasConstraintName("Shop_Scheme_Relationship");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -9,11 +9,15 @@ namespace Shambala.Core.Contracts.Repositories
     using Models.BLLModel;
     public interface IOutgoingShipmentRepository : ILoadingProperties<OutgoingShipment>
     {
-        
         OutgoingShipment Add(OutgoingShipment outgoingShipment);
-        bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetail> outgoingShipment);
+        bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetails> outgoingShipment);
         OutgoingShipment GetByIdWithNoTracking(int Id);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
         bool Complete(int Id);
+        OutgoingShipment GetAllDetailById(int Id);
+    }
+    public interface IOutgoingShipmentDetailRepository : IGenericRepository<OutgoingShipmentDetails>
+    {
+       bool Delete(int Id);
     }
 }

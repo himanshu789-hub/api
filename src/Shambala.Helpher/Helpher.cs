@@ -1,8 +1,9 @@
 ﻿using System;
-using Shambala.Domain;
 using System.Linq.Expressions;
+
 namespace Shambala.Helpher
 {
+    using Domain;
     public class InvoiceTolerance
     {
         class BalanceInfo

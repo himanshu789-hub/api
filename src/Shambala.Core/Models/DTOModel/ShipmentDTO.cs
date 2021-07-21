@@ -1,9 +1,10 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using System.Collections.Generic;
 namespace Shambala.Core.Models.DTOModel
 {
     using Helphers;
-    public class ShipmentDTO
+    public class ShipmentDTO : EqualityComparer<ShipmentDTO>
     {
         [RequiredWithNonDefault]
         public int Id { get; set; }
@@ -19,5 +20,15 @@ namespace Shambala.Core.Models.DTOModel
         public int ProductId { get; set; }
         [RequiredWithNonDefault]
         public byte FlavourId { get; set; }
+
+        public override bool Equals(ShipmentDTO x, ShipmentDTO y)
+        {
+            return x.FlavourId == y.FlavourId && x.ProductId == y.ProductId;
+        }
+
+        public override int GetHashCode(ShipmentDTO obj)
+        {
+            return base.GetHashCode();
+        }
     }
 }

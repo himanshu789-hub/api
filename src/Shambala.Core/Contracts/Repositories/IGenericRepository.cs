@@ -18,9 +18,5 @@ namespace Shambala.Core.Contracts.Repositories
         bool Update(T entity);
         T GetById(object Id);
         IEnumerable<T> FetchList(System.Func<T, bool> predicate);
-    
-        int SaveChanges();
-        Task<int> SaveChangesAync();
-    
     }
 }

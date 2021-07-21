@@ -4,6 +4,7 @@ EFCore Tools and Design : 3.1.0
 Mysql.Data.EFCoe : 8.0.22
 
 
+dotnet ef dbcontext scaffold -c ShambalaContext  -o ./../Shambala.Domain --context-dir ./ "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None" Mysql.Data.EntityFrameworkCore --framework netcoreapp3.1
 
 
-dotnet ef dbcontext scaffold -c ShambalaContext  -o ./../Shambala.Domain --context-dir ./ "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=sham@12DATA;SslMode=None" Mysql.Data.EntityFrameworkCore --framework netcoreapp3.1
+dotnet ef dbcontext scaffold -c ShambalaContext  -o ./../../src/Shambala.Domain --context-dir ./../../src/Shambala.Infrastructure "Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None" Mysql.Data.EntityFrameworkCore --framework netcoreapp3.1

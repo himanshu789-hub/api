@@ -7,17 +7,17 @@ using System.Collections.Generic;
 
 namespace Shambala.Domain
 {
-    public partial class IncomingShipment
+    public partial class CustomCaratPrice
     {
         public int Id { get; set; }
         public int ProductIdFk { get; set; }
-        public short? TotalRecievedPieces { get; set; }
-        public short? TotalDefectPieces { get; set; }
-        public byte? CaretSize { get; set; }
-        public DateTime DateCreated { get; set; }
         public byte FlavourIdFk { get; set; }
+        public short Quantity { get; set; }
+        public decimal PricePerCarat { get; set; }
+        public int OutgoinShipmentIdFk { get; set; }
 
         public virtual Flavour FlavourIdFkNavigation { get; set; }
+        public virtual OutgoingShipment OutgoinShipmentIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }
     }
 }

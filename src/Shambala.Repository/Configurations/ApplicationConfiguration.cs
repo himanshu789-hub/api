@@ -7,7 +7,6 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IServiceCollection AddRepositoryServices(this IServiceCollection services)
         {
             services.AddScoped<ISchemeRepository,SchemeRepository>();
-            services.AddScoped<IInvoiceRepository,InvoiceRepository>();
             services.AddScoped<IIncomingShipmentRepository,IncomingShipmentRepository>();
             services.AddScoped<IOutgoingShipmentRepository,OutgoingShipmentRepository>();
             services.AddScoped<IProductRepository,ProductRepository>();
@@ -16,7 +15,6 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IShopRepository,ShopRepository>();
           
             services.AddScoped<IDebitReadRepository,ReadDebitRepository>();
-            services.AddScoped<IReadInvoiceRepository,ReadInvoiceRepository>();
             services.AddScoped<IReadOutgoingShipmentRepository,ReadOutgoingShipmentRepository>();
         
             

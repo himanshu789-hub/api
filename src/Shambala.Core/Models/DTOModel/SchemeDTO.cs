@@ -9,17 +9,12 @@ namespace Shambala.Core.Models.DTOModel
         public short Id { get; set; }
         
         [RequiredWithNonDefault]
-        public string Title { get; set; }
+        public int Quantity { get; set; }
         
         [RequiredWithNonDefault]
-        public DateTime DateCreated { get; set; }
-       
-        [RequiredWithNonDefault]
-        public bool IsUserDefinedScheme { get; set; }
+        public int ProductId{get;set;}
         
         [RequiredWithNonDefault]
-        public SchemeType SchemeType { get; set; }
-        
-        public decimal Value { get; set; }
+        public DateTime DateCreated{get;set;}
     }
 }

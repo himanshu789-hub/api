@@ -20,6 +20,14 @@ namespace Shambala.Controllers
         {
             _outgoingSupervisor = outgoingShipmentSupervisor;
         }
+        [HttpGet]
+        public IActionResult GetById([FromQuery][BindRequired] int Id)
+        {
+            if (!ModelState.IsValid)
+                return new BadRequestObjectResult(ModelState.Values.SelectMany(e => e.Errors));
+
+            return Ok(_outgoingSupervisor.GetOutgoingShipmentWithSalesmanInfoDTO(Id));
+        }
 
         [HttpPost]
         public async Task<IActionResult> AddAsync([FromBody] PostOutgoingShipmentDTO postOutgoing)
@@ -36,6 +44,17 @@ namespace Shambala.Controllers
             return Ok(outgoing);
         }
 
+        [HttpPut]
+        public IActionResult Update([FromQuery] int Id, [FromBody] IEnumerable<ShipmentDTO> shipments)
+        {
+            ModelState.Remove("Id");
+            if (!ModelState.IsValid)
+                return new BadRequestObjectResult(ModelState.Values.SelectMany(e => e.Errors));
+
+            bool IsUpdated = _outgoingSupervisor.Update(Id, shipments);
+
+            return Ok(IsUpdated);
+        }
         [HttpPut]
         public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs)
         {
@@ -62,13 +81,12 @@ namespace Shambala.Controllers
 
             return Ok(_outgoingSupervisor.GetWithProductListByOrderId(Id));
         }
-
         [HttpPost]
-        public IActionResult CheckAmount([BindRequired]int Id,[MinLength(1)][FromBody] IEnumerable<LedgerDTO> ledgers)
+        public IActionResult CheckAmount([BindRequired] int Id, [MinLength(1)][FromBody] IEnumerable<LedgerDTO> ledgers)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
-            return Ok(_outgoingSupervisor.CheckShipmentAmountById(ledgers,Id));
+            return Ok(_outgoingSupervisor.CheckShipmentAmountById(ledgers, Id));
         }
         [HttpPost]
         public async Task<IActionResult> CompleteAsync([Required][FromBody] ShipmentLedgerDetail shipmentLedgerDetail)
@@ -95,6 +113,20 @@ namespace Shambala.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             return Ok(_outgoingSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
+        }
+        [HttpGet]
+        public IActionResult CheckShipment([FromQuery] int Id, [FromBody] IEnumerable<ShipmentDTO> shipmentDTOs)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest();
+            try
+            {
+
+            }
+            catch (System.Exception e)
+            {
+
+            }
         }
     }
 }

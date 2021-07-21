@@ -51,19 +51,7 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<IEnumerable<SchemeDTO>>(schemeRepository.GetAll());
         }
 
-        public IEnumerable<SchemeDTO> GetAllByName(string name)
-        {
-            return _mapper.Map<IEnumerable<SchemeDTO>>(_repository.FetchList(e => EF.Functions.Like(e.Title, $"%{name}%")));
-        }
 
-        public SchemeDTO GetByShopId(int shopId)
-        {
-            Shop shop = this.shopRepository.GetById(shopId);
-            if (shop.SchemeIdFk != null)
-                return _mapper.Map<SchemeDTO>(schemeRepository.GetById(shop.SchemeIdFk));
-            return null;
-
-        }
         public override bool IsNameAlreadyExists(string name, int? Id)
         {
             return _repository.IsNameAlreadyExists(name, Id);

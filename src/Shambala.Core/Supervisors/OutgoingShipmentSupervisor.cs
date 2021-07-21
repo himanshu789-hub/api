@@ -32,11 +32,9 @@ namespace Shambala.Core.Supervisors
         }
 
         public byte GSTRate => _gstRate;
-        public IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipment)
+        public IEnumerable<ProductOutOfStockBLL> ProvideOutOfStockQuantities(IEnumerable<ShipmentDTO> shipment, IEnumerable<Product> products)
         {
             ICollection<ProductOutOfStockBLL> productOutOfStockBLLs = new List<ProductOutOfStockBLL>();
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
-
             foreach (var item in shipment)
             {
                 int QuantityShiped = item.TotalRecievedPieces - item.TotalDefectPieces;
@@ -49,7 +47,7 @@ namespace Shambala.Core.Supervisors
 
             return null;
         }
-        void UpdateQuantities(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails)
+        void UpdateQuantities(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
         {
 
             foreach (var item in outgoingShipmentDetails)
@@ -90,7 +88,7 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(OutgoingShipment);
         }
 
-        IEnumerable<ProductReturnBLL> GetProductLeftOverFromShipments(IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails)
+        IEnumerable<ProductReturnBLL> GetProductLeftOverFromShipments(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
         {
             ICollection<ProductReturnBLL> productReturnBLLs = new List<ProductReturnBLL>();
 
@@ -106,62 +104,36 @@ namespace Shambala.Core.Supervisors
             }
             return productReturnBLLs;
         }
-        void ApplySchemeOverInvoice(Invoice invoice, IEnumerable<Product> products)
-        {
-            //     short? SchemeId = invoice.SchemeIdFk;
-
-            //     Scheme scheme = null;
-            //     if (SchemeId != null)
-            //         scheme = _unitOfWork.SchemeRepository.GetSchemeWithNoTrackingById(SchemeId.Value);
-            //     byte? InvoiceSchemeType = scheme?.SchemeType;
-            //     Product Product = products.FirstOrDefault(e => e.Id == invoice.ProductIdFk);
-            //     decimal Price = (Product.PricePerCaret / Product.CaretSize) * invoice.QuantityPurchase;
-            //     // add Cost Price
-            //     invoice.CostPrice = Price;
-            //     invoice.CaretSize = Product.CaretSize;
-            //     invoice.SellingPrice = invoice.CostPrice;
-            //     if (InvoiceSchemeType != null)
-            //     {
-            //         if (InvoiceSchemeType == (byte)SchemeType.Percentage)
-            //         {
-            //             invoice.SellingPrice *= (1 - scheme.Value);
-            //             return;
-            //         }
-            //         int QuantityToDeduct = (int)(InvoiceSchemeType == (byte)SchemeType.Bottle ? (scheme.Value) : (scheme.Value * Product.CaretSize));
-            //         _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(invoice.ProductIdFk, invoice.FlavourIdFk, QuantityToDeduct);
-            //     }
-            throw new System.NotImplementedException();
-        }
-        bool ClearCredit(ShipmentLedgerDetail shipmentLedgerDetail)
-        {
-            IEnumerable<LedgerWithPastDebitDTO> ledgers = shipmentLedgerDetail.Ledgers;
-            IEnumerable<ShopCreditOrDebitDTO> shopRecievedCredits = _mapper.Map<IEnumerable<ShopCreditOrDebitDTO>>(ledgers);
-            IEnumerable<InvoiceAggreagateDetailBLL> notClearedInvoice = readInvoiceRepository.GetNotClearedAggregateByShopIds(shopRecievedCredits.Select(e => e.ShopId).ToArray());
-            IEnumerable<ShopCreditOrDebitDTO> creditLeftOverDTO = Utility.CheckDebitUnderGivenBalance(shopRecievedCredits, notClearedInvoice);
-            bool IsAllOk = creditLeftOverDTO.Count() == 0;
-            if (IsAllOk)
-            {
-                foreach (var ledger in ledgers)
-                {
-                    decimal totalRecievedDue = ledger.OldDebit;
-                    foreach (var invoice in notClearedInvoice.Where(e => e.ShopId == ledger.ShopId).OrderBy(e => e.Id))
-                    {
-                        if (totalRecievedDue > 0)
-                        {
-                            decimal totalDueLeft = invoice.TotalPrice - invoice.TotalDueCleared;
-                            decimal amountToCleared = totalDueLeft >= totalRecievedDue ? totalRecievedDue : totalDueLeft;
-                            _unitOfWork.DebitRepository.Add(shipmentLedgerDetail.Id, ledger.ShopId, amountToCleared, shipmentLedgerDetail.DateCreated);
-                            totalRecievedDue -= amountToCleared;
-                            if (Shambala.Helpher.InvoiceTolerance.IsCleared(invoice.TotalPrice, invoice.TotalDueCleared + amountToCleared))
-                            {
-                                _unitOfWork.InvoiceRepository.MakeCompleted(invoice.Id);
-                            }
-                        }
-                    }
-                }
-            }
-            return IsAllOk;
-        }
+        // bool ClearCredit(ShipmentLedgerDetail shipmentLedgerDetail)
+        // {
+        //     IEnumerable<LedgerWithPastDebitDTO> ledgers = shipmentLedgerDetail.Ledgers;
+        //     IEnumerable<ShopCreditOrDebitDTO> shopRecievedCredits = _mapper.Map<IEnumerable<ShopCreditOrDebitDTO>>(ledgers);
+        //     IEnumerable<InvoiceAggreagateDetailBLL> notClearedInvoice = readInvoiceRepository.GetNotClearedAggregateByShopIds(shopRecievedCredits.Select(e => e.ShopId).ToArray());
+        //     IEnumerable<ShopCreditOrDebitDTO> creditLeftOverDTO = Utility.CheckDebitUnderGivenBalance(shopRecievedCredits, notClearedInvoice);
+        //     bool IsAllOk = creditLeftOverDTO.Count() == 0;
+        //     if (IsAllOk)
+        //     {
+        //         foreach (var ledger in ledgers)
+        //         {
+        //             decimal totalRecievedDue = ledger.OldDebit;
+        //             foreach (var invoice in notClearedInvoice.Where(e => e.ShopId == ledger.ShopId).OrderBy(e => e.Id))
+        //             {
+        //                 if (totalRecievedDue > 0)
+        //                 {
+        //                     decimal totalDueLeft = invoice.TotalPrice - invoice.TotalDueCleared;
+        //                     decimal amountToCleared = totalDueLeft >= totalRecievedDue ? totalRecievedDue : totalDueLeft;
+        //                     _unitOfWork.DebitRepository.Add(shipmentLedgerDetail.Id, ledger.ShopId, amountToCleared, shipmentLedgerDetail.DateCreated);
+        //                     totalRecievedDue -= amountToCleared;
+        //                     if (Shambala.Helpher.InvoiceTolerance.IsCleared(invoice.TotalPrice, invoice.TotalDueCleared + amountToCleared))
+        //                     {
+        //                         _unitOfWork.InvoiceRepository.MakeCompleted(invoice.Id);
+        //                     }
+        //                 }
+        //             }
+        //         }
+        //     }
+        //     return IsAllOk;
+        // }
 
         public async Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail)
         {
@@ -174,13 +146,13 @@ namespace Shambala.Core.Supervisors
             OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(OutgoingShipmentId);
 
 
-            IEnumerable<OutgoingShipmentDetail> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
+            IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
 
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            if (!this.ClearCredit(shipmentLedgerDetail))
-            {
-                return false;
-            }
+            // if (!this.ClearCredit(shipmentLedgerDetail))
+            // {
+            //     return false;
+            // }
             _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
             await _unitOfWork.SaveChangesAsync();
             return true;
@@ -217,7 +189,7 @@ namespace Shambala.Core.Supervisors
         }
         public async Task ReturnAsync(int Id, IEnumerable<OutgoingShipmentDetailReturnDTO> shipments)
         {
-            var returnShipments = _mapper.Map<IEnumerable<OutgoingShipmentDetail>>(shipments);
+            var returnShipments = _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(shipments);
             foreach (var item in returnShipments)
                 item.OutgoingShipmentIdFk = Id;
 
@@ -240,27 +212,144 @@ namespace Shambala.Core.Supervisors
             return result;
         }
 
-        public LedgerStatus CheckShipmentAmountById(IEnumerable<LedgerDTO> ledgerDTOs, int Id)
-        {
-            OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
-            decimal totalShipmentPrice = 0;
-            
-            decimal givenLedgerTotal = 0;
-            foreach (var ledger in ledgerDTOs)
-                givenLedgerTotal += (ledger.Credit + ledger.Debit);
-
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
-            foreach (var shipmentDetail in outgoingShipment.OutgoingShipmentDetails)
-            {
-                Product product = products.First(e => e.Id == shipmentDetail.ProductIdFk);
-                int quantityToCalculate = shipmentDetail.TotalQuantityShiped - shipmentDetail.TotalQuantityReturned;
-                totalShipmentPrice += CalculateTotalAmountOfProduct(product.CaretSize, product.PricePerCaret, quantityToCalculate);
-            }
-            return new LedgerStatus() { Result = givenLedgerTotal == totalShipmentPrice, TotalShipmentPrice = totalShipmentPrice, YourAmount = givenLedgerTotal };
-        }
         decimal CalculateTotalAmountOfProduct(int caretSize, decimal pricePerCaret, int quantity)
         {
             return (pricePerCaret / caretSize) * quantity;
+        }
+
+        public OutgoingShipmentWithSalesmanInfoDTO GetOutgoingShipmentWithSalesmanInfoDTO(int Id)
+        {
+            return (_mapper.Map<OutgoingShipmentWithSalesmanInfoDTO>(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id)));
+        }
+
+        public bool Update(int Id, IEnumerable<ShipmentDTO> shipments)
+        {
+
+            _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
+            OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
+            IEnumerable<ShipmentDTO> oldShipments = _mapper.Map<IEnumerable<ShipmentDTO>>(outgoingShipment.OutgoingShipmentDetails);
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+            IEnumerable<ShipmentDTO> newShipments = shipments.Except(oldShipments);
+            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.ProvideOutOfStockQuantities(newShipments, products);
+            if (productOutOfStockBLLs.Count() > 0)
+            {
+                return false;
+            }
+            foreach (var newShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(newShipments))
+            {
+                int ProductId = newShipment.ProductIdFk; short FlavourId = newShipment.FlavourIdFk;
+                newShipment.OutgoingShipmentIdFk = Id;
+
+                products.First(e => e.Id == ProductId).ProductFlavourQuantity.First(e => e.FlavourIdFk == FlavourId);
+                _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipment);
+            }
+
+            IEnumerable<ShipmentDTO> deleteShipments = oldShipments.Except(shipments);
+            foreach (var deleteShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(deleteShipments))
+            {
+                _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
+            }
+            IEnumerable<ShipmentDTO> updateShipments = oldShipments.Intersect(shipments);
+            foreach (var updateShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(updateShipments))
+            {
+
+            }
+            throw new System.NotImplementedException();
+        }
+        public bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
+        {
+            return shipments.Distinct().Count() == shipments.Count();
+        }
+        public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(int? Id, IEnumerable<ShipmentDTO> shipments)
+        {
+            if (IsShipmentsUnique(shipments))
+                throw new DuplicateShipmentsException();
+
+            _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+            OutgoingShipment outgoingShipment = null;
+            if (Id != null)
+            {
+                outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id.Value);
+            }
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+            foreach (ShipmentDTO shipment in shipments)
+            {
+                int ProductId = shipment.ProductId;
+                short FlavourId = shipment.FlavourId;
+                int ProductQuantity = products.SelectMany(e => e.ProductFlavourQuantity).Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId).First().Quantity;
+                if (outgoingShipment != null)
+                {
+                    ProductQuantity += outgoingShipment.OutgoingShipmentDetails.First(e => e.FlavourIdFk == FlavourId && e.ProductIdFk == ProductId).TotalQuantityShiped;
+                }
+            }
+        }
+
+        public OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id)
+        {
+            if (Id == 0)
+                return null;
+
+            OutgoingShipment outgoingShipment = null;
+            using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
+            {
+                outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
+            }
+            OutgoingShipmentPriceDetailDTO outgoingShipmentPriceDetail = new OutgoingShipmentPriceDetailDTO
+            {
+                Id = outgoingShipment.Id,
+                ProductDetails = new List<OutgoingShipmentProductDetailDTO>(),
+                Salesman = _mapper.Map<SalesmanDTO>(outgoingShipment.SalesmanIdFkNavigation)
+            };
+            foreach (OutgoingShipmentDetails outgoingShipmentDetail in outgoingShipment.OutgoingShipmentDetails)
+            {
+                int ProductId = outgoingShipmentDetail.ProductIdFk;
+                short FlavourId = outgoingShipmentDetail.FlavourIdFk;
+                if (outgoingShipmentPriceDetail.ProductDetails.First(e => e.ProductId == ProductId) == null)
+                {
+                    outgoingShipmentPriceDetail.ProductDetails.Add(new OutgoingShipmentProductDetailDTO
+                    {
+                        Name = outgoingShipmentDetail.ProductIdFkNavigation.Name,
+                        ProductId = outgoingShipmentDetail.ProductIdFk,
+                        OutgoingShipmentFlavourDetails = new List<OutgoingShipmentFlavourDetailDTO>()
+                    });
+
+                }
+                int FlavourQuantity = outgoingShipmentDetail.TotalQuantityShiped;
+
+                ICollection<FlavourQuantityVariantDetailDTO> variantDetailDTOs = new List<FlavourQuantityVariantDetailDTO>();
+
+                foreach (CustomCaratPrice customCarat in outgoingShipment.CustomCaratPrice.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId))
+                {
+                    FlavourQuantity -= customCarat.Quantity;
+                    variantDetailDTOs.Add(new FlavourQuantityVariantDetailDTO
+                    {
+                        PricePerCarat = customCarat.PricePerCarat,
+                        Quantity = customCarat.Quantity,
+                        TotalPrice = customCarat.Quantity * (customCarat.PricePerCarat / outgoingShipmentDetail.CaretSize)
+                    });
+                }
+                variantDetailDTOs.Add(new FlavourQuantityVariantDetailDTO
+                {
+                    PricePerCarat = outgoingShipmentDetail.PricePerCarat ?? 0,
+                    Quantity = FlavourQuantity,
+                    TotalPrice = FlavourQuantity * (outgoingShipmentDetail.PricePerCarat ?? 0 / outgoingShipmentDetail.CaretSize)
+                });
+
+                outgoingShipmentPriceDetail.ProductDetails.First(e => e.ProductId == ProductId)
+                .OutgoingShipmentFlavourDetails.Add(new OutgoingShipmentFlavourDetailDTO()
+                {
+                    FlavourId = FlavourId,
+                    FlavourQuantityVariantDetails = variantDetailDTOs,
+                    Name = outgoingShipmentDetail.FlavourIdFkNavigation.Title,
+                    SchemeDetail = new FlavourSchemeDetailDTO
+                    {
+                        PricePerBottle = outgoingShipmentDetail.SchemeTotalPrice / outgoingShipmentDetail.SchemeTotalQuantity,
+                        Quantity = outgoingShipmentDetail.SchemeTotalQuantity,
+                        TotalPrice = outgoingShipmentDetail.SchemeTotalPrice
+                    }
+                });
+            }
+            return outgoingShipmentPriceDetail;
         }
     }
 }
