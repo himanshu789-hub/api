@@ -199,6 +199,7 @@ namespace Shambala.Core.Supervisors
             }
             return productOutOfs.Count() > 0 ? productOutOfs : null;
         }
+
         public async Task<bool> ReturnShipmentAsync(int Id, IEnumerable<ShipmentDTO> recieveShipments)
         {
 
@@ -210,12 +211,32 @@ namespace Shambala.Core.Supervisors
             IEnumerable<ProductOutOfStockBLL> productReturnOverShipeds = this.GetOverReturnShipment(outgoingShipment, recieveShipments);
             if (productReturnOverShipeds != null)
                 throw new ShipmentReturnQuantityExceedException();
+            foreach (ShipmentDTO updateShipment in recieveShipments.Where(e => e.Id != 0))
+            {
+                int ProductId = updateShipment.ProductId;
+                short FlavourId = updateShipment.FlavourId;
+                short NewReturnQuantity = updateShipment.TotalRecievedPieces;
+                short CurrentQuantity = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id).TotalQuantityReturned;
+                OutgoingShipmentDetails CurrentOutgoingDetail = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
+                CurrentOutgoingDetail.TotalQuantityReturned = NewReturnQuantity;
+                _unitOfWork.OutgoingShipmentDetailRepository.Update(CurrentOutgoingDetail);
+                if (NewReturnQuantity > CurrentQuantity)
+                    _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, NewReturnQuantity - CurrentQuantity);
 
+                if (NewReturnQuantity < CurrentQuantity)
+                    _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, CurrentQuantity - NewReturnQuantity);
+            }
+            int[] RecieveOutgoingDetailIds = recieveShipments.Select(e => e.Id).ToArray();
+            foreach (OutgoingShipmentDetails deleteDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id))
+            {
+                _unitOfWork.ProductRepository.AddQuantity(deleteDetails.ProductIdFk, deleteDetails.FlavourIdFk, deleteDetails.TotalQuantityShiped);
+                _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteDetails.Id);
+            
+            }
             // if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
             //     throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
 
-            _unitOfWork.OutgoingShipmentRepository.Return(Id, returnShipments);
-            await _unitOfWork.SaveChangesAsync();
+           return await _unitOfWork.SaveChangesAsync()>0;
         }
         public IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {

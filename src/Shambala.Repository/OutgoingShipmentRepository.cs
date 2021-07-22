@@ -35,26 +35,6 @@ namespace Shambala.Repository
         {
             return _context.OutgoingShipment.AsNoTracking().First(e => e.Id == Id).Status == System.Enum.GetName(typeof(OutgoingShipmentStatus), expectedValue);
         }
-        public bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetails> returnShipments)
-        {
-            string name = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
-
-            OutgoingShipment outgoing = this.GetByIdWithNoTracking(outgoingShipmentId);
-
-            foreach (var item in returnShipments)
-            {
-                OutgoingShipmentDetails ShipmentDetail = outgoing.OutgoingShipmentDetails
-                .First(e => e.FlavourIdFk == item.FlavourIdFk && e.ProductIdFk == item.ProductIdFk);
-                short ReturnQuantity = item.TotalQuantityShiped;
-                short DefectedQuantity = item.TotalQuantityRejected;
-                ShipmentDetail.TotalQuantityShiped -= (short)(ReturnQuantity - DefectedQuantity);
-                ShipmentDetail.TotalQuantityRejected += (byte)DefectedQuantity;
-                ShipmentDetail.TotalQuantityReturned = ReturnQuantity;
-            }
-            outgoing.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.RETURN);
-            _context.Attach(outgoing).State = EntityState.Modified;
-            return true;
-        }
 
         public bool Complete(int Id)
         {

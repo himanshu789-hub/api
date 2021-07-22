@@ -10,7 +10,6 @@ namespace Shambala.Core.Contracts.Repositories
     public interface IOutgoingShipmentRepository : ILoadingProperties<OutgoingShipment>
     {
         OutgoingShipment Add(OutgoingShipment outgoingShipment);
-        bool Return(int outgoingShipmentId, IEnumerable<OutgoingShipmentDetails> outgoingShipment);
         OutgoingShipment GetByIdWithNoTracking(int Id);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
         bool Complete(int Id);
