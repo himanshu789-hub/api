@@ -21,6 +21,7 @@ namespace Shambala.Domain
         public int Id { get; set; }
         public byte CaretSize { get; set; }
         public decimal PricePerCaret { get; set; }
+        public byte SchemeQuantity { get; set; }
 
         public virtual ICollection<CustomCaratPrice> CustomCaratPrice { get; set; }
         public virtual ICollection<IncomingShipment> IncomingShipment { get; set; }

@@ -326,7 +326,7 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.Name)
                     .IsRequired()
                     .HasMaxLength(20);
-
+                    
                 entity.Property(e => e.PricePerCaret).HasColumnType("decimal(6,2)");
             });
 

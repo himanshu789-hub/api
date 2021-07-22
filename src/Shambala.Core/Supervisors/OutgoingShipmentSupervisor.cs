@@ -14,7 +14,6 @@ namespace Shambala.Core.Supervisors
     using Helphers;
     using System;
     using Contracts.Repositories;
-
     public class OutgoingShipmentSupervisor : IOutgoingShipmentSupervisor
     {
         IMapper _mapper;
@@ -216,27 +215,27 @@ namespace Shambala.Core.Supervisors
                 int ProductId = updateShipment.ProductId;
                 short FlavourId = updateShipment.FlavourId;
                 short NewReturnQuantity = updateShipment.TotalRecievedPieces;
-                short CurrentQuantity = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id).TotalQuantityReturned;
+                short CurrentReturnQuantity = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id).TotalQuantityReturned;
                 OutgoingShipmentDetails CurrentOutgoingDetail = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
                 CurrentOutgoingDetail.TotalQuantityReturned = NewReturnQuantity;
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(CurrentOutgoingDetail);
-                if (NewReturnQuantity > CurrentQuantity)
-                    _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, NewReturnQuantity - CurrentQuantity);
-
-                if (NewReturnQuantity < CurrentQuantity)
-                    _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, CurrentQuantity - NewReturnQuantity);
+                if (NewReturnQuantity > CurrentReturnQuantity)
+                {
+                    _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, NewReturnQuantity - CurrentReturnQuantity);
+                }
+                if (NewReturnQuantity < CurrentReturnQuantity)
+                    _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, CurrentReturnQuantity - NewReturnQuantity);
             }
             int[] RecieveOutgoingDetailIds = recieveShipments.Select(e => e.Id).ToArray();
-            foreach (OutgoingShipmentDetails deleteDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id))
+            foreach (OutgoingShipmentDetails deleteDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id)))
             {
                 _unitOfWork.ProductRepository.AddQuantity(deleteDetails.ProductIdFk, deleteDetails.FlavourIdFk, deleteDetails.TotalQuantityShiped);
                 _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteDetails.Id);
-            
             }
             // if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
             //     throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
 
-           return await _unitOfWork.SaveChangesAsync()>0;
+            return await _unitOfWork.SaveChangesAsync() > 0;
         }
         public IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
@@ -271,6 +270,8 @@ namespace Shambala.Core.Supervisors
 
             IEnumerable<ShipmentDTO> currentShipments = _mapper.Map<IEnumerable<ShipmentDTO>>(outgoingShipment.OutgoingShipmentDetails);
             IEnumerable<ShipmentDTO> newShipments = recieveShipments.Except(currentShipments);
+
+            ProductFlavourQuantity SchemeProductQuantity = products.First(e=>e.Id==Constan) 
 
             foreach (var newShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(newShipments))
             {
