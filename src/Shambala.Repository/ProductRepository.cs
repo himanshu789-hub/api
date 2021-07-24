@@ -4,7 +4,7 @@ using Shambala.Core.Contracts.Repositories;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-
+using System;
 using Shambala.Core.Models.DTOModel;
 using Shambala.Core.Models.BLLModel;
 using Shambala.Core.Helphers;
@@ -41,9 +41,28 @@ namespace Shambala.Repository
             return value > 0;
         }
 
-        public IEnumerable<Product> GetAllWithNoTracking()
+        public IEnumerable<Product> GetAllWithNoTracking(DateTime? beforeDate = null)
         {
-            return _context.Product.AsNoTracking().Include(e => e.ProductFlavourQuantity).ThenInclude(e => e.FlavourIdFkNavigation).ToList();
+            var query = _context.Product.Include(e => e.ProductFlavourQuantity).ThenInclude(e => e.FlavourIdFkNavigation).AsQueryable();
+
+            if (beforeDate.HasValue)
+            {
+                query = query.Join(_context.Scheme.Where(e => e.DateCreated <= beforeDate.Value).GroupBy(e => e.ProductIdFk)
+                .Select(e => e.Max(s => s.Id)).Join(_context.Scheme, m => m, n => n.Id, (m, n) => n),
+                 m => m.Id, n => n.ProductIdFk, (m, n) => new Product()
+                 {
+                     CaretSize = m.CaretSize,
+                     CustomCaratPrice = m.CustomCaratPrice,
+                     Id = m.Id,
+                     IncomingShipment = m.IncomingShipment,
+                     Name = m.Name,
+                     OutgoingShipmentDetails = m.OutgoingShipmentDetails,
+                     PricePerCaret = m.PricePerCaret,
+                     ProductFlavourQuantity = m.ProductFlavourQuantity,
+                     SchemeQuantity = n.Quantity ?? 0,
+                 });
+            }
+            return query.AsNoTracking().ToList();
         }
 
         public ProductInfoDTO GetProductsInStockWithDispatchQuantity(int ProductId, byte? FlavourId)
@@ -82,7 +101,8 @@ namespace Shambala.Repository
                 QuantityInStock = k.e.Quantity,
                 QuantityInDispatch = k.f?.QuantityInProcrument,
                 FlavourId = k.e.FlavourIdFk,
-                i.Name,i.CaretSize
+                i.Name,
+                i.CaretSize
             }).Join(_context.Flavour, e => e.FlavourId, f => f.Id, (e, f) => new
             {
                 ProductName = e.Name,
@@ -90,14 +110,15 @@ namespace Shambala.Repository
                 e.QuantityInDispatch,
                 e.QuantityInStock,
                 Id = e.ProductId,
-                e.FlavourId,e.CaretSize
+                e.FlavourId,
+                e.CaretSize
             })
             .ToList();
             IEnumerable<ProductInfoDTO> ProductInfoDTOs = result.GroupBy(e => e.Id).Select(e => e.First()).GroupJoin(result, e => e.Id, f => f.Id,
             (e, f) => new ProductInfoDTO()
             {
                 Id = e.Id,
-                CaretSize=e.CaretSize,
+                CaretSize = e.CaretSize,
                 Name = e.ProductName,
                 FlavourInfos = f.Where(g => g.Id == e.Id)
                    .Select(s => new FlavourInfoDTO() { Id = s.FlavourId, QuantityInDispatch = s.QuantityInDispatch ?? 0, QuantityInStock = s.QuantityInStock, Title = s.FlavourName })

@@ -64,4 +64,14 @@ namespace Shambala.Core.Exception
             System.Runtime.Serialization.SerializationInfo info,
             System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
     }
+    [System.Serializable]
+    public class SchemeProductQuantityExceedException : System.Exception
+    {
+        public SchemeProductQuantityExceedException():base("Scheme Product Quantity Exceed") { }
+        public SchemeProductQuantityExceedException(string message) : base(message) { }
+        public SchemeProductQuantityExceedException(string message, System.Exception inner) : base(message, inner) { }
+        protected SchemeProductQuantityExceedException(
+            System.Runtime.Serialization.SerializationInfo info,
+            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
+    }
 }
