@@ -38,9 +38,6 @@ namespace Shambala.Controllers
 
             OutgoingShipmentWithSalesmanInfoDTO outgoing = await _outgoingSupervisor.AddAsync(postOutgoing);
 
-            if (outgoing == null)
-                return BadRequest(new BadRequestErrorModel() { Code = (int)OutgoingBadErrorCodes.QUANTITIES_OUT_OF_STOCK, Model = _outgoingSupervisor.ProvideOutOfStockQuantities(postOutgoing.Shipments), Message = "Out Of Stock" });
-
             return Ok(outgoing);
         }
 
@@ -56,13 +53,13 @@ namespace Shambala.Controllers
             return Ok(IsUpdated);
         }
         [HttpPut]
-        public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<OutgoingShipmentDetailReturnDTO> shipmentDTOs)
+        public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<ShipmentDTO> shipmentDTOs)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.Select(e => e.Errors.Select(e => e.ErrorMessage)));
             try
             {
-                await _outgoingSupervisor.ReturnAsync(Id, shipmentDTOs);
+                await _outgoingSupervisor.ReturnShipmentAsync(Id, shipmentDTOs);
                 return Ok();
             }
             catch (System.Exception e)
@@ -80,13 +77,6 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors));
 
             return Ok(_outgoingSupervisor.GetWithProductListByOrderId(Id));
-        }
-        [HttpPost]
-        public IActionResult CheckAmount([BindRequired] int Id, [MinLength(1)][FromBody] IEnumerable<LedgerDTO> ledgers)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
-            return Ok(_outgoingSupervisor.CheckShipmentAmountById(ledgers, Id));
         }
         [HttpPost]
         public async Task<IActionResult> CompleteAsync([Required][FromBody] ShipmentLedgerDetail shipmentLedgerDetail)
@@ -121,12 +111,13 @@ namespace Shambala.Controllers
                 return BadRequest();
             try
             {
-
+                return Ok(_outgoingSupervisor.CheckPostShipment(shipmentDTOs, Id));
             }
-            catch (System.Exception e)
+            catch (System.Exception)
             {
 
             }
+            return Ok(false);
         }
     }
 }

@@ -64,33 +64,9 @@ namespace Shambala.Controllers
             schemeSupervisor = supervisor;
         }
         [HttpGet]
-        public IActionResult GetByShopId([BindRequired] int Id)
-        {
-            SchemeDTO Scheme = schemeSupervisor.GetByShopId(Id);
-            if (Scheme == null)
-                return NoContent();
-            return Ok(Scheme);
-        }
-        [HttpGet]
         public IActionResult GetAll()
         {
             return Ok(schemeSupervisor.GetAll());
-        }
-
-        [HttpGet]
-        public IActionResult GetAllByName([BindRequired][FromQuery] string name)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState.Root.Errors);
-
-            return Ok(schemeSupervisor.GetAllByName(name));
-        }
-        [HttpGet]
-        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest("Name Value Required");
-            return Ok(schemeSupervisor.IsNameAlreadyExists(name, Id));
         }
     }
     public class ShopController : GenericController<ShopDTO>
