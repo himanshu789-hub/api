@@ -52,10 +52,6 @@ namespace Shambala.Core.Supervisors
         }
 
 
-        public override bool IsNameAlreadyExists(string name, int? Id)
-        {
-            return _repository.IsNameAlreadyExists(name, Id);
-        }
     }
 
     public class IncomingShipmentSupervisor : GenericSupervisor<IncomingShipment, ShipmentDTO, IIncomingShipmentRepository>, IIncomingShipmentSupervisor

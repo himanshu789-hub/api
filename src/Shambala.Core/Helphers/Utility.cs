@@ -32,7 +32,7 @@ namespace Shambala.Core.Helphers
         {
             return decimal.ToInt16(totalSchemeQuantity / System.Math.Floor((decimal)totalQuantityOfProduct / caretSize));
         }
-        static public decimal GetTotalSchemePrice(Product schemeProduct,short quantity)
+        static public decimal GetTotalProductPrice(Product schemeProduct,short quantity)
         {
             return (schemeProduct.PricePerCaret/schemeProduct.CaretSize)*quantity;
         }

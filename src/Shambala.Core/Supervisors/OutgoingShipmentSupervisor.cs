@@ -243,23 +243,34 @@ namespace Shambala.Core.Supervisors
                     _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, AbsoluteReturnQuantity);
                     _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, AbsoluteSchemeQuantity);
                 }
-                CurrentOutgoingDetail.SchemeTotalPrice = Utility.GetTotalSchemePrice(products.First(e=>e.Id==SchemeProductDetail.ProductId),NewSchemeQuantity);
+                CurrentOutgoingDetail.SchemeTotalPrice = Utility.GetTotalProductPrice(products.First(e => e.Id == SchemeProductDetail.ProductId), NewSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(CurrentOutgoingDetail);
             }
             foreach (ShipmentDTO newShipment in recieveShipments.Where(e => e.Id == 0))
             {
-
+                int ProductId = newShipment.ProductId;
+                byte FlavourId = newShipment.FlavourId;
+                Product product = products.First(e=>e.Id==ProductId);
+                
+                OutgoingShipmentDetails outgoingShipmentDetail = outgoingShipment.OutgoingShipmentDetails.First(e=>e.ProductIdFk == ProductId &&  e.FlavourIdFk == FlavourId);
+                short SchemeQuantity = Utility.GetTotalSchemeQuantity(outgoingShipmentDetail.TotalQuantityShiped-newShipment.TotalRecievedPieces,outgoingShipmentDetail.CaretSize,product.SchemeQuantity);
+                outgoingShipmentDetail.SchemeTotalQuantity = (byte)SchemeQuantity;
+                outgoingShipmentDetail.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct,SchemeQuantity);
+                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductDetail.ProductId,SchemeProductDetail.FlavourId,SchemeQuantity);
+                _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId,FlavourId,newShipment.TotalRecievedPieces);
+                _unitOfWork.OutgoingShipmentDetailRepository.Update(outgoingShipmentDetail);
             }
-            int[] RecieveOutgoingDetailIds = recieveShipments.Select(e => e.Id).ToArray();
-            foreach (OutgoingShipmentDetails deleteDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id)))
+
+            int[] RecieveOutgoingDetailIds = recieveShipments.Select(e => e.Id).ToArray();//Id of shipment recieve
+            //loop through shipment that previous have return but not now
+            foreach (OutgoingShipmentDetails nonExistDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id) && e.TotalQuantityReturned > 0))
             {
-                _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, deleteDetails.SchemeTotalQuantity);
-                _unitOfWork.ProductRepository.AddQuantity(deleteDetails.ProductIdFk, deleteDetails.FlavourIdFk, deleteDetails.TotalQuantityShiped);
-                _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteDetails.Id);
+                nonExistDetails.SchemeTotalQuantity = 0;
+                nonExistDetails.SchemeTotalPrice = 0;
+                nonExistDetails.TotalQuantityReturned = 0;
+                _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, nonExistDetails.SchemeTotalQuantity);
+                _unitOfWork.OutgoingShipmentDetailRepository.Update(nonExistDetails);
             }
-            // if (!_unitOfWork.OutgoingShipmentRepository.CheckStatusWithNoTracking(Id, Helphers.OutgoingShipmentStatus.PENDING))
-            //     throw new OutgoingShipmentNotOperableException(Helphers.OutgoingShipmentStatus.PENDING);
-
             return await _unitOfWork.SaveChangesAsync() > 0;
         }
         public IEnumerable<OutgoingShipmentWithSalesmanInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
@@ -343,7 +354,7 @@ namespace Shambala.Core.Supervisors
                 short TotalSchemeQuantity = Utility.GetSchemeQuantityPerCaret(newShipment.TotalQuantityShiped, product.SchemeQuantity, product.CaretSize);
                 //scheme price and quantity
                 newShipment.SchemeTotalQuantity = (byte)TotalSchemeQuantity;
-                newShipment.SchemeTotalPrice = Utility.GetTotalSchemePrice(SchemeProduct, TotalSchemeQuantity);
+                newShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, TotalSchemeQuantity);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, TotalSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipment);
             }
@@ -374,7 +385,7 @@ namespace Shambala.Core.Supervisors
                     _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, CurrentQuantity - NewSchemeQuantity);
 
                 }
-                updateShipment.SchemeTotalPrice = Utility.GetTotalSchemePrice(SchemeProduct, NewSchemeQuantity);
+                updateShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, NewSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
                 _unitOfWork.SaveChanges();
             }
