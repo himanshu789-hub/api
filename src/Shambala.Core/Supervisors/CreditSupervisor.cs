@@ -14,11 +14,16 @@ namespace Shambala.Core.Supervisors
         {
             debitRead = readRepository;
         }
+
         public IEnumerable<ShopCreditOrDebitDTO> GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
         {
-            IEnumerable<InvoiceAggreagateDetailBLL> result = debitRead.GetNotClearedAggregateByShopIds(debits.Select(e => e.ShopId).ToArray());
-            IEnumerable<ShopCreditOrDebitDTO> creditOrDebitDTOs = Utility.CheckDebitUnderGivenBalance(debits,result);
-            return creditOrDebitDTOs;
+            throw new System.NotImplementedException();
         }
+        // public IEnumerable<ShopCreditOrDebitDTO> GetLeftOverCredit(IEnumerable<ShopCreditOrDebitDTO> debits)
+        // {
+        //     IEnumerable<InvoiceAggreagateDetailBLL> result = debitRead.GetNotClearedAggregateByShopIds(debits.Select(e => e.ShopId).ToArray());
+        //     IEnumerable<ShopCreditOrDebitDTO> creditOrDebitDTOs = Utility.CheckDebitUnderGivenBalance(debits,result);
+        //     return creditOrDebitDTOs;
+        // }
     }
 }

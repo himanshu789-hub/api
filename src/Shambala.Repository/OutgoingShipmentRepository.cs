@@ -14,11 +14,13 @@ namespace Shambala.Repository
     {
         ShambalaContext _context;
         public OutgoingShipmentRepository(ShambalaContext context) : base(context) => _context = context;
+        
         public OutgoingShipment Add(OutgoingShipment outgoingShipment)
         {
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
             var Entity = _context.OutgoingShipment.Add(outgoingShipment);
             return Entity.Entity;
+            
         }
 
         public OutgoingShipment GetByIdWithNoTracking(int Id)

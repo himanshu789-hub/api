@@ -22,6 +22,21 @@ namespace Shambala.Core.Supervisors
             this.creditReadRepository = creditRead;
         }
 
+        public InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page)
+        {
+            throw new NotImplementedException();
+        }
+
+        public InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId)
+        {
+            throw new NotImplementedException();
+        }
+
         // public InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId)
         // {
 
@@ -37,23 +52,23 @@ namespace Shambala.Core.Supervisors
         //     }
         // }
 
-        public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page)
-        {
-            return _mapper.Map<IEnumerable<InvoiceDetailDTO>>(_repository.GetAllInvoiceByShopId(shopId, date, status, page == 0 ? 1 : page, 15));
-        }
-        public InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId)
-        {
-            var option = new TransactionOptions();
-            option.IsolationLevel = IsolationLevel.RepeatableRead;
+        // public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page)
+        // {
+        //     return _mapper.Map<IEnumerable<InvoiceDetailDTO>>(_repository.GetAllInvoiceByShopId(shopId, date, status, page == 0 ? 1 : page, 15));
+        // }
+        // public InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId)
+        // {
+        //     var option = new TransactionOptions();
+        //     option.IsolationLevel = IsolationLevel.RepeatableRead;
 
-            using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, option))
-            {
-                InvoiceDetailWithInfoBLL invoiceDetailWithInfo = _repository.GetAllInvoiceDetailOfShopByShipmentId(shopId, shipmentId);
-                InvoicewithCreditLogBLL creditLogBLL = _mapper.Map<InvoicewithCreditLogBLL>(invoiceDetailWithInfo);
-                creditLogBLL.Debits = creditReadRepository.GetDebitLogs(shopId, shipmentId);
-                return _mapper.Map<InvoicewithCreditLogDTO>(creditLogBLL);
-            }
-        }
+        //     using (var transactionScope = new TransactionScope(TransactionScopeOption.Required, option))
+        //     {
+        //         InvoiceDetailWithInfoBLL invoiceDetailWithInfo = _repository.GetAllInvoiceDetailOfShopByShipmentId(shopId, shipmentId);
+        //         InvoicewithCreditLogBLL creditLogBLL = _mapper.Map<InvoicewithCreditLogBLL>(invoiceDetailWithInfo);
+        //         creditLogBLL.Debits = creditReadRepository.GetDebitLogs(shopId, shipmentId);
+        //         return _mapper.Map<InvoicewithCreditLogDTO>(creditLogBLL);
+        //     }
+        // }
 
     }
 }

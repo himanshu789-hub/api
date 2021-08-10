@@ -21,35 +21,55 @@ namespace Shambala.Core.Supervisors
             this.mapper = mapper;
             this.readInvoice = readInvoiceRepository;
         }
+
         public DebitDTO Add(DebitDTO credit)
         {
-            int outgoingShipmentId = credit.OutgoingShipmentId;
-            short shopId = credit.ShopId;
-            unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
-            decimal DuePrice = readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDueCleared;
-            if (credit.Amount > DuePrice)
-                throw new CreditFlorishException();
-            Debit credit1 = unitOfWork.DebitRepository.Add(credit.OutgoingShipmentId, credit.ShopId, credit.Amount, credit.DateRecieved);
-            unitOfWork.SaveChanges();
-            return mapper.Map<DebitDTO>(credit1);
+            throw new System.NotImplementedException();
         }
-
 
         public decimal GetLeftOverCredit(int outgoingShipmentId, short shopId)
         {
-            return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDueCleared;
+            throw new System.NotImplementedException();
         }
 
         public IEnumerable<DebitDTO> GetLog(int outgoingShipmentId, int shopId)
         {
-            var logs = unitOfWork.DebitRepository.FetchList(e => e.OutgoingShipmentIdFk == outgoingShipmentId && e.ShopIdFk == shopId);
-            return mapper.Map<IEnumerable<DebitDTO>>(logs);
+            throw new System.NotImplementedException();
         }
 
         public bool IsCreditCleared(int outgoingShipmentId, short shopId)
         {
-            InvoiceAggreagateDetailBLL  detailDTO = readInvoice.GetAggreate(outgoingShipmentId, shopId);
-            return Utility.IsDueCompleted(detailDTO.TotalDueCleared);
+            throw new System.NotImplementedException();
         }
+        // public DebitDTO Add(DebitDTO credit)
+        // {
+        //     int outgoingShipmentId = credit.OutgoingShipmentId;
+        //     short shopId = credit.ShopId;
+        //     unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted);
+        //     decimal DuePrice = readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDueCleared;
+        //     if (credit.Amount > DuePrice)
+        //         throw new CreditFlorishException();
+        //     Debit credit1 = unitOfWork.DebitRepository.Add(credit.OutgoingShipmentId, credit.ShopId, credit.Amount, credit.DateRecieved);
+        //     unitOfWork.SaveChanges();
+        //     return mapper.Map<DebitDTO>(credit1);
+        // }
+
+
+        // public decimal GetLeftOverCredit(int outgoingShipmentId, short shopId)
+        // {
+        //     return readInvoice.GetAggreate(outgoingShipmentId, shopId).TotalDueCleared;
+        // }
+
+        // public IEnumerable<DebitDTO> GetLog(int outgoingShipmentId, int shopId)
+        // {
+        //     var logs = unitOfWork.DebitRepository.FetchList(e => e.OutgoingShipmentIdFk == outgoingShipmentId && e.ShopIdFk == shopId);
+        //     return mapper.Map<IEnumerable<DebitDTO>>(logs);
+        // }
+
+        // public bool IsCreditCleared(int outgoingShipmentId, short shopId)
+        // {
+        //     InvoiceAggreagateDetailBLL  detailDTO = readInvoice.GetAggreate(outgoingShipmentId, shopId);
+        //     return Utility.IsDueCompleted(detailDTO.TotalDueCleared);
+        // }
     }
 }
