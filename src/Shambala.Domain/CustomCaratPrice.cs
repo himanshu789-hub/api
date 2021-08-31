@@ -11,8 +11,6 @@ namespace Shambala.Domain
     {
         public short Quantity { get; set; }
         public decimal PricePerCarat { get; set; }
-        public int OutgoinShipmentDetailIdFk { get; set; }
-
-        public virtual OutgoingShipmentDetails OutgoinShipmentDetailIdFkNavigation { get; set; }
+        public int OutgoinShipmentDetailIdFk { get; set; } 
     }
 }

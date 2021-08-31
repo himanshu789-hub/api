@@ -13,10 +13,11 @@ namespace Shambala.Core.Contracts.Repositories
         OutgoingShipment GetByIdWithNoTracking(int Id);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
         //bool Complete(int Id);
-        OutgoingShipment GetAllDetailById(int Id);
+        //  OutgoingShipment GetAllDetailById(int Id);
+        IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId,System.DateTime date);
     }
     public interface IOutgoingShipmentDetailRepository : IGenericRepository<OutgoingShipmentDetails>
     {
-       bool Delete(int Id);
+        bool Delete(int Id);
     }
 }

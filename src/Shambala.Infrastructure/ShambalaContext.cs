@@ -87,12 +87,6 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
-
-                entity.HasOne(d => d.OutgoinShipmentDetailIdFkNavigation)
-                    .WithMany()
-                    .HasForeignKey(d => d.OutgoinShipmentDetailIdFk)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("OutgoingShipment_CustomPrice_Relationship");
             });
 
             modelBuilder.Entity<Debit>(entity =>

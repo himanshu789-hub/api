@@ -22,8 +22,14 @@ namespace Shambala.Domain
         public decimal? PricePerCarat { get; set; }
         public short TotalQuantityTaken { get; set; }
 
+        public OutgoingShipmentDetails()
+        {
+            this.CustomCaratPrices = new HashSet<CustomCaratPrice>();
+        }
+
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }
+        public virtual ICollection<CustomCaratPrice> CustomCaratPrices { get; set; }
     }
 }

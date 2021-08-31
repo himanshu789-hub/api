@@ -6,8 +6,6 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System;
 using Shambala.Core.Models.DTOModel;
-using Shambala.Core.Models.BLLModel;
-using Shambala.Core.Helphers;
 namespace Shambala.Repository
 {
 
@@ -126,16 +124,16 @@ namespace Shambala.Repository
 
             return ProductInfoDTOs.First();
         }
-        public bool ReturnQuantity(IEnumerable<ProductReturnBLL> productReturnBLLs)
-        {
-            foreach (var item in productReturnBLLs)
-            {
-                ProductFlavourQuantity productFlavourQuantity = _context.ProductFlavourQuantity.FirstOrDefault(e => e.ProductIdFk == item.ProductId && e.FlavourIdFk == item.FlavourId);
-                if (productFlavourQuantity == null)
-                    return false;
-                productFlavourQuantity.Quantity += (short)item.Quantity;
-            }
-            return true;
-        }
+        // public bool ReturnQuantity(IEnumerable<ProductReturnBLL> productReturnBLLs)
+        // {
+        //     foreach (var item in productReturnBLLs)
+        //     {
+        //         ProductFlavourQuantity productFlavourQuantity = _context.ProductFlavourQuantity.FirstOrDefault(e => e.ProductIdFk == item.ProductId && e.FlavourIdFk == item.FlavourId);
+        //         if (productFlavourQuantity == null)
+        //             return false;
+        //         productFlavourQuantity.Quantity += (short)item.Quantity;
+        //     }
+        //     return true;
+        // }
     }
 }

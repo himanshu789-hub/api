@@ -15,6 +15,7 @@ namespace Shambala.Core.Contracts.UnitOfWork
         IIncomingShipmentRepository IncomingShipmentRepository { get; }
         ISchemeRepository SchemeRepository { get; }
         IOutgoingShipmentDetailRepository OutgoingShipmentDetailRepository { get; }
+        ICustomPriceRepository CustomPriceRepository{get;}
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction CurrentTransaction { get; }
         int SaveChanges();
         Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction BeginTransaction(IsolationLevel levl);

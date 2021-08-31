@@ -43,15 +43,22 @@ namespace Shambala.Core.Profile
             CreateMap<Debit, DebitDTO>();
             CreateMap<Debit, DebitDTO>().ReverseMap();
 
-//            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
+            //            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForMember(e=>e.SchemeInfo.TotalSchemePrice,map => map.MapFrom(e=>e.SchemeTotalPrice))
-            .ForMember(e=>e.SchemeInfo.TotalQuantity,m => m.MapFrom(e=>e.SchemeTotalQuantity));
+            .ForMember(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
+            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity));
+
+            CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
+            CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
+            .ReverseMap()
+            .ForMember(e => e.OutgoinShipmentDetailIdFk, m => m.MapFrom((src, desr, d, context) => context.Items["OutgoingId"] == null ? 0 : context.Items["Id"]));
+
+
 
 
             // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
@@ -109,8 +116,8 @@ namespace Shambala.Core.Profile
 
             CreateMap<LedgerWithPastDebitDTO, ShopCreditOrDebitDTO>()
             .ForMember(e => e.Amount, map => map.MapFrom(e => e.OldDebit));
-            
-            
+
+
         }
     }
 }

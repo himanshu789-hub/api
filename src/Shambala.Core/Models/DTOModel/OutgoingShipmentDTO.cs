@@ -50,6 +50,7 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public short TotalQuantityReturned { get; set; }
         public SchemeInfo SchemeInfo { get; set; }
+        public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
     }
     public class SchemeInfo
     {

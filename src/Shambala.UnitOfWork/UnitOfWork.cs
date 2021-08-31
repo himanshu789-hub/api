@@ -25,6 +25,14 @@ namespace Shambala.UnitOfWork
         IIncomingShipmentRepository _incomingShipmentRepository { get; set; }
         ISchemeRepository _schemeRepository { get; set; }
         IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository { get; set; }
+        ICustomPriceRepository _customPricerepository {get;set;}
+        public ICustomPriceRepository CustomPriceRepository
+        {
+            get
+            {
+                return _customPricerepository = _customPricerepository==null?new CustomPriceRepository(_context):_customPricerepository;
+            }
+        }
         public IShopRepository ShopRepository
         {
             get

@@ -72,7 +72,7 @@ namespace Shambala.Core.Supervisors
 
             using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable))
             {
-                IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.CheckPostShipment(postOutgoingShipmentDTO.Shipments.Select(e => new ProductQuantityBLL { FlavourId = e.FlavourId, ProductId = e.ProductId, Quantity = e.TotalRecievedPieces+e.TotalDefectPieces }));
+                IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.CheckPostShipment(postOutgoingShipmentDTO.Shipments.Select(e => new ProductQuantityBLL { FlavourId = e.FlavourId, ProductId = e.ProductId, Quantity = e.TotalRecievedPieces + e.TotalDefectPieces }));
 
                 if (productOutOfStockBLLs == null)
                 {
@@ -94,23 +94,6 @@ namespace Shambala.Core.Supervisors
             resultModel.IsValid = true;
             resultModel.Content = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
             return resultModel;
-        }
-
-        IEnumerable<ProductQuantityBLL> GetReturnProductFromShipments(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
-        {
-            ICollection<ProductQuantityBLL> productReturnBLLs = new List<ProductQuantityBLL>();
-
-            foreach (var OutgoingShipmentDetail in outgoingShipmentDetails)
-            {
-                if (OutgoingShipmentDetail.TotalQuantityReturned >= 0)
-                    productReturnBLLs.Add(new ProductQuantityBLL
-                    {
-                        ProductId = OutgoingShipmentDetail.ProductIdFk,
-                        FlavourId = OutgoingShipmentDetail.FlavourIdFk,
-                        Quantity = OutgoingShipmentDetail.TotalQuantityReturned
-                    });
-            }
-            return productReturnBLLs;
         }
         // bool ClearCredit(ShipmentLedgerDetail shipmentLedgerDetail)
         // {
@@ -143,170 +126,7 @@ namespace Shambala.Core.Supervisors
         //     return IsAllOk;
         // }
 
-        // public async Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail)
-        // {
-        //     int OutgoingShipmentId = shipmentLedgerDetail.Id;
-        //     IEnumerable<ShopCreditOrDebitDTO> shopRecievedCredits = _mapper.Map<IEnumerable<ShopCreditOrDebitDTO>>(shipmentLedgerDetail.Ledgers);
 
-        //     OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(OutgoingShipmentId);
-
-
-        //     IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails = outgoing.OutgoingShipmentDetails;
-
-        //     _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        //     // if (!this.ClearCredit(shipmentLedgerDetail))
-        //     // {
-        //     //     return false;
-        //     // }
-        //     _unitOfWork.OutgoingShipmentRepository.Complete(OutgoingShipmentId);
-        //     await _unitOfWork.SaveChangesAsync();
-        //     return true;
-
-        // }
-
-        // public OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int orderId)
-        // {
-        //     IEnumerable<OutgoingShipmentProductInfoDTO> OutgoingShipmentDettailInfos = readOutgoingShipmentRepository.GetProductsById(orderId: orderId);
-        //     OutgoingShipment outgoing = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(orderId);
-
-        //     OutgoingShipmentWithProductListDTO outgoingShipmentWithProductListDTO = new OutgoingShipmentWithProductListDTO()
-        //     {
-        //         Id = outgoing.Id,
-        //         DateCreated = outgoing.DateCreated,
-        //         Status = (OutgoingShipmentStatus)System.Enum.Parse(typeof(OutgoingShipmentStatus), outgoing.Status),
-        //         Salesman = _mapper.Map<SalesmanDTO>(outgoing.SalesmanIdFkNavigation)
-        //     };
-        //     if (OutgoingShipmentDettailInfos.Count() == 0)
-        //     {
-        //         outgoingShipmentWithProductListDTO.Products = new List<ProductDTO>();
-        //         return outgoingShipmentWithProductListDTO;
-        //     }
-        //     IEnumerable<ProductDTO> Products = OutgoingShipmentDettailInfos.GroupBy(e => e.Product.Id).First()
-        //     .GroupJoin(OutgoingShipmentDettailInfos, e => e.Product.Id, f => f.Product.Id, (e, f) => new ProductDTO()
-        //     {
-        //         CaretSize = e.Product.CaretSize,
-        //         Id = e.Product.Id,
-        //         Name = e.Product.Name,
-        //         Flavours = f.Select(s => s.Flavour).ToList()
-        //     });
-        //     outgoingShipmentWithProductListDTO.Products = Products;
-        //     return outgoingShipmentWithProductListDTO;
-        // }
-        // public IEnumerable<ProductOutOfStockBLL> CheckReturnShipment(int Id, IEnumerable<ShipmentDTO> shipments)
-        // {
-        //     if (_unitOfWork.CurrentTransaction == null)
-        //     {
-        //         using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-        //         {
-        //             return this.GetOverReturnShipment(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id), shipments);
-        //         }
-        //     }
-        //     return this.GetOverReturnShipment(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id), shipments);
-        // }
-        IEnumerable<ProductOutOfStockBLL> GetOverReturnShipment(OutgoingShipment outgoingShipment, IEnumerable<ShipmentDTO> shipments)
-        {
-            ICollection<ProductOutOfStockBLL> productOutOfs = new List<ProductOutOfStockBLL>();
-            foreach (ShipmentDTO shipmentDTO in shipments)
-            {
-                int ProductId = shipmentDTO.ProductId;
-                short FlavourId = shipmentDTO.FlavourId;
-                OutgoingShipmentDetails outgoingShipmentDetail = outgoingShipment.OutgoingShipmentDetails.FirstOrDefault(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId);
-                if (outgoingShipmentDetail == null)
-                    throw new ShipmentNotVaidException();
-                short ShipedQuantity = outgoingShipmentDetail.TotalQuantityReturned;
-                if (shipmentDTO.TotalRecievedPieces > ShipedQuantity)
-                    productOutOfs.Add(new ProductOutOfStockBLL() { FlavourId = FlavourId, ProductId = ProductId, Quantity = ShipedQuantity });
-            }
-            return productOutOfs.Count() > 0 ? productOutOfs : null;
-        }
-
-        // public async Task<bool> ReturnShipmentAsync(int Id, IEnumerable<ShipmentDTO> recieveShipments)
-        // {
-
-        //     if (IsShipmentsUnique(recieveShipments))
-        //         throw new DuplicateShipmentsException();
-
-        //     _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-        //     OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
-        //     IEnumerable<ProductOutOfStockBLL> productReturnOverShipeds = this.GetOverReturnShipment(outgoingShipment, recieveShipments);
-        //     IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking(outgoingShipment.DateCreated);
-        //     Product SchemeProduct = products.First(e => e.Id == this.schemeProductOptions.ProductId);
-
-        //     if (productReturnOverShipeds != null)
-        //         throw new ShipmentReturnQuantityExceedException();
-        //     if (!this.IsSchemeQuantityAvailable(_mapper.Map<IEnumerable<ShipmentDTO>>(
-        //         outgoingShipment.OutgoingShipmentDetails),
-        //         recieveShipments, SchemeProduct.ProductFlavourQuantity.First(e => e.FlavourIdFk == this.schemeProductOptions.FlavourId).Quantity + outgoingShipment.OutgoingShipmentDetails.Sum(e => e.SchemeTotalQuantity), products))
-        //     {
-        //         throw new SchemeProductQuantityExceedException();
-        //     }
-        //     foreach (ShipmentDTO updateShipment in recieveShipments.Where(e => e.Id != 0))
-        //     {
-        //         int ProductId = updateShipment.ProductId;
-        //         short FlavourId = updateShipment.FlavourId;
-        //         Product product = products.First(e => e.Id == ProductId);
-        //         short NewReturnQuantity = updateShipment.TotalRecievedPieces;
-        //         OutgoingShipmentDetails CurrentOutgoingDetail = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
-        //         short CurrentReturnQuantity = CurrentOutgoingDetail.TotalQuantityReturned;
-
-        //         CurrentOutgoingDetail.TotalQuantityReturned = NewReturnQuantity;
-
-        //         short AbsoluteReturnQuantity = (short)Math.Abs(CurrentReturnQuantity - NewReturnQuantity);
-        //         short NewSchemeQuantity = Utility.GetTotalSchemeQuantity(CurrentOutgoingDetail.TotalQuantityShiped - updateShipment.TotalRecievedPieces, product.CaretSize, product.SchemeQuantity);
-        //         short AbsoluteSchemeQuantity = (short)Math.Abs(CurrentOutgoingDetail.SchemeTotalQuantity - NewSchemeQuantity);
-
-        //         if (NewReturnQuantity > CurrentReturnQuantity)
-        //         {
-        //             _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, AbsoluteReturnQuantity);
-        //             _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, AbsoluteSchemeQuantity);
-        //         }
-        //         if (NewReturnQuantity < CurrentReturnQuantity)
-        //         {
-        //             _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, AbsoluteReturnQuantity);
-        //             _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, AbsoluteSchemeQuantity);
-        //         }
-        //         CurrentOutgoingDetail.SchemeTotalPrice = Utility.GetTotalProductPrice(products.First(e => e.Id == SchemeProductDetail.ProductId), NewSchemeQuantity);
-        //         _unitOfWork.OutgoingShipmentDetailRepository.Update(CurrentOutgoingDetail);
-        //     }
-        //     foreach (ShipmentDTO newShipment in recieveShipments.Where(e => e.Id == 0))
-        //     {
-        //         int ProductId = newShipment.ProductId;
-        //         byte FlavourId = newShipment.FlavourId;
-        //         Product product = products.First(e => e.Id == ProductId);
-
-        //         OutgoingShipmentDetails outgoingShipmentDetail = outgoingShipment.OutgoingShipmentDetails.First(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId);
-        //         short SchemeQuantity = Utility.GetTotalSchemeQuantity(outgoingShipmentDetail.TotalQuantityShiped - newShipment.TotalRecievedPieces, outgoingShipmentDetail.CaretSize, product.SchemeQuantity);
-        //         outgoingShipmentDetail.SchemeTotalQuantity = (byte)SchemeQuantity;
-        //         outgoingShipmentDetail.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, SchemeQuantity);
-        //         _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, SchemeQuantity);
-        //         _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, newShipment.TotalRecievedPieces);
-        //         _unitOfWork.OutgoingShipmentDetailRepository.Update(outgoingShipmentDetail);
-        //     }
-
-        //     int[] RecieveOutgoingDetailIds = recieveShipments.Select(e => e.Id).ToArray();//Id of shipment recieve
-        //     //loop through shipment that previous have return but not now
-        //     foreach (OutgoingShipmentDetails nonExistDetails in outgoingShipment.OutgoingShipmentDetails.Where(e => !RecieveOutgoingDetailIds.Contains(e.Id) && e.TotalQuantityReturned > 0))
-        //     {
-        //         nonExistDetails.SchemeTotalQuantity = 0;
-        //         nonExistDetails.SchemeTotalPrice = 0;
-        //         nonExistDetails.TotalQuantityReturned = 0;
-        //         _unitOfWork.ProductRepository.AddQuantity(SchemeProductDetail.ProductId, SchemeProductDetail.FlavourId, nonExistDetails.SchemeTotalQuantity);
-        //         _unitOfWork.OutgoingShipmentDetailRepository.Update(nonExistDetails);
-        //     }
-        //     return await _unitOfWork.SaveChangesAsync() > 0;
-        // }
-        // public IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
-        // {
-        //     IEnumerable<OutgoingShipment> outgoings = readOutgoingShipmentRepository.GetShipmentsBySalesmnaIdAndDate(salesmanId, date);
-        //     IEnumerable<OutgoingShipmentInfoDTO> result = _mapper.Map<IEnumerable<OutgoingShipmentInfoDTO>>(outgoings);
-        //     return result;
-        // }
-
-
-        public OutgoingShipmentInfoDTO GetOutgoingShipmentWithSalesmanInfoDTO(int Id)
-        {
-            return (_mapper.Map<OutgoingShipmentInfoDTO>(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id)));
-        }
         bool IsSchemeQuantityAvailable(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs, IEnumerable<OutgoingShipmentDetails> oldOutoingDetails, IEnumerable<Product> products)
         {
             bool IsValid = true;
@@ -346,12 +166,32 @@ namespace Shambala.Core.Supervisors
                     productFlavourElements.Add(new ProductFlavourElement { ProductId = productFlavourElement.ProductId, FlavourId = productFlavourElement.FlavourId });
             return productFlavourElements.Count > 0 ? productFlavourElements : null;
         }
+        IEnumerable<ProductFlavourElement> CheckCustomCaratPriceValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs)
+        {
+            ICollection<ProductFlavourElement> elemtnWithInvalidCaratPriceCollection = new List<ProductFlavourElement>();
+            foreach (OutgoingShipmentDetailDTO outgoingShipmentDetail in outgoingShipmentDetailDTOs)
+            {
+                if (outgoingShipmentDetail.CustomCaratPrices.Sum(e => e.Quantity) > outgoingShipmentDetail.TotalQuantityShiped)
+                    elemtnWithInvalidCaratPriceCollection.Add(new ProductFlavourElement { FlavourId = outgoingShipmentDetail.FlavourId, ProductId = outgoingShipmentDetail.ProductId });
+            }
+            return elemtnWithInvalidCaratPriceCollection.Count > 0 ? elemtnWithInvalidCaratPriceCollection : null;
+        }
         public ResultModel Update(OutgoingShipmentDTO outgoingShipmentDTO)
         {
             IEnumerable<ProductFlavourElement> productFlavourElements = CheckQuantityShipedValid(outgoingShipmentDTO.OutgoingShipmentDetails);
             if (productFlavourElements != null)
                 return new ResultModel { Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Code = ((int)OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Content = productFlavourElements };
-
+            IEnumerable<ProductFlavourElement> elementWithInvalidCustomPriceCollection = CheckCustomCaratPriceValid(outgoingShipmentDTO.OutgoingShipmentDetails);
+            if (elementWithInvalidCustomPriceCollection != null)
+            {
+                return new ResultModel
+                {
+                    Code = ((int)OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID),
+                    Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID),
+                    Content = elementWithInvalidCustomPriceCollection,
+                    IsValid = false
+                };
+            }
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(outgoingShipmentDTO.Id);
             IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking(outgoingShipment.DateCreated);
@@ -390,8 +230,8 @@ namespace Shambala.Core.Supervisors
 
             foreach (var newShipment in newShipments)
             {
-                OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment);
-
+                OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment, opt => opt.Items["OutgoingId"] = outgoingShipment.Id);
+                
                 int ProductId = newShipment.ProductId; short FlavourId = newShipment.FlavourId;
                 newShipmentDetails.OutgoingShipmentIdFk = outgoingShipment.Id;
                 Product product = products.First(e => e.Id == ProductId);
@@ -409,12 +249,14 @@ namespace Shambala.Core.Supervisors
             .Where(e => outgoingShipment.OutgoingShipmentDetails.Any(f => f.FlavourIdFk == e.FlavourId && f.ProductIdFk == e.ProductId));
             foreach (var shipment in updateShipments)
             {
-                OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment);
+                OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment, opt => opt.Items["OutgoingId"] = outgoingShipment.Id);
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
                 Product product = products.First(e => e.Id == ProductId);
                 OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
                 short previousQuantity = previousShipment.TotalQuantityShiped;
                 short newQuantity = updateShipment.TotalQuantityShiped;
+
+                SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices);
 
                 if (newQuantity == previousQuantity && Utility.GetSchemeQuantityPerCaret(previousQuantity, previousShipment.SchemeTotalQuantity, products.First(e => e.Id == shipment.ProductId).CaretSize) == shipment.SchemeInfo.SchemeQuantity)
                     continue;
@@ -433,9 +275,16 @@ namespace Shambala.Core.Supervisors
                 }
                 updateShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, newSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
-                _unitOfWork.SaveChanges();
             }
+            _unitOfWork.SaveChanges();
             return new ResultModel { IsValid = true };
+        }
+        void SetNewCustomCaratPrice(IEnumerable<CustomCaratPrice> oldCustomPries, IEnumerable<CustomCaratPrice> newCustomPrices)
+        {
+            foreach (CustomCaratPrice customCaratPrice in oldCustomPries)
+                _unitOfWork.CustomPriceRepository.Delete(customCaratPrice);
+            foreach (CustomCaratPrice customCarat in newCustomPrices)
+                _unitOfWork.CustomPriceRepository.Add(customCarat);
         }
         bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
         {
@@ -462,83 +311,14 @@ namespace Shambala.Core.Supervisors
             return productOutOfStocks.Count() > 0 ? productOutOfStocks : null;
         }
 
-        public IEnumerable<OutgoingShipmentInfoDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
-        {
-            throw new NotImplementedException();
-        }
-
         public OutgoingShipmentInfoDTO GetById(int Id)
         {
             return _mapper.Map<OutgoingShipmentInfoDTO>(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id));
         }
 
-        // public OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id)
-        // {
-        //     if (Id == 0)
-        //         return null;
-
-        //     OutgoingShipment outgoingShipment = null;
-        //     using (var transaction = _unitOfWork.BeginTransaction(System.Data.IsolationLevel.ReadCommitted))
-        //     {
-        //         outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
-        //     }
-        //     OutgoingShipmentPriceDetailDTO outgoingShipmentPriceDetail = new OutgoingShipmentPriceDetailDTO
-        //     {
-        //         Id = outgoingShipment.Id,
-        //         ProductDetails = new List<OutgoingShipmentProductDetailDTO>(),
-        //         Salesman = _mapper.Map<SalesmanDTO>(outgoingShipment.SalesmanIdFkNavigation)
-        //     };
-        //     foreach (OutgoingShipmentDetails outgoingShipmentDetail in outgoingShipment.OutgoingShipmentDetails)
-        //     {
-        //         int ProductId = outgoingShipmentDetail.ProductIdFk;
-        //         short FlavourId = outgoingShipmentDetail.FlavourIdFk;
-        //         if (outgoingShipmentPriceDetail.ProductDetails.First(e => e.ProductId == ProductId) == null)
-        //         {
-        //             outgoingShipmentPriceDetail.ProductDetails.Add(new OutgoingShipmentProductDetailDTO
-        //             {
-        //                 Name = outgoingShipmentDetail.ProductIdFkNavigation.Name,
-        //                 ProductId = outgoingShipmentDetail.ProductIdFk,
-        //                 OutgoingShipmentFlavourDetails = new List<OutgoingShipmentFlavourDetailDTO>()
-        //             });
-
-        //         }
-        //         int FlavourQuantity = outgoingShipmentDetail.TotalQuantityShiped;
-
-        //         ICollection<FlavourQuantityVariantDetailDTO> variantDetailDTOs = new List<FlavourQuantityVariantDetailDTO>();
-
-        //         foreach (CustomCaratPrice customCarat in outgoingShipment.CustomCaratPrice.Where(e => e.ProductIdFk == ProductId && e.FlavourIdFk == FlavourId))
-        //         {
-        //             FlavourQuantity -= customCarat.Quantity;
-        //             variantDetailDTOs.Add(new FlavourQuantityVariantDetailDTO
-        //             {
-        //                 PricePerCarat = customCarat.PricePerCarat,
-        //                 Quantity = customCarat.Quantity,
-        //                 TotalPrice = customCarat.Quantity * (customCarat.PricePerCarat / outgoingShipmentDetail.CaretSize)
-        //             });
-        //         }
-        //         variantDetailDTOs.Add(new FlavourQuantityVariantDetailDTO
-        //         {
-        //             PricePerCarat = outgoingShipmentDetail.PricePerCarat ?? 0,
-        //             Quantity = FlavourQuantity,
-        //             TotalPrice = FlavourQuantity * (outgoingShipmentDetail.PricePerCarat ?? 0 / outgoingShipmentDetail.CaretSize)
-        //         });
-
-        //         outgoingShipmentPriceDetail.ProductDetails.First(e => e.ProductId == ProductId)
-        //         .OutgoingShipmentFlavourDetails.Add(new OutgoingShipmentFlavourDetailDTO()
-        //         {
-        //             FlavourId = FlavourId,
-        //             FlavourQuantityVariantDetails = variantDetailDTOs,
-        //             Name = outgoingShipmentDetail.FlavourIdFkNavigation.Title,
-        //             SchemeDetail = new FlavourSchemeDetailDTO
-        //             {
-        //                 PricePerBottle = outgoingShipmentDetail.SchemeTotalPrice / outgoingShipmentDetail.SchemeTotalQuantity,
-        //                 Quantity = outgoingShipmentDetail.SchemeTotalQuantity,
-        //                 TotalPrice = outgoingShipmentDetail.SchemeTotalPrice
-        //             }
-        //         });
-        //     }
-        //     return outgoingShipmentPriceDetail;
-        // }
-
+        public IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
+        {
+            return _mapper.Map<IEnumerable<OutgoingShipmentDTO>>(_unitOfWork.OutgoingShipmentRepository.GetBySalesmanIdAndAfterDate(salesmanId, date));
+        }
     }
 }

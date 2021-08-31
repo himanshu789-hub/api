@@ -9,10 +9,16 @@ namespace Shambala.Core.Contracts.Repositories
     // {
     //     void MakeCompleted(int Id);
     // }
+    public interface ICustomPriceRepository
+    {
+          CustomCaratPrice Add(CustomCaratPrice customCaratPrice);
+          bool Delete(CustomCaratPrice customCaratPrice);
+    }
     public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {
         IEnumerable<Salesman> GetAllActive();
     }
+
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {
 

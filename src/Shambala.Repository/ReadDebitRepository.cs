@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Shambala.Core.Helphers;
 using System.Linq;
-using Shambala.Core.Models.BLLModel;
+using Shambala.Core.Models;
 using Shambala.Core.Models.DTOModel;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using System;

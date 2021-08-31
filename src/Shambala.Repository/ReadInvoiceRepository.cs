@@ -9,7 +9,7 @@ namespace Shambala.Repository
     using Core.Contracts.Repositories;
     using Infrastructure;
     using Shambala.Core.Helphers;
-    using Shambala.Core.Models.BLLModel;
+    using Shambala.Core.Models;
     using Shambala.Domain;
     using Helpher;
     public class ReadInvoiceRepository : IReadInvoiceRepository
