@@ -6,7 +6,7 @@ namespace Shambala.Core.Contracts.Supervisors
     public interface IInvoiceSupervisor 
     {
        IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(short shopId, System.DateTime? date, InvoiceStatus? status, int page);
-       InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId);
-       InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId);
+    //    InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId);
+    //    InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId);
     }
 }

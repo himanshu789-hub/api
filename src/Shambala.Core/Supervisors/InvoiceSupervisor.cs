@@ -5,7 +5,7 @@ using System.Transactions;
 namespace Shambala.Core.Supervisors
 {
     using Core.Helphers;
-    using Models.BLLModel;
+    using Models;
     using Models.DTOModel;
     using Contracts.Repositories;
     using Contracts.Supervisors;
@@ -22,20 +22,20 @@ namespace Shambala.Core.Supervisors
             this.creditReadRepository = creditRead;
         }
 
-        public InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId)
-        {
-            throw new NotImplementedException();
-        }
+        // public InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
         public IEnumerable<InvoiceDetailDTO> GetInvoiceDetailByShopId(short shopId, DateTime? date, InvoiceStatus? status, int page)
         {
             throw new NotImplementedException();
         }
 
-        public InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId)
-        {
-            throw new NotImplementedException();
-        }
+        // public InvoicewithCreditLogDTO GetShopInvoiceWithCreditLog(int shipmentId, short shopId)
+        // {
+        //     throw new NotImplementedException();
+        // }
 
         // public InvoiceBillDTO GetInvoiceBill(int shipmentId, short shopId)
         // {

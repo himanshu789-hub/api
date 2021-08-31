@@ -21,7 +21,6 @@ namespace Shambala.Core.Models.DTOModel
         public string Name { get; set; }
         public ICollection<FlavourQuantityVariantDetailDTO> FlavourQuantityVariantDetails { get; set; }
         public FlavourSchemeDetailDTO SchemeDetail { get; set; }
-
     }
     public class FlavourQuantityVariantDetailDTO
     {

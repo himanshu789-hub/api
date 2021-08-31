@@ -11,21 +11,21 @@ namespace Shambala.Domain
     {
         public Product()
         {
-            CustomCaratPrice = new HashSet<CustomCaratPrice>();
             IncomingShipment = new HashSet<IncomingShipment>();
             OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetails>();
             ProductFlavourQuantity = new HashSet<ProductFlavourQuantity>();
+            Scheme = new HashSet<Scheme>();
         }
 
         public string Name { get; set; }
         public int Id { get; set; }
         public byte CaretSize { get; set; }
         public decimal PricePerCaret { get; set; }
-        public byte SchemeQuantity { get; set; }
+        public byte? SchemeQuantity { get; set; }
 
-        public virtual ICollection<CustomCaratPrice> CustomCaratPrice { get; set; }
         public virtual ICollection<IncomingShipment> IncomingShipment { get; set; }
         public virtual ICollection<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
         public virtual ICollection<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
+        public virtual ICollection<Scheme> Scheme { get; set; }
     }
 }

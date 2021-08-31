@@ -1,5 +1,5 @@
 
-namespace Shambala.Core.Models.BLLModel
+namespace Shambala.Core.Models
 {
     public class ProductOutOfStockBLL : System.Collections.Generic.EqualityComparer<ProductOutOfStockBLL>
     {

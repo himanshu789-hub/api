@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace Shambala.Core.Supervisors
 {
-    using Shambala.Core.Models.BLLModel;
+    using Models;
     using Shambala.Core.Models.DTOModel;
     
     public interface ICreditSupervisor

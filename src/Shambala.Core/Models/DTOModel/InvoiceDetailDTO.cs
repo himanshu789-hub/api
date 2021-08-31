@@ -29,17 +29,17 @@ namespace Shambala.Core.Models.DTOModel
         public decimal TotalDuePrice { get; set; }
         public bool IsCompleted { get { return Utility.IsDueCompleted(this.TotalDuePrice); } }
     }
-    public class InvoicewithCreditLogDTO : InvoiceDetailDTO
-    {
-        public OutgoingShipmentWithSalesmanInfoDTO OutgoingShipment { get; set; }
-        public ShopDTO Shop { get; set; }
-        public IEnumerable<DebitDTO> Credits { get; set; }
+    // public class InvoicewithCreditLogDTO : InvoiceDetailDTO
+    // {
+    //     public OutgoingShipmentWithSalesmanInfoDTO OutgoingShipment { get; set; }
+    //     public ShopDTO Shop { get; set; }
+    //     public IEnumerable<DebitDTO> Credits { get; set; }
 
-    }
-    public class InvoiceBillDTO : InvoiceDetailDTO
-    {
-        public OutgoingShipmentWithSalesmanInfoDTO OutgoingShipment { get; set; }
-        public ShopDTO Shop { get; set; }
-        public IEnumerable<Models.BLLModel.InvoiceBillingInfoBLL> BillingInfo { get; set; }
-    }
+    // }
+    // public class InvoiceBillDTO : InvoiceDetailDTO
+    // {
+    //     public OutgoingShipmentWithSalesmanInfoDTO OutgoingShipment { get; set; }
+    //     public ShopDTO Shop { get; set; }
+    //     public IEnumerable<Models.BLLModel.InvoiceBillingInfoBLL> BillingInfo { get; set; }
+    // }
 }

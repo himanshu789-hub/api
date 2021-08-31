@@ -8,7 +8,7 @@ namespace Shambala.Core.Helphers
 {
     using Domain;
     using Models.DTOModel;
-    using Models.BLLModel;
+    using Models;
     class Utility
     {
         static public bool IsDueCompleted(decimal DuePrice)

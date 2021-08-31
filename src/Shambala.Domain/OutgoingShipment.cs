@@ -11,7 +11,6 @@ namespace Shambala.Domain
     {
         public OutgoingShipment()
         {
-            CustomCaratPrice = new HashSet<CustomCaratPrice>();
             Debit = new HashSet<Debit>();
             OutgoingShipmentDetails = new HashSet<OutgoingShipmentDetails>();
         }
@@ -22,7 +21,6 @@ namespace Shambala.Domain
         public string Status { get; set; }
 
         public virtual Salesman SalesmanIdFkNavigation { get; set; }
-        public virtual ICollection<CustomCaratPrice> CustomCaratPrice { get; set; }
         public virtual ICollection<Debit> Debit { get; set; }
         public virtual ICollection<OutgoingShipmentDetails> OutgoingShipmentDetails { get; set; }
     }

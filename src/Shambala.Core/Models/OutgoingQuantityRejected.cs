@@ -1,4 +1,4 @@
-namespace Shambala.Core.Models.BLLModel
+namespace Shambala.Core.Models
 {
     public class OutgoingQuantityRejectedBLL
     {

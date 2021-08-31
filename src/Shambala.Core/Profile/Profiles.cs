@@ -7,7 +7,7 @@ using AutoMapper;
 namespace Shambala.Core.Profile
 {
     using AutoMapper;
-    using Models.BLLModel;
+    using Models;
     using Helphers;
     public class ApplicationProfiles : AutoMapper.Profile
     {
@@ -43,36 +43,34 @@ namespace Shambala.Core.Profile
             CreateMap<Debit, DebitDTO>();
             CreateMap<Debit, DebitDTO>().ReverseMap();
 
-            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
+//            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
-            .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped));
+            .ForMember(e=>e.SchemeInfo.TotalSchemePrice,map => map.MapFrom(e=>e.SchemeTotalPrice))
+            .ForMember(e=>e.SchemeInfo.TotalQuantity,m => m.MapFrom(e=>e.SchemeTotalQuantity));
 
-            CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
-            .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
-            .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
-            CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
-            .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
-            .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
-            .ReverseMap();
+            // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
+            // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
+            // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
+
+            // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
+            // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
+            // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
+            // .ReverseMap();
 
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>()
             .ReverseMap();
 
-            CreateMap<OutgoingShipment, PostOutgoingShipmentDTO>()
+            CreateMap<OutgoingShipment, OutgoingShipmentPostDTO>()
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
 
-            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailReturnDTO>().ReverseMap();
-
-            CreateMap<OutgoingShipment, OutgoingShipmentWithSalesmanInfoDTO>();
 
             CreateMap<IncomingShipment, ShipmentDTO>();
             CreateMap<IncomingShipment, ShipmentDTO>().ReverseMap();
@@ -102,12 +100,12 @@ namespace Shambala.Core.Profile
             .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title)).ReverseMap();
 
 
-            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailWithInfoBLL>();
-            CreateMap<InvoiceDetailWithInfoBLL, InvoicewithCreditLogBLL>();
-            CreateMap<InvoiceDetailWithInfoBLL, ShopBillInfo>();
-            CreateMap<InvoicewithCreditLogBLL, InvoicewithCreditLogDTO>();
-            CreateMap<ShopBillInfo, InvoiceBillDTO>()
-            .ForMember(e => e.BillingInfo, map => map.MapFrom(e => e.BillingInfoBLLs));
+            // CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailWithInfoBLL>();
+            // CreateMap<InvoiceDetailWithInfoBLL, InvoicewithCreditLogBLL>();
+            // CreateMap<InvoiceDetailWithInfoBLL, ShopBillInfo>();
+            // CreateMap<InvoicewithCreditLogBLL, InvoicewithCreditLogDTO>();
+            // CreateMap<ShopBillInfo, InvoiceBillDTO>()
+            // .ForMember(e => e.BillingInfo, map => map.MapFrom(e => e.BillingInfoBLLs));
 
             CreateMap<LedgerWithPastDebitDTO, ShopCreditOrDebitDTO>()
             .ForMember(e => e.Amount, map => map.MapFrom(e => e.OldDebit));

@@ -4,7 +4,7 @@ namespace Shambala.Core.Supervisors
     using Core.Helphers;
     using System.Collections.Generic;
     using Contracts.Supervisors;
-    using Core.Models.BLLModel;
+    using Core.Models;
     using Shambala.Core.Models.DTOModel;
     using Shambala.Domain;
     using Contracts.UnitOfWork;

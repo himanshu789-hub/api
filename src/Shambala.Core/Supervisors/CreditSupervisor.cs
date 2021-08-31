@@ -5,7 +5,7 @@ namespace Shambala.Core.Supervisors
     using Contracts.Supervisors;
     using Contracts.Repositories;
     using Shambala.Core.Models.DTOModel;
-    using Shambala.Core.Models.BLLModel;
+    using Shambala.Core.Models;
     using Core.Helphers;
     public class CreditSupervisor : ICreditSupervisor
     {

@@ -20,6 +20,7 @@ namespace Shambala.Domain
         public byte SchemeTotalQuantity { get; set; }
         public decimal SchemeTotalPrice { get; set; }
         public decimal? PricePerCarat { get; set; }
+        public short TotalQuantityTaken { get; set; }
 
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }

@@ -4,13 +4,13 @@ using Shambala.Core.Models.DTOModel;
 using System;
 namespace Shambala.Core.Contracts.Repositories
 {
-    using Models.BLLModel;
+    using Models;
     public interface IProductRepository
     {
         IEnumerable<Product> GetAllWithNoTracking(DateTime? beforeDate=null);
         bool AddQuantity(int productId,int flavourId,int quantity);
         ProductInfoDTO GetProductsInStockWithDispatchQuantity(int ProductId,byte? FlavourId); 
-        bool ReturnQuantity(IEnumerable<ProductReturnBLL> productReturnBLLs);
+//        bool ReturnQuantity(IEnumerable<ProductQuantityBLL> productReturnBLLs);
         bool DeductQuantityOfProductFlavour(int productId,int flavourId,int quantity);
    }
 } 

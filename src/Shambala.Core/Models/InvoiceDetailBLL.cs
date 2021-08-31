@@ -1,6 +1,6 @@
 using Shambala.Domain;
 using System.Collections.Generic;
-namespace Shambala.Core.Models.BLLModel
+namespace Shambala.Core.Models
 {
        public class InvoiceAggreagateDetailBLL
       {

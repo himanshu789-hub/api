@@ -4,7 +4,7 @@ namespace Shambala.Core.Contracts.Repositories
 {
     using Domain;
     using Models.DTOModel;
-    using Models.BLLModel;
+    using Models;
     using Helphers;
     public interface IReadOutgoingShipmentRepository
     {

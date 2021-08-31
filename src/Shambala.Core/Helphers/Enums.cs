@@ -10,10 +10,15 @@ namespace Shambala.Core.Helphers
     }
     public enum OutgoingShipmentStatus
     {
-        PENDING,RETURN, COMPLETED
+        PENDING, FILLED
     }
-    public enum InvoiceStatus 
+    public enum InvoiceStatus
     {
-        DUE=1,COMPLETED
+        DUE = 1, COMPLETED
+    }
+
+    public enum OutgoingErroCode
+    {
+        DUPLICATE = 1221, SCHEME_EXCEED, OUT_OF_STOCK, SCHEME_QUANTITY_NOT_VALID,SHIPED_QUANTITY_NOT_VALID
     }
 }

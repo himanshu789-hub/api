@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Shambala.Core.Contracts.Repositories
 {
     using Models.DTOModel;
-    using Models.BLLModel;
+    using Models;
     using Helphers;
     // public interface IInvoiceRepository : IGenericRepository<Invoice>
     // {
@@ -12,7 +12,6 @@ namespace Shambala.Core.Contracts.Repositories
     public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {
         IEnumerable<Salesman> GetAllActive();
-
     }
     public interface ISchemeRepository : IGenericRepository<Scheme>
     {

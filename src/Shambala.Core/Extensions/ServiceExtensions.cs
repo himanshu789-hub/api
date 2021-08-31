@@ -1,10 +1,12 @@
 using AutoMapper;
 using Shambala.Core.Profile;
-using Microsoft.Extensions.DependencyInjection;
 using Shambala.Core.Contracts.Supervisors;
 using Shambala.Core.Supervisors;
+using Microsoft.Extensions.Configuration;
 namespace Microsoft.Extensions.DependencyInjection
 {
+    using Shambala.Core.Helphers;
+    
     public static class ApplicationServiceExtensions
     {
         public static IServiceCollection AddMappingConfiguration(this IServiceCollection services)
@@ -20,14 +22,18 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IProductSupervisor, ProductSupervisor>();
             services.AddScoped<IOutgoingShipmentSupervisor, OutgoingShipmentSupervisor>();
             services.AddScoped<ISchemeSupervisor, SchemeSupervisor>();
-            services.AddScoped<IDebitSupervisor,DebitSupervisor>();
+            services.AddScoped<IDebitSupervisor, DebitSupervisor>();
             services.AddScoped<ISalesmanSupervisor, SalesmanSupervisor>();
             services.AddScoped<IIncomingShipmentSupervisor, IncomingShipmentSupervisor>();
             services.AddScoped<IInvoiceSupervisor, InvoiceSupervisor>();
             services.AddScoped<IShopSupervisor, ShopSupervisor>();
             services.AddScoped<ICreditSupervisor, CreditSupervisor>();
-            
-            
+
+            return services;
+        }
+        public static IServiceCollection AddSchemeConfig(this IServiceCollection services,IConfiguration configuration)
+        {
+            services.Configure<SchemeProductOptions>(options=>configuration.GetSection(SchemeProductOptions.Option).Bind(options));
             return services;
         }
     }

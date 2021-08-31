@@ -6,13 +6,13 @@ using Shambala.Core.Models.DTOModel;
 namespace Shambala.Core.Contracts.Repositories
 {
 
-    using Models.BLLModel;
+    using Models;
     public interface IOutgoingShipmentRepository : ILoadingProperties<OutgoingShipment>
     {
         OutgoingShipment Add(OutgoingShipment outgoingShipment);
         OutgoingShipment GetByIdWithNoTracking(int Id);
         bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
-        bool Complete(int Id);
+        //bool Complete(int Id);
         OutgoingShipment GetAllDetailById(int Id);
     }
     public interface IOutgoingShipmentDetailRepository : IGenericRepository<OutgoingShipmentDetails>
