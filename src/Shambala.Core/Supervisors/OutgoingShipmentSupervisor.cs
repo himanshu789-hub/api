@@ -247,7 +247,7 @@ namespace Shambala.Core.Supervisors
 
             IEnumerable<OutgoingShipmentDetailDTO> updateShipments = outgoingShipmentDTO.OutgoingShipmentDetails
             .Where(e => outgoingShipment.OutgoingShipmentDetails.Any(f => f.FlavourIdFk == e.FlavourId && f.ProductIdFk == e.ProductId));
-            foreach (var shipment in updateShipments)
+            foreach (OutgoingShipmentDetailDTO shipment in updateShipments)
             {
                 OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment, opt => opt.Items["OutgoingId"] = outgoingShipment.Id);
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;

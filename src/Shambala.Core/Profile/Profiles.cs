@@ -51,7 +51,15 @@ namespace Shambala.Core.Profile
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
             .ForMember(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
-            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity));
+            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            .ForMember(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)));
+
+
+            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
+            .ForMember(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
+            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            .ReverseMap();
+
 
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
