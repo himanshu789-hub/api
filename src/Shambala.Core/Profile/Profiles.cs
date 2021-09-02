@@ -50,14 +50,14 @@ namespace Shambala.Core.Profile
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForMember(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
-            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
-            .ForMember(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)));
+            .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
+            .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)));
 
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForMember(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
-            .ForMember(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
+            .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
             .ReverseMap();
 
 

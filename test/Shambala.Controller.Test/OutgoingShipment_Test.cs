@@ -18,7 +18,7 @@ namespace Shambala.Controller.Test
 
         readonly HttpClient _client;
         readonly ITestOutputHelper _testOutput;
-        OutgoingShipmentWithSalesmanInfoDTO _outgoingAdded { get; set; }
+        OutgoingShipmentInfoDTO _outgoingAdded { get; set; }
         public OutgoingShipment_IntegrationTest(TestFixture fixture, Xunit.Abstractions.ITestOutputHelper outputHelper)
         {
             _client = fixture.Client;
@@ -28,7 +28,7 @@ namespace Shambala.Controller.Test
         [Fact]
         public async void OutgoingShipment_Add()
         {
-            PostOutgoingShipmentDTO postOutgoing = new PostOutgoingShipmentDTO
+            OutgoingShipmentPostDTO postOutgoing = new OutgoingShipmentPostDTO
             {
                 DateCreated = new System.DateTime(),
                 SalesmanId = 1,
@@ -43,67 +43,10 @@ namespace Shambala.Controller.Test
             string responseJson = await response.Content.ReadAsStringAsync();
             System.Console.WriteLine("Response :=>" + responseJson);
             response.EnsureSuccessStatusCode();
-            _outgoingAdded = System.Text.Json.JsonSerializer.Deserialize<OutgoingShipmentWithSalesmanInfoDTO>(responseJson);
+            _outgoingAdded = System.Text.Json.JsonSerializer.Deserialize<OutgoingShipmentInfoDTO>(responseJson);
 
         }
-        [Fact]
-        public async void GetProductListByOrderId()
-        {
-            int OutgoingShipmentId = 3;
-            var response = await _client.GetAsync($"/api/shipment/GetProductListByOrderId/{OutgoingShipmentId}");
-            string responseJson = await response.Content.ReadAsStringAsync();
-            System.Console.WriteLine("Response :=>" + responseJson);
-            response.EnsureSuccessStatusCode();
-
-        }
-        [Fact]
-        public async void OutgoingShipment_Return()
-        {
-            OutgoingShipmentDetailDTO[] outgoingShipmentDTOs = _outgoingAdded.OutgoingShipmentDetails.ToArray();
-            OutgoingShipmentInfoDTO outgoing = new OutgoingShipmentInfoDTO
-            {
-                Id = _outgoingAdded.Id,
-                DateCreated = new System.DateTime(),
-                SalesmanId = 1,
-                OutgoingShipmentDetails = new List<OutgoingShipmentDetailDTO>(){
-                         new OutgoingShipmentDetailDTO{
-                             CaretSize=30,
-                             FlavourId=outgoingShipmentDTOs[0].FlavourId,
-                             ProductId=outgoingShipmentDTOs[0].ProductId,
-                             Id=outgoingShipmentDTOs[0].Id,
-                             DateCreated=new System.DateTime(),
-                             OutgoingShipmentId=outgoingShipmentDTOs[0].OutgoingShipmentId,
-                             TotalDefectPieces=2,
-                             TotalRecievedPieces=10
-                        }}
-            };
-            var json = System.Text.Json.JsonSerializer.Serialize(outgoing);
-            //System.Console.WriteLine(json);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _client.PutAsync("/api/shipment/return", data);
-            System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
-            response.EnsureSuccessStatusCode();
-        }
-        [Fact]
-        public async void OutgoingShipment_Completed()
-        {
-            int OutgoingShipmentId = DTOData.shipmentLedgerDetail.Id;
-            ShipmentLedgerDetail shipmentLedger = new ShipmentLedgerDetail
-            {
-                DateCreated = DateTime.Now,
-                Id = OutgoingShipmentId,
-                Ledgers = DTOData.shipmentLedgerDetail.Ledgers
-            };
-            var json = System.Text.Json.JsonSerializer.Serialize(shipmentLedger);
-            System.Console.WriteLine(json);
-            var data = new StringContent(json, Encoding.UTF8, "application/json");
-            string url = $"/api/shipment/complete";
-            var response = await _client.PostAsync(url, data);
-            System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
-            response.EnsureSuccessStatusCode();
-        }
-
+        
         [Fact]
         public async void OutgoingShipment_CheckAmount()
         {

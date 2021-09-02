@@ -24,7 +24,8 @@ namespace Shambala.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors).Select(e => e.ErrorMessage));
-            return Ok(invoiceSupervisor.GetShopInvoiceWithCreditLog(shipmentId, shopId));
+            // return Ok(invoiceSupervisor.GetShopInvoiceWithCreditLog(shipmentId, shopId));
+            return Ok();
         }
         // public IActionResult GetInvoiceBill([FromQuery][BindRequired] short shopId, [FromQuery][BindRequired] int shipmentId)
         // {

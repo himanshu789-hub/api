@@ -18,5 +18,5 @@
     "peacock.color": "#5ab4db",
     "omnisharp.enableMsBuildLoadProjectsOnDemand": true,
     "omnisharp.projectLoadTimeout": 120,
-    "dotnet-test-explorer.testProjectPath": "test/*"
+    "dotnet-test-explorer.testProjectPath": "**/*.Test.csproj"
 }

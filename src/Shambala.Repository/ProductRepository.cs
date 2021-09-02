@@ -50,7 +50,6 @@ namespace Shambala.Repository
                  m => m.Id, n => n.ProductIdFk, (m, n) => new Product()
                  {
                      CaretSize = m.CaretSize,
-                     CustomCaratPrice = m.CustomCaratPrice,
                      Id = m.Id,
                      IncomingShipment = m.IncomingShipment,
                      Name = m.Name,

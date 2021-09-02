@@ -41,13 +41,13 @@ namespace Shambala.General.Test
             //     }}
             // });
             // var result = _mapper.Map<IEnumerable<Invoice>>(Utility.ToInvoices(postInvoiceDTOs));
-            PostOutgoingShipmentDTO outgoing = new PostOutgoingShipmentDTO(){
+            OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){
                 DateCreated=new System.DateTime(2021,5,13),SalesmanId=1,Shipments=dtos};
           //  OutgoingShipment outgoing = new OutgoingShipment() { DateCreated = new DateTime(2021,5,13), SalesmanIdFk = 10, Id = 333,
           //  Status = "RETURN" };
         //    IncomingShipment incoming = new IncomingShipment(){Id=12,FlavourIdFk=99,ProductIdFk=80};
-            //PostOutgoingShipmentDTO outgoing = new PostOutgoingShipmentDTO(){SalesmanId=2};
-            var result = _mapper.Map<IEnumerable<OutgoingShipmentDetail>>(dtos);
+            //OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){SalesmanId=2};
+            var result = _mapper.Map<IEnumerable<OutgoingShipmentDetailDTO>>(dtos);
             Assert.NotNull(result);
             // Assert.Same(exptectedMapped.FullName, salesman.FullName);
             Console.WriteLine("Shipment Domain Value : " + System.Text.Json.JsonSerializer.Serialize(result));
