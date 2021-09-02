@@ -81,7 +81,9 @@ namespace Shambala.Core.Profile
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>()
             .ReverseMap();
-
+            
+            CreateMap<OutgoingShipment,OutgoingShipmentDTO>().ReverseMap();
+            
             CreateMap<OutgoingShipment, OutgoingShipmentPostDTO>()
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
@@ -122,8 +124,8 @@ namespace Shambala.Core.Profile
             // CreateMap<ShopBillInfo, InvoiceBillDTO>()
             // .ForMember(e => e.BillingInfo, map => map.MapFrom(e => e.BillingInfoBLLs));
 
-            CreateMap<LedgerWithPastDebitDTO, ShopCreditOrDebitDTO>()
-            .ForMember(e => e.Amount, map => map.MapFrom(e => e.OldDebit));
+            // CreateMap<LedgerWithPastDebitDTO, ShopCreditOrDebitDTO>()
+            // .ForMember(e => e.Amount, map => map.MapFrom(e => e.OldDebit));
 
 
         }

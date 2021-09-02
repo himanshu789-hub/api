@@ -62,14 +62,14 @@ namespace Shambala.Controller.Test
         public async void GetOutgoingShipment_SalesmanIdAndDate()
         {
             int salesmanId = 3;
-            System.DateTime Date = new System.DateTime(2021, 5, 15);
+            System.DateTime date = new System.DateTime(2021, 5, 15);
             var param = new Dictionary<string, string>();
             param.Add("SalesmanId", salesmanId.ToString());
-            param.Add("Date", Date.ToString());
-            string uri = QueryHelpers.AddQueryString("api/shipment/GetOutgoingBySalesmanIdAndDate", param);
-            System.Console.WriteLine("Url : ", uri.ToString());
+            param.Add("Date", date.ToString("s"));
+            string uri = QueryHelpers.AddQueryString("api/shipment/GetOutgoingBySalesmanIdAndDate", param).ToString();
+            _testOutput.WriteLine("Url : "+ uri);
             var response = await _client.GetAsync(uri);
-            System.Console.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
+            _testOutput.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();
         }
     }

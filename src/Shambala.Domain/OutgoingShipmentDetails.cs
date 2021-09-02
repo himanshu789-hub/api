@@ -30,6 +30,6 @@ namespace Shambala.Domain
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }
-        public virtual ICollection<CustomCaratPrice> CustomCaratPrices { get; set; }
+        public  ICollection<CustomCaratPrice> CustomCaratPrices { get; set; }
     }
 }

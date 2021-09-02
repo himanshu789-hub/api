@@ -11,7 +11,9 @@ namespace Shambala.Core.Models.DTOModel
         public byte GSTRate { get; set; }
         public decimal Price{get;set;}
         public byte SchemeQuantity{get;set;}
+        public decimal PricePerBottle{get;set;}
         public ICollection<FlavourDTO> Flavours { get; set; }
+
         public ProductDTO()
         {
             this.Flavours = new List<FlavourDTO>();

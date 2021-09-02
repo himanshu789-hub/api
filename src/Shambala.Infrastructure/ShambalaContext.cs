@@ -73,7 +73,6 @@ namespace Shambala.Infrastructure
 
             modelBuilder.Entity<CustomCaratPrice>(entity =>
             {
-                entity.HasNoKey();
 
                 entity.ToTable("custom_carat_price");
 
@@ -83,7 +82,8 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.OutgoinShipmentDetailIdFk)
                     .HasColumnName("OutgoinShipmentDetail_Id_FK")
                     .HasColumnType("int(10) unsigned");
-
+                    
+                entity.Property(e=>e.Id).HasColumnType("int(10) unsigned"); 
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
@@ -278,12 +278,15 @@ namespace Shambala.Infrastructure
                     .HasForeignKey(d => d.FlavourIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_Flavour_Relationship");
-
+                 
                 entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_OutgoingShipment_Relationship");
+                entity.HasMany(e => e.CustomCaratPrices)
+                .WithOne()
+                .HasForeignKey(e=>e.OutgoinShipmentDetailIdFk);
 
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)
