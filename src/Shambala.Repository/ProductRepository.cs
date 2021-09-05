@@ -47,16 +47,13 @@ namespace Shambala.Repository
             {
                 query = query.Join(_context.Scheme.Where(e => e.DateCreated <= beforeDate.Value).GroupBy(e => e.ProductIdFk)
                 .Select(e => e.Max(s => s.Id)).Join(_context.Scheme, m => m, n => n.Id, (m, n) => n),
-                 m => m.Id, n => n.ProductIdFk, (m, n) => new Product()
-                 {
+                 m => m.Id, n => n.ProductIdFk, (m, n) => new Product(){
                      CaretSize = m.CaretSize,
                      Id = m.Id,
-                     IncomingShipment = m.IncomingShipment,
                      Name = m.Name,
-                     OutgoingShipmentDetails = m.OutgoingShipmentDetails,
                      PricePerCaret = m.PricePerCaret,
                      ProductFlavourQuantity = m.ProductFlavourQuantity,
-                     SchemeQuantity = n.Quantity ?? 0,
+                     SchemeQuantity = n.Quantity ?? 0
                  });
             }
             return query.AsNoTracking().ToList();

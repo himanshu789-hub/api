@@ -30,9 +30,9 @@ namespace Shambala.Controllers
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public IActionResult GetAll([FromQuery]System.DateTime? date)
         {
-            return Ok(_productSupervisor.GetAll());
+            return Ok(_productSupervisor.GetAll(date));
         }
         
         [HttpGet]

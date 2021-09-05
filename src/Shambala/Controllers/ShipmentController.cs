@@ -55,43 +55,6 @@ namespace Shambala.Controllers
                 return UnprocessableEntity(resultModel);
             return Ok(resultModel.Content);
         }
-        // [HttpPut]
-        // public async Task<IActionResult> ReturnAsync([FromRoute] int Id, [FromBody] IEnumerable<ShipmentDTO> shipmentDTOs)
-        // {
-        //     if (!ModelState.IsValid)
-        //         return BadRequest(ModelState.Values.Select(e => e.Errors.Select(e => e.ErrorMessage)));
-        //     try
-        //     {
-        //         await _outgoingSupervisor.ReturnShipmentAsync(Id, shipmentDTOs);
-        //         return Ok();
-        //     }
-        //     catch (System.Exception e)
-        //     {
-        //         if (e is DuplicateShipmentsException || e is OutgoingShipmentNotOperableException)
-        //             return BadRequest(new BadRequestErrorModel() { Code = (int)OutgoingBadErrorCodes.DUPLICATE, Message = e.Message });
-        //         else
-        //             throw;
-        //     }
-        // }
-        //[HttpPost]
-        // public async Task<IActionResult> CompleteAsync([Required][FromBody] ShipmentLedgerDetail shipmentLedgerDetail)
-        // {
-
-        //     if (!ModelState.IsValid)
-        //         return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
-        //     try
-        //     {
-        //         return Ok(await _outgoingSupervisor.CompleteAsync(shipmentLedgerDetail));
-        //     }
-        //     catch (System.Exception e)
-        //     {
-        //         if (e is OutgoingShipmentNotOperableException)
-        //             return BadRequest(new BadRequestErrorModel() { Message = e.Message, Code = (int)OutgoingBadErrorCodes.OUTGOINGSHIPMENT_NOT_OPERABLE });
-        //         if (e is DuplicateNameException)
-        //             return BadRequest(new BadRequestErrorModel() { Message = e.Message, Code = (int)OutgoingBadErrorCodes.DUPLICATE_SHIPMENT });
-        //         throw;
-        //     }
-        // }
         [HttpGet]
         public IActionResult GetOutgoingBySalesmanIdAndDate([FromQuery][BindRequired] short salesmanId, [FromQuery][BindRequired] System.DateTime date)
         {
@@ -99,6 +62,5 @@ namespace Shambala.Controllers
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             return Ok(_outgoingSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
         }
-
     }
 }

@@ -38,7 +38,6 @@ namespace Shambala.Core.Helphers
         }
         static public short GetTotalSchemeQuantity(int totalProductQuantity, short caretSize, byte schemequantity)
         {
-
             return (short)(System.Math.Floor((decimal)(totalProductQuantity / caretSize)) * schemequantity);
         }
         static public IEnumerable<ShipmentDTO> GetReturnShipmentInfoList(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
@@ -51,5 +50,6 @@ namespace Shambala.Core.Helphers
                 TotalRecievedPieces = e.TotalQuantityReturned
             });
         }
+        static public decimal CalculatePricePerBottleOfProduct(Product product)=>decimal.Round((product.PricePerCaret/product.CaretSize),2);
     }
 }
