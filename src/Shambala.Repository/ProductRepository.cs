@@ -45,15 +45,18 @@ namespace Shambala.Repository
 
             if (beforeDate.HasValue)
             {
-                query = query.Join(_context.Scheme.Where(e => e.DateCreated <= beforeDate.Value).GroupBy(e => e.ProductIdFk)
+                query = query.GroupJoin(_context.Scheme.Where(e => e.DateCreated <= beforeDate.Value).GroupBy(e => e.ProductIdFk)
                 .Select(e => e.Max(s => s.Id)).Join(_context.Scheme, m => m, n => n.Id, (m, n) => n),
-                 m => m.Id, n => n.ProductIdFk, (m, n) => new Product(){
-                     CaretSize = m.CaretSize,
-                     Id = m.Id,
-                     Name = m.Name,
-                     PricePerCaret = m.PricePerCaret,
-                     ProductFlavourQuantity = m.ProductFlavourQuantity,
-                     SchemeQuantity = n.Quantity ?? 0
+                 m => m.Id, n => n.ProductIdFk, (m, n) => new { Product = m, Schemes = n })
+                 .SelectMany(xy => xy.Schemes.DefaultIfEmpty(), (x, y) => new { Product = x.Product, Scheme = y })
+                 .Select(e => new Product()
+                 {
+                     CaretSize = e.Product.CaretSize,
+                     Id = e.Product.Id,
+                     Name = e.Product.Name,
+                     PricePerCaret = e.Product.PricePerCaret,
+                     ProductFlavourQuantity = e.Product.ProductFlavourQuantity,
+                     SchemeQuantity = e.Scheme.Quantity
                  });
             }
             return query.AsNoTracking().ToList();

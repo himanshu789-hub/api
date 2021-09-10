@@ -176,6 +176,20 @@ namespace Shambala.Core.Supervisors
             }
             return elemtnWithInvalidCaratPriceCollection.Count > 0 ? elemtnWithInvalidCaratPriceCollection : null;
         }
+        IEnumerable<ProductFlavourElement> CheckSchemePriceValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs, IEnumerable<Product> products)
+        {
+            ICollection<ProductFlavourElement> result = new List<ProductFlavourElement>();
+            Product schemeProduct = products.First(e => e.Id == schemeProductOptions.ProductId);
+            decimal pricePerBottle = schemeProduct.PricePerCaret / schemeProduct.CaretSize;
+            foreach (OutgoingShipmentDetailDTO detailDTO in outgoingShipmentDetailDTOs)
+            {
+                if (detailDTO.SchemeInfo.TotalSchemePrice != Utility.GetTotalProductPrice(schemeProduct, detailDTO.SchemeInfo.TotalQuantity))
+                {
+                    result.Add(new ProductFlavourElement { FlavourId = detailDTO.FlavourId, ProductId = detailDTO.ProductId });
+                }
+            }
+            return result.Count > 0 ? result : null;
+        }
         public ResultModel Update(OutgoingShipmentDTO outgoingShipmentDTO)
         {
             IEnumerable<ProductFlavourElement> productFlavourElements = CheckQuantityShipedValid(outgoingShipmentDTO.OutgoingShipmentDetails);
@@ -201,6 +215,11 @@ namespace Shambala.Core.Supervisors
                 IEnumerable<ProductFlavourElement> productWithSchemeNotValid = this.CheckSchemeQuantityValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
                 if (productWithSchemeNotValid != null)
                     return new ResultModel { Code = ((int)OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), IsValid = false, Content = productWithSchemeNotValid };
+                //check scheme total price valid 
+                IEnumerable<ProductFlavourElement> productWithSchemePriceNotValid = this.CheckSchemePriceValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
+                if (productWithSchemePriceNotValid != null)
+                    return new ResultModel { Code = (int)OutgoingErroCode.SCHME_PRICE_NOT_VALID, Content = productWithSchemePriceNotValid, Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHME_PRICE_NOT_VALID) };
+
                 //check scheme quantity available
                 if (!this.IsSchemeQuantityAvailable(outgoingShipmentDTO.OutgoingShipmentDetails, outgoingShipment.OutgoingShipmentDetails, products))
                     return new ResultModel { Code = ((int)OutgoingErroCode.SCHEME_EXCEED), Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHEME_EXCEED), Content = "Scheme Product Quantity Exceed" };

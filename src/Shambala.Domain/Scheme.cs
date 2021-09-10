@@ -11,7 +11,7 @@ namespace Shambala.Domain
     {
         public short Id { get; set; }
         public DateTime DateCreated { get; set; }
-        public byte? Quantity { get; set; }
+        public byte Quantity { get; set; }
         public int ProductIdFk { get; set; }
 
         public virtual Product ProductIdFkNavigation { get; set; }
