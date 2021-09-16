@@ -47,20 +47,19 @@ namespace Shambala.Core.Models.DTOModel
         public int OutgoingShipmentId { get; set; }
         [RequiredWithNonDefault]
         public short TotalQuantityRejected { get; set; }
-        [RequiredWithNonDefault]
         public short TotalQuantityReturned { get; set; }
         public SchemeInfo SchemeInfo { get; set; }
+        
+        public byte CaretSize{get;set;}
         public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
     }
     public class SchemeInfo
     {
-        [RequiredWithNonDefault]
+    
         public byte SchemeQuantity { get; set; }
 
-        [RequiredWithNonDefault]
         public short TotalQuantity { get; set; }
 
-        [RequiredWithNonDefault]
         public decimal TotalSchemePrice { get; set; }
     }
     public class OutgoingShipmentPostDTO

@@ -18,6 +18,7 @@ namespace Shambala.Repository
 
         public OutgoingShipment Add(OutgoingShipment outgoingShipment)
         {
+            outgoingShipment.Id = 0;
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
             var Entity = _context.OutgoingShipment.Add(outgoingShipment);
             return Entity.Entity;
@@ -41,7 +42,7 @@ namespace Shambala.Repository
 
         public IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
-            return _context.OutgoingShipment.AsNoTracking().Where(e=>e.SalesmanIdFk==salesmanId && e.DateCreated.Date>=date.Date).ToList();
+            return _context.OutgoingShipment.AsNoTracking().Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date >= date.Date).ToList();
         }
     }
 }

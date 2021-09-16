@@ -35,7 +35,7 @@ namespace Shambala.Core.Supervisors
 
         public IEnumerable<ProductDTO> GetAll(System.DateTime? date)
         {
-            return _mapper.Map<List<ProductDTO>>(_unitOfWork.ProductRepository.GetAllWithNoTracking(date));
+            return _mapper.Map<IEnumerable<ProductDTO>>(_unitOfWork.ProductRepository.GetAllWithNoTracking(date));
         }
         public ProductInfoDTO GetProductsByLeftQuantityAndDispatch(int ProductId, byte? FlavourId)
         {

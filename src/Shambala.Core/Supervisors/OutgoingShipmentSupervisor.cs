@@ -235,7 +235,7 @@ namespace Shambala.Core.Supervisors
             Product SchemeProduct = products.First(e => e.Id == this.schemeProductOptions.ProductId);
             int SchemeProductId = this.schemeProductOptions.ProductId;
             short SchemeFlavourId = this.schemeProductOptions.FlavourId;
-
+            //delete shipments
             IEnumerable<OutgoingShipmentDetails> deleteShipments = outgoingShipment.OutgoingShipmentDetails
             .Where(e => !outgoingShipmentDTO.OutgoingShipmentDetails.Any(f => f.FlavourId == e.FlavourIdFk && f.ProductId == e.ProductIdFk && f.OutgoingShipmentId == e.OutgoingShipmentIdFk));
             foreach (var deleteShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(deleteShipments))
@@ -244,8 +244,8 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.ProductRepository.AddQuantity(deleteShipment.ProductIdFk, deleteShipment.FlavourIdFk, deleteShipment.TotalQuantityShiped);
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
             }
-
-            IEnumerable<OutgoingShipmentDetailDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => e.Id == 0).ToList();
+            //new Shipments
+            IEnumerable<OutgoingShipmentDetailDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f=>f.ProductIdFk==e.ProductId && f.FlavourIdFk==e.FlavourId)).ToList();
 
             foreach (var newShipment in newShipments)
             {
@@ -263,7 +263,7 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
             }
 
-
+            //update Shipments
             IEnumerable<OutgoingShipmentDetailDTO> updateShipments = outgoingShipmentDTO.OutgoingShipmentDetails
             .Where(e => outgoingShipment.OutgoingShipmentDetails.Any(f => f.FlavourIdFk == e.FlavourId && f.ProductIdFk == e.ProductId));
             foreach (OutgoingShipmentDetailDTO shipment in updateShipments)

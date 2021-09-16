@@ -50,6 +50,6 @@ namespace Shambala.Core.Helphers
                 TotalRecievedPieces = e.TotalQuantityReturned
             });
         }
-        static public decimal CalculatePricePerBottleOfProduct(Product product)=>decimal.Round((product.PricePerCaret/product.CaretSize),2);
+        static public decimal CalculatePricePerBottleOfProduct(Product product)=>decimal.Round(product.PricePerCaret/product.CaretSize,2);
     }
 }

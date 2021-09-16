@@ -25,9 +25,12 @@ namespace Shambala.Repository
         {
             if (typeof(T).GetProperty("IsActive") != null && typeof(T).GetProperty("IsActive").PropertyType.FullName == typeof(bool).FullName)
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
-                
+            if (typeof(T).GetProperty("Id") != null && Utility.NumericOnly(System.Type.GetTypeCode(typeof(T).GetProperty("Id").PropertyType)))
+            {
+                typeof(T).GetProperty("Id").SetValue(entity, 0);
+            }
             var AddedEntity = _context.Set<T>().Add(entity);
-        
+
             return AddedEntity.Entity;
         }
 

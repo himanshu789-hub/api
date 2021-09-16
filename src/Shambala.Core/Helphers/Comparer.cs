@@ -1,5 +1,6 @@
 using Shambala.Core.Models.DTOModel;
 using System.Collections.Generic;
+using System;
 class ShipmentComparer : IEqualityComparer<ShipmentDTO>
 {
     public bool Equals(ShipmentDTO x, ShipmentDTO y)
@@ -9,7 +10,7 @@ class ShipmentComparer : IEqualityComparer<ShipmentDTO>
 
     public int GetHashCode(ShipmentDTO obj)
     {
-        throw new System.NotImplementedException();
+        return Tuple.Create(obj.ProductId,obj.FlavourId).GetHashCode();
     }
 }
 
@@ -22,6 +23,6 @@ class OutgoingShipmentDetailComparer : IEqualityComparer<OutgoingShipmentDetailD
 
     public int GetHashCode(OutgoingShipmentDetailDTO obj)
     {
-        throw new System.NotImplementedException();
+        return Tuple.Create(obj.OutgoingShipmentId,obj.ProductId,obj.FlavourId).GetHashCode();
     }
 }

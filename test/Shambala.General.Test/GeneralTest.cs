@@ -15,6 +15,7 @@ namespace Shambala.General.Test
         {
 
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
+            config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
         }
         [Fact]
@@ -24,10 +25,10 @@ namespace Shambala.General.Test
             // Salesman salesman = _mapper.Map<Salesman>(salesmanDTO);
             // Salesman exptectedMapped = new Salesman() { FullName = "Pattrick Beans" };
 
-            ICollection<ShipmentDTO> dtos = new List<ShipmentDTO>();
-            dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
-             dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
-          
+            // ICollection<ShipmentDTO> dtos = new List<ShipmentDTO>();
+            // dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 9, TotalRecievedPieces = 190 });
+            //  dtos.Add(new ShipmentDTO() { CaretSize = 12, FlavourId = 4, ProductId = 1, TotalDefectPieces = 1, TotalRecievedPieces = 190 });
+
             //  ICollection<PostInvoiceDTO> postInvoiceDTOs = new List<PostInvoiceDTO>();
             // postInvoiceDTOs.Add(new PostInvoiceDTO
             // {
@@ -41,16 +42,18 @@ namespace Shambala.General.Test
             //     }}
             // });
             // var result = _mapper.Map<IEnumerable<Invoice>>(Utility.ToInvoices(postInvoiceDTOs));
-            OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){
-                DateCreated=new System.DateTime(2021,5,13),SalesmanId=1,Shipments=dtos};
-          //  OutgoingShipment outgoing = new OutgoingShipment() { DateCreated = new DateTime(2021,5,13), SalesmanIdFk = 10, Id = 333,
-          //  Status = "RETURN" };
-        //    IncomingShipment incoming = new IncomingShipment(){Id=12,FlavourIdFk=99,ProductIdFk=80};
+            //            OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){
+            //              DateCreated=new System.DateTime(2021,5,13),SalesmanId=1,Shipments=dtos};
+            //  OutgoingShipment outgoing = new OutgoingShipment() { DateCreated = new DateTime(2021,5,13), SalesmanIdFk = 10, Id = 333,
+            //  Status = "RETURN" };
+            //    IncomingShipment incoming = new IncomingShipment(){Id=12,FlavourIdFk=99,ProductIdFk=80};
             //OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){SalesmanId=2};
-            var result = _mapper.Map<IEnumerable<OutgoingShipmentDetailDTO>>(dtos);
+            var products = new Product() { Id = 1, PricePerCaret = 134.34m, CaretSize = 24, Name = "Demo RGB", SchemeQuantity = 2 };
+            var result = _mapper.Map<ProductDTO>(products);
             Assert.NotNull(result);
+            Assert.NotEqual(result.PricePerBottle, 0);
             // Assert.Same(exptectedMapped.FullName, salesman.FullName);
-            Console.WriteLine("Shipment Domain Value : " + System.Text.Json.JsonSerializer.Serialize(result));
+            Console.WriteLine("Desiralize Value : " + System.Text.Json.JsonSerializer.Serialize(result));
         }
     }
 }

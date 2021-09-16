@@ -3,7 +3,7 @@ using AutoMapper.Configuration;
 using AutoMapper.QueryableExtensions;
 using Shambala.Domain;
 using Shambala.Core.Models.DTOModel;
-using AutoMapper;
+
 namespace Shambala.Core.Profile
 {
     using AutoMapper;
@@ -20,7 +20,13 @@ namespace Shambala.Core.Profile
                     return result;
 
                 return OutgoingShipmentStatus.PENDING;
-
+            }
+        }
+        public class PricePerBottleValueResolver : IValueResolver<Product, ProductDTO, decimal>
+        {
+            public decimal Resolve(Product source, ProductDTO destination, decimal destMember, ResolutionContext context)
+            {
+                return Utility.CalculatePricePerBottleOfProduct(source);
             }
         }
         public ApplicationProfiles()
@@ -34,13 +40,13 @@ namespace Shambala.Core.Profile
             .AddName<PrePostfixName>(e => e.AddStrings(p => p.Postfixes, "Fk", "IdFkNavigation"));
 
 
-            CreateMap<Salesman, SalesmanDTO>();
-            CreateMap<Salesman, SalesmanDTO>().ReverseMap();
+            // CreateMap<Salesman, SalesmanDTO>();
+            // CreateMap<Salesman, SalesmanDTO>();
 
-            CreateMap<Scheme, SchemeDTO>();
+   //         CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
 
-            CreateMap<Debit, DebitDTO>();
+ //           CreateMap<Debit, DebitDTO>();
             CreateMap<Debit, DebitDTO>().ReverseMap();
 
             //            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
@@ -52,22 +58,20 @@ namespace Shambala.Core.Profile
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
             .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
             .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
-            .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)));
-
-
-            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
-            .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)))
             .ReverseMap();
 
 
-            CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
+            // CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
+            // .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
+            // .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
+            // .ReverseMap();
+
+
+            //CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
             .ReverseMap()
             .ForMember(e => e.OutgoinShipmentDetailIdFk, m => m.MapFrom((src, desr, d, context) => context.Items["OutgoingId"] == null ? 0 : context.Items["Id"]));
-
-
-
 
             // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
@@ -78,43 +82,44 @@ namespace Shambala.Core.Profile
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
             // .ReverseMap();
 
-            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
+            //            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>()
             .ReverseMap();
-            
-            CreateMap<OutgoingShipment,OutgoingShipmentDTO>().ReverseMap();
-            
+
+            CreateMap<OutgoingShipment, OutgoingShipmentDTO>().ReverseMap();
+
             CreateMap<OutgoingShipment, OutgoingShipmentPostDTO>()
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
 
 
-            CreateMap<IncomingShipment, ShipmentDTO>();
+            //          CreateMap<IncomingShipment, ShipmentDTO>();
             CreateMap<IncomingShipment, ShipmentDTO>().ReverseMap();
 
-            CreateMap<Shop, ShopDTO>();
+            //        CreateMap<Shop, ShopDTO>();
             CreateMap<Shop, ShopDTO>().ReverseMap();
 
             CreateMap<Shop, ShopInfoDTO>();
 
-            CreateMap<Shop, ShopWithInvoicesDTO>();
+            //      CreateMap<Shop, ShopWithInvoicesDTO>();
             CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();
 
             CreateMap<Product, ProductDTO>()
-            .ForMember(e => e.Flavours, map => map.MapFrom(e => e.ProductFlavourQuantity));
-            CreateMap<Product, ProductDTO>()
-            .ForMember(e => e.Flavours, map => map.MapFrom(e => e.ProductFlavourQuantity)).ReverseMap();
+            .ForMember(e => e.Flavours, map => map.MapFrom(e => e.ProductFlavourQuantity))
+            .ForMember(e => e.PricePerBottle, map => map.MapFrom(new PricePerBottleValueResolver()))
+            .ReverseMap();
 
-            CreateMap<ProductFlavourQuantity, FlavourDTO>(AutoMapper.MemberList.None)
-            .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
-            .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
-            .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title));
+
+            // CreateMap<ProductFlavourQuantity, FlavourDTO>(AutoMapper.MemberList.None)
+            // .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
+            // .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
+            // .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title));
 
             CreateMap<ProductFlavourQuantity, FlavourDTO>(AutoMapper.MemberList.None)
             .ForMember(destinationMember => destinationMember.Id, from => from.MapFrom(e => e.FlavourIdFk))
             .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title))
             .ForMember(e => e.Quantity, map => map.MapFrom(e => e.Quantity))
-            .ForMember(e => e.Title, map => map.MapFrom(e => e.FlavourIdFkNavigation.Title)).ReverseMap();
+            .ReverseMap();
 
 
             // CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailWithInfoBLL>();
