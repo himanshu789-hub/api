@@ -50,7 +50,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ShopIdFk)
                     .HasName("Credit_Shop_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(11)");
+                entity.Property(e => e.Id).HasColumnType("int(11)").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(6,2)");
 
@@ -83,7 +83,7 @@ namespace Shambala.Infrastructure
                     .HasColumnName("OutgoinShipmentDetail_Id_FK")
                     .HasColumnType("int(10) unsigned");
                     
-                entity.Property(e=>e.Id).HasColumnType("int(10) unsigned"); 
+                entity.Property(e=>e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd(); 
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
@@ -99,7 +99,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ShopIdFk)
                     .HasName("Credit_Shop_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Amount).HasColumnType("decimal(6,2)");
 
@@ -155,7 +155,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("IncomingShipment_Product_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
@@ -192,7 +192,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.SalesmanIdFk)
                     .HasName("OUtgoingShipment_Salesman_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
 
@@ -229,7 +229,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("Outgoing_Shipment_Details_Product_RelationShip_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
@@ -303,7 +303,7 @@ namespace Shambala.Infrastructure
                     .HasName("Id_UNIQUE")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned");
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
@@ -361,7 +361,7 @@ namespace Shambala.Infrastructure
                     .HasName("Id_UNIQUE")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned");
+                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.FullName)
                     .IsRequired()
@@ -379,7 +379,7 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("Scheme_Product_Relationship_idx");
 
-                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned");
+                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
 
@@ -404,7 +404,7 @@ namespace Shambala.Infrastructure
                     .HasName("Id_UNIQUE")
                     .IsUnique();
 
-                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned");
+                entity.Property(e => e.Id).HasColumnType("smallint(5) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.Address).HasMaxLength(80);
 

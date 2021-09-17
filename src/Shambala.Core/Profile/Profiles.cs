@@ -41,7 +41,7 @@ namespace Shambala.Core.Profile
 
 
             // CreateMap<Salesman, SalesmanDTO>();
-            // CreateMap<Salesman, SalesmanDTO>();
+             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
    //         CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
@@ -71,16 +71,15 @@ namespace Shambala.Core.Profile
             //CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
             .ReverseMap()
-            .ForMember(e => e.OutgoinShipmentDetailIdFk, m => m.MapFrom((src, desr, d, context) => context.Items["OutgoingId"] == null ? 0 : context.Items["Id"]));
+            .ForMember(e => e.OutgoinShipmentDetailIdFk, m => m.MapFrom((src, desr, d, context) => context.Items["OutgoingId"] == null ? 0 : context.Items["OutgoingId"]));
 
             // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
-            // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
-            // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
-            // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected))
-            // .ReverseMap();
+            CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
+            .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityTaken))
+            .ReverseMap();
 
             //            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>()

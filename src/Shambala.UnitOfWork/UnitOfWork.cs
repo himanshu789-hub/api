@@ -25,12 +25,12 @@ namespace Shambala.UnitOfWork
         IIncomingShipmentRepository _incomingShipmentRepository { get; set; }
         ISchemeRepository _schemeRepository { get; set; }
         IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository { get; set; }
-        ICustomPriceRepository _customPricerepository {get;set;}
+        ICustomPriceRepository _customPricerepository { get; set; }
         public ICustomPriceRepository CustomPriceRepository
         {
             get
             {
-                return _customPricerepository = _customPricerepository==null?new CustomPriceRepository(_context):_customPricerepository;
+                return _customPricerepository = _customPricerepository == null ? new CustomPriceRepository(_context) : _customPricerepository;
             }
         }
         public IShopRepository ShopRepository
@@ -116,13 +116,12 @@ namespace Shambala.UnitOfWork
                 {
                     value = _context.SaveChanges();
                     transaction.Commit();
-
                     _isTransactionCommited = true;
                 }
                 catch (System.Exception e)
                 {
                     this.Rollback();
-                    logger.LogCritical(e.ToString());
+                    throw e;
                 }
             }
             else

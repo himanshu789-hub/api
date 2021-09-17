@@ -9,6 +9,7 @@ namespace Shambala.Repository
         public CustomPriceRepository(ShambalaContext shambalaContext) => this.context = shambalaContext;
         public CustomCaratPrice Add(CustomCaratPrice customCaratPrice)
         {
+            customCaratPrice.Id = 0;
             return this.context.CustomCaratPrice.Add(customCaratPrice).Entity;
         }
 

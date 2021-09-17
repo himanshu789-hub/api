@@ -33,7 +33,7 @@ namespace Shambala.Core.Supervisors
         public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(IEnumerable<ProductQuantityBLL> productQuantitties, int? Id = null)
         {
 
-            if (productQuantitties.Distinct().Count() == productQuantitties.Count())
+            if (productQuantitties.Distinct().Count() != productQuantitties.Count())
                 throw new DuplicateShipmentsException();
 
             if (_unitOfWork.CurrentTransaction == null)
@@ -77,8 +77,9 @@ namespace Shambala.Core.Supervisors
                 if (productOutOfStockBLLs == null)
                 {
                     this.UpdateQuantities(outgoingShipment.OutgoingShipmentDetails);
-                    _unitOfWork.OutgoingShipmentRepository.Add(outgoingShipment);
+                    outgoingShipment = _unitOfWork.OutgoingShipmentRepository.Add(outgoingShipment);
                     _unitOfWork.SaveChanges();
+
                 }
                 else
                 {
@@ -90,6 +91,7 @@ namespace Shambala.Core.Supervisors
                     return resultModel;
                 }
             }
+
             _unitOfWork.OutgoingShipmentRepository.Load(outgoingShipment, entity => entity.SalesmanIdFkNavigation);
             resultModel.IsValid = true;
             resultModel.Content = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
@@ -134,7 +136,7 @@ namespace Shambala.Core.Supervisors
             foreach (OutgoingShipmentDetailDTO currentShipmentDetailDTO in outgoingShipmentDetailDTOs)
             {
                 OutgoingShipmentDetails oldDetail = oldOutoingDetails.FirstOrDefault(e => e.ProductIdFk == currentShipmentDetailDTO.ProductId && e.FlavourIdFk == currentShipmentDetailDTO.FlavourId);
-                short oldSchemeQuantity = oldDetail.SchemeTotalQuantity;
+                short oldSchemeQuantity = oldDetail?.SchemeTotalQuantity??0;
                 short newSchemeQuantity = currentShipmentDetailDTO.SchemeInfo.TotalQuantity;
                 schemeQuantityLeft += oldSchemeQuantity;
                 schemeQuantityLeft -= newSchemeQuantity;
@@ -152,7 +154,7 @@ namespace Shambala.Core.Supervisors
             ICollection<ProductFlavourElement> productFlavourElements = new List<ProductFlavourElement>();
             foreach (OutgoingShipmentDetailDTO outgoingDetail in outgoingShipmentDetailDTOs)
             {
-                Product product = products.First(e => e.Id == outgoingDetail.Id);
+                Product product = products.First(e => e.Id == outgoingDetail.ProductId);
                 if (Utility.GetTotalSchemeQuantity(outgoingDetail.TotalQuantityShiped, product.CaretSize, outgoingDetail.SchemeInfo.SchemeQuantity) != outgoingDetail.SchemeInfo.TotalQuantity)
                     productFlavourElements.Add(new ProductFlavourElement { FlavourId = outgoingDetail.FlavourId, ProductId = outgoingDetail.ProductId });
             }
@@ -162,7 +164,7 @@ namespace Shambala.Core.Supervisors
         {
             ICollection<ProductFlavourElement> productFlavourElements = new List<ProductFlavourElement>();
             foreach (OutgoingShipmentDetailDTO productFlavourElement in outgoingShipmentDetailDTOs)
-                if (productFlavourElement.TotalQuantityShiped - productFlavourElement.TotalQuantityReturned != productFlavourElement.TotalQuantityTaken)
+                if (productFlavourElement.TotalQuantityTaken - productFlavourElement.TotalQuantityReturned != productFlavourElement.TotalQuantityShiped)
                     productFlavourElements.Add(new ProductFlavourElement { ProductId = productFlavourElement.ProductId, FlavourId = productFlavourElement.FlavourId });
             return productFlavourElements.Count > 0 ? productFlavourElements : null;
         }
@@ -245,7 +247,7 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
             }
             //new Shipments
-            IEnumerable<OutgoingShipmentDetailDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f=>f.ProductIdFk==e.ProductId && f.FlavourIdFk==e.FlavourId)).ToList();
+            IEnumerable<OutgoingShipmentDetailDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f => f.ProductIdFk == e.ProductId && f.FlavourIdFk == e.FlavourId)).ToList();
 
             foreach (var newShipment in newShipments)
             {

@@ -30,11 +30,14 @@ namespace Shambala.Core.Helphers
         }
         static public short GetSchemeQuantityPerCaret(int totalQuantityOfProduct, short totalSchemeQuantity, short caretSize)
         {
-            return decimal.ToInt16(totalSchemeQuantity / System.Math.Floor((decimal)totalQuantityOfProduct / caretSize));
+            int totalCaret = decimal.ToInt16(System.Math.Floor((decimal)totalQuantityOfProduct / caretSize));
+            if (totalCaret == 0)
+                return 0;
+            return decimal.ToInt16(totalSchemeQuantity / totalCaret);
         }
         static public decimal GetTotalProductPrice(Product Product, short quantity)
         {
-            return (Product.PricePerCaret / Product.CaretSize) * quantity;
+            return Utility.CalculatePricePerBottleOfProduct(Product) * quantity;
         }
         static public short GetTotalSchemeQuantity(int totalProductQuantity, short caretSize, byte schemequantity)
         {
@@ -50,6 +53,6 @@ namespace Shambala.Core.Helphers
                 TotalRecievedPieces = e.TotalQuantityReturned
             });
         }
-        static public decimal CalculatePricePerBottleOfProduct(Product product)=>decimal.Round(product.PricePerCaret/product.CaretSize,2);
+        static public decimal CalculatePricePerBottleOfProduct(Product product) => decimal.Round(product.PricePerCaret / product.CaretSize, 2);
     }
 }

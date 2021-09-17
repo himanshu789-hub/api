@@ -18,8 +18,12 @@ namespace Shambala.Repository
 
         public OutgoingShipment Add(OutgoingShipment outgoingShipment)
         {
-            outgoingShipment.Id = 0;
+            outgoingShipment.Id= 0;
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
+            foreach(var details in outgoingShipment.OutgoingShipmentDetails)
+            {
+                details.Id = 0;
+            }
             var Entity = _context.OutgoingShipment.Add(outgoingShipment);
             return Entity.Entity;
 
