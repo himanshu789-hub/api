@@ -7,13 +7,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Collections.Generic;
 using Microsoft.Extensions.Options;
+using System;
 
 namespace Shambala.Core.Supervisors
 {
     using Exception;
     using Models;
     using Helphers;
-    using System;
     public class OutgoingShipmentSupervisor : IOutgoingShipmentSupervisor
     {
         IMapper _mapper;
@@ -29,10 +29,17 @@ namespace Shambala.Core.Supervisors
 
         public byte GSTRate => _gstRate;
 
-
+        IEnumerable<OutgoingShipmentDetailTransferDTO> mapOutgoingDetailsToOutgoingDTO(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetails, IEnumerable<Product> products)
+        {
+            foreach (var destElement in outgoingShipmentDetails)
+            {
+                Product product = products.FirstOrDefault(e => e.Id == destElement.ProductId);
+                destElement.SchemeInfo.SchemeQuantity = (byte)Utility.GetSchemeQuantityPerCaret(destElement.TotalQuantityShiped, destElement.SchemeInfo.TotalQuantity, product.CaretSize);
+            }
+            return outgoingShipmentDetails;
+        }
         public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(IEnumerable<ProductQuantityBLL> productQuantitties, int? Id = null)
         {
-
             if (productQuantitties.Distinct().Count() != productQuantitties.Count())
                 throw new DuplicateShipmentsException();
 
@@ -51,7 +58,6 @@ namespace Shambala.Core.Supervisors
         }
         void UpdateQuantities(IEnumerable<OutgoingShipmentDetails> outgoingShipmentDetails)
         {
-
             foreach (var item in outgoingShipmentDetails)
             {
                 int QuantityShiped = item.TotalQuantityShiped - item.TotalQuantityRejected;
@@ -60,7 +66,6 @@ namespace Shambala.Core.Supervisors
                     _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, item.TotalQuantityRejected);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, QuantityShiped);
             }
-
         }
         public ResultModel AddAsync(OutgoingShipmentPostDTO postOutgoingShipmentDTO)
         {
@@ -79,7 +84,6 @@ namespace Shambala.Core.Supervisors
                     this.UpdateQuantities(outgoingShipment.OutgoingShipmentDetails);
                     outgoingShipment = _unitOfWork.OutgoingShipmentRepository.Add(outgoingShipment);
                     _unitOfWork.SaveChanges();
-
                 }
                 else
                 {
@@ -129,14 +133,14 @@ namespace Shambala.Core.Supervisors
         // }
 
 
-        bool IsSchemeQuantityAvailable(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs, IEnumerable<OutgoingShipmentDetails> oldOutoingDetails, IEnumerable<Product> products)
+        bool IsSchemeQuantityAvailable(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailDTOs, IEnumerable<OutgoingShipmentDetails> oldOutoingDetails, IEnumerable<Product> products)
         {
             bool IsValid = true;
             int schemeQuantityLeft = products.First(e => e.Id == this.schemeProductOptions.ProductId).ProductFlavourQuantity.First(e => e.FlavourIdFk == this.schemeProductOptions.FlavourId).Quantity;
-            foreach (OutgoingShipmentDetailDTO currentShipmentDetailDTO in outgoingShipmentDetailDTOs)
+            foreach (OutgoingShipmentDetailTransferDTO currentShipmentDetailDTO in outgoingShipmentDetailDTOs)
             {
                 OutgoingShipmentDetails oldDetail = oldOutoingDetails.FirstOrDefault(e => e.ProductIdFk == currentShipmentDetailDTO.ProductId && e.FlavourIdFk == currentShipmentDetailDTO.FlavourId);
-                short oldSchemeQuantity = oldDetail?.SchemeTotalQuantity??0;
+                short oldSchemeQuantity = oldDetail?.SchemeTotalQuantity ?? 0;
                 short newSchemeQuantity = currentShipmentDetailDTO.SchemeInfo.TotalQuantity;
                 schemeQuantityLeft += oldSchemeQuantity;
                 schemeQuantityLeft -= newSchemeQuantity;
@@ -149,10 +153,10 @@ namespace Shambala.Core.Supervisors
 
             return IsValid;
         }
-        IEnumerable<ProductFlavourElement> CheckSchemeQuantityValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs, IEnumerable<Product> products)
+        IEnumerable<ProductFlavourElement> CheckSchemeQuantityValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailDTOs, IEnumerable<Product> products)
         {
             ICollection<ProductFlavourElement> productFlavourElements = new List<ProductFlavourElement>();
-            foreach (OutgoingShipmentDetailDTO outgoingDetail in outgoingShipmentDetailDTOs)
+            foreach (OutgoingShipmentDetailTransferDTO outgoingDetail in outgoingShipmentDetailDTOs)
             {
                 Product product = products.First(e => e.Id == outgoingDetail.ProductId);
                 if (Utility.GetTotalSchemeQuantity(outgoingDetail.TotalQuantityShiped, product.CaretSize, outgoingDetail.SchemeInfo.SchemeQuantity) != outgoingDetail.SchemeInfo.TotalQuantity)
@@ -160,30 +164,30 @@ namespace Shambala.Core.Supervisors
             }
             return productFlavourElements.Count > 0 ? productFlavourElements : null;
         }
-        IEnumerable<ProductFlavourElement> CheckQuantityShipedValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs)
+        IEnumerable<ProductFlavourElement> CheckQuantityShipedValid(IEnumerable<OutgoingShipmentDetailBaseDTO> outgoingShipmentDetailDTOs)
         {
             ICollection<ProductFlavourElement> productFlavourElements = new List<ProductFlavourElement>();
-            foreach (OutgoingShipmentDetailDTO productFlavourElement in outgoingShipmentDetailDTOs)
+            foreach (OutgoingShipmentDetailBaseDTO productFlavourElement in outgoingShipmentDetailDTOs)
                 if (productFlavourElement.TotalQuantityTaken - productFlavourElement.TotalQuantityReturned != productFlavourElement.TotalQuantityShiped)
                     productFlavourElements.Add(new ProductFlavourElement { ProductId = productFlavourElement.ProductId, FlavourId = productFlavourElement.FlavourId });
             return productFlavourElements.Count > 0 ? productFlavourElements : null;
         }
-        IEnumerable<ProductFlavourElement> CheckCustomCaratPriceValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs)
+        IEnumerable<ProductFlavourElement> CheckCustomCaratPriceValid(IEnumerable<OutgoingShipmentDetailBaseDTO> outgoingShipmentDetailDTOs)
         {
             ICollection<ProductFlavourElement> elemtnWithInvalidCaratPriceCollection = new List<ProductFlavourElement>();
-            foreach (OutgoingShipmentDetailDTO outgoingShipmentDetail in outgoingShipmentDetailDTOs)
+            foreach (OutgoingShipmentDetailBaseDTO outgoingShipmentDetail in outgoingShipmentDetailDTOs)
             {
                 if (outgoingShipmentDetail.CustomCaratPrices.Sum(e => e.Quantity) > outgoingShipmentDetail.TotalQuantityShiped)
                     elemtnWithInvalidCaratPriceCollection.Add(new ProductFlavourElement { FlavourId = outgoingShipmentDetail.FlavourId, ProductId = outgoingShipmentDetail.ProductId });
             }
             return elemtnWithInvalidCaratPriceCollection.Count > 0 ? elemtnWithInvalidCaratPriceCollection : null;
         }
-        IEnumerable<ProductFlavourElement> CheckSchemePriceValid(IEnumerable<OutgoingShipmentDetailDTO> outgoingShipmentDetailDTOs, IEnumerable<Product> products)
+        IEnumerable<ProductFlavourElement> CheckSchemePriceValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailDTOs, IEnumerable<Product> products)
         {
             ICollection<ProductFlavourElement> result = new List<ProductFlavourElement>();
             Product schemeProduct = products.First(e => e.Id == schemeProductOptions.ProductId);
             decimal pricePerBottle = schemeProduct.PricePerCaret / schemeProduct.CaretSize;
-            foreach (OutgoingShipmentDetailDTO detailDTO in outgoingShipmentDetailDTOs)
+            foreach (OutgoingShipmentDetailTransferDTO detailDTO in outgoingShipmentDetailDTOs)
             {
                 if (detailDTO.SchemeInfo.TotalSchemePrice != Utility.GetTotalProductPrice(schemeProduct, detailDTO.SchemeInfo.TotalQuantity))
                 {
@@ -247,11 +251,11 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
             }
             //new Shipments
-            IEnumerable<OutgoingShipmentDetailDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f => f.ProductIdFk == e.ProductId && f.FlavourIdFk == e.FlavourId)).ToList();
+            IEnumerable<OutgoingShipmentDetailTransferDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f => f.ProductIdFk == e.ProductId && f.FlavourIdFk == e.FlavourId)).ToList();
 
             foreach (var newShipment in newShipments)
             {
-                OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment, opt => opt.Items["OutgoingId"] = outgoingShipment.Id);
+                OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment);
 
                 int ProductId = newShipment.ProductId; short FlavourId = newShipment.FlavourId;
                 newShipmentDetails.OutgoingShipmentIdFk = outgoingShipment.Id;
@@ -266,15 +270,16 @@ namespace Shambala.Core.Supervisors
             }
 
             //update Shipments
-            IEnumerable<OutgoingShipmentDetailDTO> updateShipments = outgoingShipmentDTO.OutgoingShipmentDetails
+            IEnumerable<OutgoingShipmentDetailTransferDTO> updateShipments = outgoingShipmentDTO.OutgoingShipmentDetails
             .Where(e => outgoingShipment.OutgoingShipmentDetails.Any(f => f.FlavourIdFk == e.FlavourId && f.ProductIdFk == e.ProductId));
-            foreach (OutgoingShipmentDetailDTO shipment in updateShipments)
+            foreach (OutgoingShipmentDetailTransferDTO shipment in updateShipments)
             {
-                OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment, opt => opt.Items["OutgoingId"] = outgoingShipment.Id);
+                OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment);
+                updateShipment.OutgoingShipmentIdFk = outgoingShipment.Id;
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
                 Product product = products.First(e => e.Id == ProductId);
                 OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
-
+                
                 SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices);
                 if (previousShipment.TotalQuantityTaken != updateShipment.TotalQuantityTaken)
                 {
@@ -305,8 +310,6 @@ namespace Shambala.Core.Supervisors
                 short newQuantity = updateShipment.TotalQuantityShiped;
 
                 updateShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, newSchemeQuantity);
-                updateShipment.PricePerCarat = product.PricePerCaret;
-                updateShipment.CaretSize = product.CaretSize;
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
             }
             _unitOfWork.SaveChanges();
@@ -346,9 +349,11 @@ namespace Shambala.Core.Supervisors
 
         public OutgoingShipmentInfoDTO GetById(int Id)
         {
-            return _mapper.Map<OutgoingShipmentInfoDTO>(_unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id));
+            OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
+            OutgoingShipmentInfoDTO outgoingShipmentInfoDTO = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
+            outgoingShipmentInfoDTO.OutgoingShipmentDetails = new List<OutgoingShipmentDetailTransferDTO>(this.mapOutgoingDetailsToOutgoingDTO(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking()));
+            return outgoingShipmentInfoDTO;
         }
-
         public IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
             return _mapper.Map<IEnumerable<OutgoingShipmentDTO>>(_unitOfWork.OutgoingShipmentRepository.GetBySalesmanIdAndAfterDate(salesmanId, date));

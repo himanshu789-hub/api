@@ -9,8 +9,11 @@ namespace Shambala.Core.Profile
     using AutoMapper;
     using Models;
     using Helphers;
+
+    
     public class ApplicationProfiles : AutoMapper.Profile
     {
+
         class StringToOutgoingEnum : AutoMapper.ITypeConverter<string, OutgoingShipmentStatus>
         {
             public OutgoingShipmentStatus Convert(string source, OutgoingShipmentStatus destination, ResolutionContext context)
@@ -41,12 +44,12 @@ namespace Shambala.Core.Profile
 
 
             // CreateMap<Salesman, SalesmanDTO>();
-             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
+            CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
-   //         CreateMap<Scheme, SchemeDTO>();
+            //         CreateMap<Scheme, SchemeDTO>();
             CreateMap<Scheme, SchemeDTO>().ReverseMap();
 
- //           CreateMap<Debit, DebitDTO>();
+            //           CreateMap<Debit, DebitDTO>();
             CreateMap<Debit, DebitDTO>().ReverseMap();
 
             //            CreateMap<InvoiceAggreagateDetailBLL, InvoiceDetailDTO>();
@@ -55,11 +58,17 @@ namespace Shambala.Core.Profile
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
-            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
-            .ForPath(e => e.SchemeInfo.TotalSchemePrice, map => map.MapFrom(e => e.SchemeTotalPrice))
-            .ForPath(e => e.SchemeInfo.TotalQuantity, m => m.MapFrom(e => e.SchemeTotalQuantity))
-            .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom(e => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity, e.CaretSize)))
+            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>();
+
+            // CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailBaseDTO>()
+            // .ReverseMap();
+
+            CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailTransferDTO>()
+            .ForPath(e => e.SchemeInfo.TotalQuantity, opt => opt.MapFrom(e => e.SchemeTotalQuantity))
+            .ForPath(e => e.SchemeInfo.TotalSchemePrice, opt => opt.MapFrom(e => e.SchemeTotalPrice))
             .ReverseMap();
+
+            //       .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom((e) => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity,)))
 
 
             // CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>()
@@ -78,8 +87,12 @@ namespace Shambala.Core.Profile
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
             CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
+            .ForMember(e=>e.CaretSize, opt => opt.Ignore())
+            .ForMember(e=>e.TotalDefectPieces, opt => opt.Ignore())
+            .ForMember(e=>e.DateCreated, opt => opt.Ignore())
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityTaken))
-            .ReverseMap();
+            .ReverseMap()
+            .ForMember(e => e.TotalQuantityShiped, map => map.MapFrom(e => e.TotalRecievedPieces));
 
             //            CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>();
             CreateMap<OutgoingShipment, OutgoingShipmentInfoDTO>()

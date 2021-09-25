@@ -231,19 +231,28 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
-                entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
+              //  entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
                 entity.Property(e => e.FlavourIdFk)
                     .HasColumnName("Flavour_Id_FK")
                     .HasColumnType("tinyint(3) unsigned");
 
+                entity.Property(e => e.TotalShipedPrice)
+                    .HasColumnName("Total_Shiped_Price")
+                    .HasColumnType("decimal(6,2)");
+
+
+                entity.Property(e => e.NetPrice)
+                    .HasColumnName("Net_Price")
+                    .HasColumnType("decimal(6,2)");
+
                 entity.Property(e => e.OutgoingShipmentIdFk)
                     .HasColumnName("Outgoing_Shipment_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.PricePerCarat)
-                    .HasColumnName("Price_Per_Carat")
-                    .HasColumnType("decimal(6,2)");
+                // entity.Property(e => e.PricePerCarat)
+                //     .HasColumnName("Price_Per_Carat")
+                //     .HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.ProductIdFk)
                     .HasColumnName("Product_Id_FK")

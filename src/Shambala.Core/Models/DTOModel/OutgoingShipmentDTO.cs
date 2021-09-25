@@ -11,7 +11,7 @@ namespace Shambala.Core.Models.DTOModel
         public int Id { get; set; }
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
-        public ICollection<OutgoingShipmentDetailDTO> OutgoingShipmentDetails { get; set; }
+        public ICollection<OutgoingShipmentDetailTransferDTO> OutgoingShipmentDetails { get; set; }
     }
     public class OutgoingShipmentDTO : OutgoingShipmentBaseDTO
     {
@@ -30,9 +30,17 @@ namespace Shambala.Core.Models.DTOModel
     {
         public SalesmanDTO Salesman { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
-
     }
-    public class OutgoingShipmentDetailDTO
+    public class OutgoingShipmentDetailTransferDTO : OutgoingShipmentDetailBaseDTO
+    {
+        public SchemeInfo SchemeInfo { get; set; }
+    }
+    public class OutgoingShipmentDetailDTO : OutgoingShipmentDetailBaseDTO
+    {
+        public byte SchemeTotalQuantity { get; set; }
+        public decimal SchemeTotalPrice { get; set; }
+    }
+    public abstract class OutgoingShipmentDetailBaseDTO
     {
         public int Id { get; set; }
         [RequiredWithNonDefault]
@@ -42,24 +50,18 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public short TotalQuantityTaken { get; set; }
         [RequiredWithNonDefault]
-        public short TotalQuantityShiped { get; set; }
-        [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
         [RequiredWithNonDefault]
+        public short TotalQuantityShiped { get; set; }
         public short TotalQuantityRejected { get; set; }
         public short TotalQuantityReturned { get; set; }
-        public SchemeInfo SchemeInfo { get; set; }
-        
-        public byte CaretSize{get;set;}
         public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
     }
     public class SchemeInfo
     {
-    
+
         public byte SchemeQuantity { get; set; }
-
         public short TotalQuantity { get; set; }
-
         public decimal TotalSchemePrice { get; set; }
     }
     public class OutgoingShipmentPostDTO

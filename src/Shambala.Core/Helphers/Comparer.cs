@@ -14,14 +14,14 @@ class ShipmentComparer : IEqualityComparer<ShipmentDTO>
     }
 }
 
-class OutgoingShipmentDetailComparer : IEqualityComparer<OutgoingShipmentDetailDTO>
+class OutgoingShipmentDetailComparer : IEqualityComparer<OutgoingShipmentDetailBaseDTO>
 {
-    public bool Equals(OutgoingShipmentDetailDTO x, OutgoingShipmentDetailDTO y)
+    public bool Equals(OutgoingShipmentDetailBaseDTO x, OutgoingShipmentDetailBaseDTO y)
     {
         return x.OutgoingShipmentId==y.OutgoingShipmentId && x.ProductId==y.ProductId && x.FlavourId==y.FlavourId; 
     }
 
-    public int GetHashCode(OutgoingShipmentDetailDTO obj)
+    public int GetHashCode(OutgoingShipmentDetailBaseDTO obj)
     {
         return Tuple.Create(obj.OutgoingShipmentId,obj.ProductId,obj.FlavourId).GetHashCode();
     }

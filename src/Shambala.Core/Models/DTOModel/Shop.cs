@@ -11,8 +11,6 @@ namespace Shambala.Core.Models.DTOModel
         public string Address { get; set; }
         [RequiredWithNonDefault]  
         public short Id { get; set; }
-        public short? SchemeId{get;set;}
-
     }
     public class ShopInfoDTO : ShopDTO
     {

@@ -47,7 +47,6 @@ namespace Shambala.Core.Helphers
         {
             return outgoingShipmentDetails.Select(e => new ShipmentDTO()
             {
-                CaretSize = e.CaretSize,
                 FlavourId = e.FlavourIdFk,
                 ProductId = e.ProductIdFk,
                 TotalRecievedPieces = e.TotalQuantityReturned

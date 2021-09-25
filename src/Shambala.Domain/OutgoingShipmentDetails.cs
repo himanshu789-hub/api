@@ -11,7 +11,6 @@ namespace Shambala.Domain
     {
         public int Id { get; set; }
         public int ProductIdFk { get; set; }
-        public byte CaretSize { get; set; }
         public short TotalQuantityShiped { get; set; }
         public byte TotalQuantityRejected { get; set; }
         public int OutgoingShipmentIdFk { get; set; }
@@ -19,14 +18,14 @@ namespace Shambala.Domain
         public short TotalQuantityReturned { get; set; }
         public byte SchemeTotalQuantity { get; set; }
         public decimal SchemeTotalPrice { get; set; }
-        public decimal? PricePerCarat { get; set; }
         public short TotalQuantityTaken { get; set; }
+        public decimal TotalShipedPrice { get; set; }
+        public decimal NetPrice { get; set; }
 
         public OutgoingShipmentDetails()
         {
             this.CustomCaratPrices = new HashSet<CustomCaratPrice>();
         }
-
         public virtual Flavour FlavourIdFkNavigation { get; set; }
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }
         public virtual Product ProductIdFkNavigation { get; set; }

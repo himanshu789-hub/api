@@ -1,2 +1,2 @@
-cd "src/shambala"
+cd %~dp0/"src/shambala"
 dotnet run
