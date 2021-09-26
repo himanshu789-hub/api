@@ -3,14 +3,14 @@ using AutoMapper.Configuration;
 using AutoMapper.QueryableExtensions;
 using Shambala.Domain;
 using Shambala.Core.Models.DTOModel;
-
+using System.Linq;
 namespace Shambala.Core.Profile
 {
     using AutoMapper;
     using Models;
     using Helphers;
 
-    
+
     public class ApplicationProfiles : AutoMapper.Profile
     {
 
@@ -25,11 +25,18 @@ namespace Shambala.Core.Profile
                 return OutgoingShipmentStatus.PENDING;
             }
         }
-        public class PricePerBottleValueResolver : IValueResolver<Product, ProductDTO, decimal>
+        class PricePerBottleValueResolver : IValueResolver<Product, ProductDTO, decimal>
         {
             public decimal Resolve(Product source, ProductDTO destination, decimal destMember, ResolutionContext context)
             {
                 return Utility.CalculatePricePerBottleOfProduct(source);
+            }
+        }
+        class CustomCaratQuantityValueResolver : IValueResolver<OutgoingShipmentDetails, OutgoingShipmentDetailTransferDTO, short>
+        {
+            public short Resolve(OutgoingShipmentDetails source, OutgoingShipmentDetailTransferDTO destination, short destMember, ResolutionContext context)
+            {
+                return ((short)source.CustomCaratPrices.Sum(e => e.Quantity));
             }
         }
         public ApplicationProfiles()
@@ -66,6 +73,8 @@ namespace Shambala.Core.Profile
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailTransferDTO>()
             .ForPath(e => e.SchemeInfo.TotalQuantity, opt => opt.MapFrom(e => e.SchemeTotalQuantity))
             .ForPath(e => e.SchemeInfo.TotalSchemePrice, opt => opt.MapFrom(e => e.SchemeTotalPrice))
+            .ForPath(e => e.CustomCaratPrices.Prices, opt => opt.MapFrom(e => e.CustomCaratPrices))
+            .ForPath(e => e.CustomCaratPrices.TotalQuantity, opt => opt.MapFrom<short>((src)=>(((short)src.CustomCaratPrices.Sum(e=>e.Quantity)))))
             .ReverseMap();
 
             //       .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom((e) => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity,)))
@@ -87,9 +96,9 @@ namespace Shambala.Core.Profile
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
             CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
-            .ForMember(e=>e.CaretSize, opt => opt.Ignore())
-            .ForMember(e=>e.TotalDefectPieces, opt => opt.Ignore())
-            .ForMember(e=>e.DateCreated, opt => opt.Ignore())
+            .ForMember(e => e.CaretSize, opt => opt.Ignore())
+            .ForMember(e => e.TotalDefectPieces, opt => opt.Ignore())
+            .ForMember(e => e.DateCreated, opt => opt.Ignore())
             .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityTaken))
             .ReverseMap()
             .ForMember(e => e.TotalQuantityShiped, map => map.MapFrom(e => e.TotalRecievedPieces));

@@ -34,11 +34,14 @@ namespace Shambala.Core.Models.DTOModel
     public class OutgoingShipmentDetailTransferDTO : OutgoingShipmentDetailBaseDTO
     {
         public SchemeInfo SchemeInfo { get; set; }
+        public CustomCaratPriceDetailDTO CustomCaratPrices { get; set; }
+
     }
     public class OutgoingShipmentDetailDTO : OutgoingShipmentDetailBaseDTO
     {
         public byte SchemeTotalQuantity { get; set; }
         public decimal SchemeTotalPrice { get; set; }
+        public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
     }
     public abstract class OutgoingShipmentDetailBaseDTO
     {
@@ -55,7 +58,14 @@ namespace Shambala.Core.Models.DTOModel
         public short TotalQuantityShiped { get; set; }
         public short TotalQuantityRejected { get; set; }
         public short TotalQuantityReturned { get; set; }
-        public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
+        public decimal NetPrice { get; set; }
+        public decimal TotalShipedPrice { get; set; }
+    }
+    public class CustomCaratPriceDetailDTO
+    {
+        public ICollection<CustomCaratPriceDTO> Prices { get; set; }
+        public decimal TotalPrice { get; set; }
+        public short TotalQuantity { get; set; }
     }
     public class SchemeInfo
     {
@@ -71,5 +81,15 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         public IEnumerable<ShipmentDTO> Shipments { get; set; }
+    }
+    public class OutgoingShipmentAggregateDTO
+    {
+        public IEnumerable<OutgoingShipmentDetailTransferDTO> OutgoingShipmentDetails { get; set; }
+        public decimal TotalSchemePrice { get; set; }
+        public decimal TotalShipedPrice { get; set; }
+        public decimal TotalNetPrice { get; set; }
+        public short TotalSaleQuantity { get; set; }
+        public short CustomCaratQuantity { get; set; }
+        public decimal CustomCaratTotalPrice { get; set; }
     }
 }

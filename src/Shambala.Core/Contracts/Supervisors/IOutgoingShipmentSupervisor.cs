@@ -20,5 +20,6 @@ namespace Shambala.Core.Contracts.Supervisors
         IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
         OutgoingShipmentInfoDTO GetById(int Id);
         //OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id); 
+        ResultModel IsAggreateValid(OutgoingShipmentAggregateDTO aggregateDTO);
     }
 }

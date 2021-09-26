@@ -38,8 +38,7 @@ namespace Shambala.Repository
                 Product = new ProductInfo()
                 {
                     Id = e.ProductIdFkNavigation.Id,
-                    Name = e.ProductIdFkNavigation.Name,
-                    CaretSize = e.CaretSize
+                    Name = e.ProductIdFkNavigation.Name
                 },
                 Flavour = new FlavourDTO()
                 {
