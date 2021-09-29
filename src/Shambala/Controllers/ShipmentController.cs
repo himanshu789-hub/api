@@ -37,7 +37,7 @@ namespace Shambala.Controllers
             if (resultModel.IsValid)
                 return Ok(resultModel.Content);
 
-            return UnprocessableEntity(resultModel);
+            return BadRequest(resultModel);
         }
 
         [HttpPut]
