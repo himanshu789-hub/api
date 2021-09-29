@@ -17,9 +17,8 @@ namespace Shambala.Core.Contracts.Supervisors
         // IEnumerable<ProductOutOfStockBLL> CheckPostShipment(IEnumerable<ShipmentDTO> shipmentDTOs,int? Id=null);
         // OutgoingShipmentWithProductListDTO GetWithProductListByOrderId(int OrderId);
         // Task<bool> CompleteAsync(ShipmentLedgerDetail shipmentLedgerDetail);
-        IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
+        //IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
         OutgoingShipmentInfoDTO GetById(int Id);
         //OutgoingShipmentPriceDetailDTO GetPriceDetailById(int Id); 
-        ResultModel IsAggreateValid(OutgoingShipmentAggregateDTO aggregateDTO);
     }
 }

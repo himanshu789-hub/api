@@ -19,6 +19,7 @@ namespace Shambala.Domain
         public short SalesmanIdFk { get; set; }
         public DateTime DateCreated { get; set; }
         public string Status { get; set; }
+        public short RowVersion{get;set;}
 
         public virtual Salesman SalesmanIdFkNavigation { get; set; }
         public virtual ICollection<Debit> Debit { get; set; }

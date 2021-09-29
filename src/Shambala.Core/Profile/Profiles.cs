@@ -74,7 +74,7 @@ namespace Shambala.Core.Profile
             .ForPath(e => e.SchemeInfo.TotalQuantity, opt => opt.MapFrom(e => e.SchemeTotalQuantity))
             .ForPath(e => e.SchemeInfo.TotalSchemePrice, opt => opt.MapFrom(e => e.SchemeTotalPrice))
             .ForPath(e => e.CustomCaratPrices.Prices, opt => opt.MapFrom(e => e.CustomCaratPrices))
-            .ForPath(e => e.CustomCaratPrices.TotalQuantity, opt => opt.MapFrom<short>((src)=>(((short)src.CustomCaratPrices.Sum(e=>e.Quantity)))))
+            .ForPath(e => e.CustomCaratPrices.TotalQuantity, opt => opt.MapFrom<short>((src) => (((short)src.CustomCaratPrices.Sum(e => e.Quantity)))))
             .ReverseMap();
 
             //       .ForPath(e => e.SchemeInfo.SchemeQuantity, m => m.MapFrom((e) => Utility.GetSchemeQuantityPerCaret(e.TotalQuantityShiped, e.SchemeTotalQuantity,)))
@@ -113,7 +113,8 @@ namespace Shambala.Core.Profile
             .ForMember(e => e.Shipments, map => map.MapFrom(e => e.OutgoingShipmentDetails))
             .ReverseMap();
 
-
+            CreateMap<OutgoingDetailBLL, OutgoingShipmentAggegateDetailDTO>();
+            CreateMap<OutgoingShipmentAggregateBLL, OutgoingShipmentAggregateDTO>();
             //          CreateMap<IncomingShipment, ShipmentDTO>();
             CreateMap<IncomingShipment, ShipmentDTO>().ReverseMap();
 

@@ -213,7 +213,19 @@ namespace Shambala.Core.Supervisors
             }
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(outgoingShipmentDTO.Id);
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking(outgoingShipment.DateCreated);
+            bool IsUpdated = _unitOfWork.OutgoingShipmentRepository.IncrRowVersion(outgoingShipment);
+            if (!IsUpdated)
+            {
+                return new ResultModel
+                {
+                    Code = ((int)ConcurrencyErrorCode.Concurrency_Error),
+                    Content = "Another User Already Changed The Content",
+                    IsValid = false,
+                    Name = "Concurrency Exception"
+                };
+            }
+            outgoingShipment.Status = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
+            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
 
             //check Given TotalSchemeQuantity == (QSinCaret)*SchemeQuantityPerCaret
             {
@@ -248,6 +260,8 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
                 _unitOfWork.ProductRepository.AddQuantity(deleteShipment.ProductIdFk, deleteShipment.FlavourIdFk, deleteShipment.TotalQuantityShiped);
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
+                foreach (var customprice in deleteShipment.CustomCaratPrices)
+                    _unitOfWork.CustomPriceRepository.Delete(customprice);
             }
             //new Shipments
             IEnumerable<OutgoingShipmentDetailTransferDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f => f.ProductIdFk == e.ProductId && f.FlavourIdFk == e.FlavourId)).ToList();
@@ -255,7 +269,6 @@ namespace Shambala.Core.Supervisors
             foreach (var newShipment in newShipments)
             {
                 OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment);
-
                 int ProductId = newShipment.ProductId; short FlavourId = newShipment.FlavourId;
                 newShipmentDetails.OutgoingShipmentIdFk = outgoingShipment.Id;
                 Product product = products.First(e => e.Id == ProductId);
@@ -350,21 +363,8 @@ namespace Shambala.Core.Supervisors
         {
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
             OutgoingShipmentInfoDTO outgoingShipmentInfoDTO = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
-            outgoingShipmentInfoDTO.OutgoingShipmentDetails = new List<OutgoingShipmentDetailTransferDTO>(this.mapOutgoingDetailsToOutgoingDTO(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking()));
+            AfterMapper.OutgoingShipmentTransferDTODetails(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking());
             return outgoingShipmentInfoDTO;
-        }
-        public IEnumerable<OutgoingShipmentDTO> GetOutgoingShipmentBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
-        {
-            return _mapper.Map<IEnumerable<OutgoingShipmentDTO>>(_unitOfWork.OutgoingShipmentRepository.GetBySalesmanIdAndAfterDate(salesmanId, date));
-        }
-
-        public ResultModel IsAggreateValid(OutgoingShipmentAggregateDTO aggregateDTO)
-        {
-            decimal TotalSchemePrice = aggregateDTO.OutgoingShipmentDetails.Sum(e => e.SchemeInfo.TotalSchemePrice);
-            decimal TotalShipedPrice = aggregateDTO.OutgoingShipmentDetails.Sum(e => e.TotalShipedPrice);
-            decimal TotalNewPrice = aggregateDTO.OutgoingShipmentDetails.Sum(e => e.NetPrice);
-            decimal CustomCaratQuantity = aggregateDTO.OutgoingShipmentDetails.Sum(e => e.CustomCaratPrices.TotalQuantity);
-            decimal CustomCaratTotalPrice = aggregateDTO.OutgoingShipmentDetails.Sum(e => e.CustomCaratPrices.TotalPrice);
         }
     }
 }

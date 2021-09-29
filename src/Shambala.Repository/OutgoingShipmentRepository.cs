@@ -5,12 +5,11 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using Shambala.Core.Helphers;
 using System.Linq;
-using Shambala.Core.Models;
-using Shambala.Core.Models.DTOModel;
 using System;
 
 namespace Shambala.Repository
 {
+    using Domain;
     public class OutgoingShipmentRepository : Shambala.Repository.GenericLoading<OutgoingShipment>, IOutgoingShipmentRepository
     {
         ShambalaContext _context;
@@ -18,9 +17,9 @@ namespace Shambala.Repository
 
         public OutgoingShipment Add(OutgoingShipment outgoingShipment)
         {
-            outgoingShipment.Id= 0;
+            outgoingShipment.Id = 0;
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
-            foreach(var details in outgoingShipment.OutgoingShipmentDetails)
+            foreach (var details in outgoingShipment.OutgoingShipmentDetails)
             {
                 details.Id = 0;
             }
@@ -47,6 +46,20 @@ namespace Shambala.Repository
         public IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
             return _context.OutgoingShipment.AsNoTracking().Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date >= date.Date).ToList();
+        }
+
+        public bool IncrRowVersion(OutgoingShipment outgoingShipment)
+        {
+            outgoingShipment.RowVersion++;
+            try
+            {
+                _context.SaveChanges();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException e)
+            {
+                return false;
+            }
         }
     }
 }

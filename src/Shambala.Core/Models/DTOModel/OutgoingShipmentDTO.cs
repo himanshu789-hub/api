@@ -11,6 +11,7 @@ namespace Shambala.Core.Models.DTOModel
         public int Id { get; set; }
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
+        public OutgoingShipmentStatus Status { get; set; }
         public ICollection<OutgoingShipmentDetailTransferDTO> OutgoingShipmentDetails { get; set; }
     }
     public class OutgoingShipmentDTO : OutgoingShipmentBaseDTO
@@ -29,13 +30,11 @@ namespace Shambala.Core.Models.DTOModel
     public class OutgoingShipmentInfoDTO : OutgoingShipmentBaseDTO
     {
         public SalesmanDTO Salesman { get; set; }
-        public OutgoingShipmentStatus Status { get; set; }
     }
     public class OutgoingShipmentDetailTransferDTO : OutgoingShipmentDetailBaseDTO
     {
         public SchemeInfo SchemeInfo { get; set; }
         public CustomCaratPriceDetailDTO CustomCaratPrices { get; set; }
-
     }
     public class OutgoingShipmentDetailDTO : OutgoingShipmentDetailBaseDTO
     {
@@ -82,14 +81,5 @@ namespace Shambala.Core.Models.DTOModel
         public DateTime DateCreated { get; set; }
         public IEnumerable<ShipmentDTO> Shipments { get; set; }
     }
-    public class OutgoingShipmentAggregateDTO
-    {
-        public IEnumerable<OutgoingShipmentDetailTransferDTO> OutgoingShipmentDetails { get; set; }
-        public decimal TotalSchemePrice { get; set; }
-        public decimal TotalShipedPrice { get; set; }
-        public decimal TotalNetPrice { get; set; }
-        public short TotalSaleQuantity { get; set; }
-        public short CustomCaratQuantity { get; set; }
-        public decimal CustomCaratTotalPrice { get; set; }
-    }
+   
 }

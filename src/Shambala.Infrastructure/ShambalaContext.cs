@@ -82,8 +82,8 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.OutgoinShipmentDetailIdFk)
                     .HasColumnName("OutgoinShipmentDetail_Id_FK")
                     .HasColumnType("int(10) unsigned");
-                    
-                entity.Property(e=>e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd(); 
+
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
@@ -191,7 +191,7 @@ namespace Shambala.Infrastructure
 
                 entity.HasIndex(e => e.SalesmanIdFk)
                     .HasName("OUtgoingShipment_Salesman_Relationship_idx");
-
+                entity.Property(e => e.RowVersion).HasDefaultValue(0).IsConcurrencyToken();
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
                 entity.Property(e => e.DateCreated).HasColumnType("date");
@@ -231,7 +231,7 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
 
-              //  entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
+                //  entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
                 entity.Property(e => e.FlavourIdFk)
                     .HasColumnName("Flavour_Id_FK")
@@ -287,15 +287,16 @@ namespace Shambala.Infrastructure
                     .HasForeignKey(d => d.FlavourIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_Flavour_Relationship");
-                 
+
                 entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)
                     .HasForeignKey(d => d.OutgoingShipmentIdFk)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_OutgoingShipment_Relationship");
+
                 entity.HasMany(e => e.CustomCaratPrices)
                 .WithOne()
-                .HasForeignKey(e=>e.OutgoinShipmentDetailIdFk);
+                .HasForeignKey(e => e.OutgoinShipmentDetailIdFk);
 
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)

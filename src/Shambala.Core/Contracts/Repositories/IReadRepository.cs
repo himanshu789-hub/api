@@ -8,8 +8,9 @@ namespace Shambala.Core.Contracts.Repositories
     using Helphers;
     public interface IReadOutgoingShipmentRepository
     {
-        IEnumerable<OutgoingShipment> GetShipmentsBySalesmnaIdAndDate(short salesmanId, System.DateTime date);
-        IEnumerable<OutgoingShipmentProductInfoDTO> GetProductsById(int orderId);
+        IEnumerable<OutgoingShipment> GetShipmentsBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
+        //IEnumerable<OutgoingShipmentProductInfoDTO> GetProductsById(int orderId);
+        OutgoingShipmentAggregateBLL GetDetails(int Id);
     }
     public interface IReadInvoiceRepository
     {

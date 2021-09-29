@@ -9,6 +9,44 @@ namespace Shambala.Core.Helphers
     using Domain;
     using Models.DTOModel;
     using Models;
+    public class AfterMapper
+    {
+        public static System.Action<OutgoingShipmentDetailTransferDTO, Product> setSchemePerCaret = (shipmentDetail, p) =>
+        {
+            shipmentDetail.SchemeInfo.SchemeQuantity = Utility.GetSchemeQuantityPerCaret(shipmentDetail.TotalQuantityShiped, shipmentDetail.SchemeInfo.TotalQuantity, p.CaretSize);
+            foreach (CustomCaratPriceDTO customCaratPrice in shipmentDetail.CustomCaratPrices.Prices)
+            {
+                Product newProduct = new Product
+                {
+                    CaretSize = p.CaretSize,
+                    Id = p.Id,
+                    Name = p.Name,
+                    PricePerCaret = customCaratPrice.PricePerCarat,
+                    SchemeQuantity = p.SchemeQuantity
+                };
+                shipmentDetail.CustomCaratPrices.TotalPrice += Utility.GetTotalProductPrice(newProduct, customCaratPrice.Quantity);
+            }
+        };
+        public static IEnumerable<OutgoingShipmentDetailTransferDTO> OutgoingShipmentTransferDTODetails(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetails, IEnumerable<Product> products)
+        {
+            foreach (var detail in outgoingShipmentDetails)
+            {
+                AfterMapper.setSchemePerCaret(detail, products.First(e => e.Id == detail.ProductId));
+            }
+            return outgoingShipmentDetails;
+        }
+        public static IEnumerable<OutgoingShipmentAggegateDetailDTO> OutgoingAggregateDetails(IEnumerable<OutgoingShipmentAggegateDetailDTO> aggegateDetailDTOs, IEnumerable<Product> products)
+        {
+            foreach (OutgoingShipmentAggegateDetailDTO detail in aggegateDetailDTOs)
+            {
+                Product product = products.First(e => e.Id == detail.ProductId);
+                setSchemePerCaret(detail, product);
+                detail.CaretSize = product.CaretSize;
+                detail.UnitPrice = product.PricePerCaret;
+            }
+            return aggegateDetailDTOs;
+        }
+    }
     class Utility
     {
         static public bool IsDueCompleted(decimal DuePrice)
@@ -28,12 +66,12 @@ namespace Shambala.Core.Helphers
             }
             return leftOverCredit;
         }
-        static public short GetSchemeQuantityPerCaret(int totalQuantityOfProduct, short totalSchemeQuantity, short caretSize)
+        static public byte GetSchemeQuantityPerCaret(int totalQuantityOfProduct, short totalSchemeQuantity, short caretSize)
         {
             int totalCaret = decimal.ToInt16(System.Math.Floor((decimal)totalQuantityOfProduct / caretSize));
             if (totalCaret == 0)
                 return 0;
-            return decimal.ToInt16(totalSchemeQuantity / totalCaret);
+            return ((byte)decimal.ToInt32(totalSchemeQuantity / totalCaret));
         }
         static public decimal GetTotalProductPrice(Product Product, short quantity)
         {

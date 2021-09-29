@@ -1,22 +1,19 @@
 using Microsoft.AspNetCore.Mvc;
 using Shambala.Core.Contracts.Supervisors;
-using System.Threading.Tasks;
-using Shambala.Core.Models.DTOModel;
 using System.Data;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Linq;
-using Shambala.Core.Exception;
-using System.ComponentModel.DataAnnotations;
-using System.Collections.Generic;
+
 namespace Shambala.Controllers
 {
     using Shambala.Core.Models.DTOModel;
     using Shambala.Core.Models;
-    using Core.Helphers;
+    using Shambala.Core.Helphers;
     public class ShipmentController : ControllerBase
     {
         IOutgoingShipmentSupervisor _outgoingSupervisor;
-        public ShipmentController(IOutgoingShipmentSupervisor outgoingShipmentSupervisor)
+        IReadOutgoingSupervisor _outgoingReadSupervisor;
+        public ShipmentController(IOutgoingShipmentSupervisor outgoingShipmentSupervisor, IReadOutgoingSupervisor readOutgoingSupervisor)
         {
             _outgoingSupervisor = outgoingShipmentSupervisor;
         }
@@ -52,7 +49,11 @@ namespace Shambala.Controllers
 
             ResultModel resultModel = _outgoingSupervisor.Update(outgoingShipment);
             if (!resultModel.IsValid)
-                return UnprocessableEntity(resultModel);
+            {
+                if (resultModel.Code == ((int)ConcurrencyErrorCode.Concurrency_Error))
+                    return UnprocessableEntity(resultModel.Content);
+                return BadRequest(resultModel.Content);
+            }
             return Ok(resultModel.Content);
         }
         [HttpGet]
@@ -60,7 +61,7 @@ namespace Shambala.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
-            return Ok(_outgoingSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
+            return Ok(_outgoingReadSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
         }
     }
 }
