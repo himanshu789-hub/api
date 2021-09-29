@@ -16,6 +16,7 @@ namespace Shambala.Controllers
         public ShipmentController(IOutgoingShipmentSupervisor outgoingShipmentSupervisor, IReadOutgoingSupervisor readOutgoingSupervisor)
         {
             _outgoingSupervisor = outgoingShipmentSupervisor;
+        this._outgoingReadSupervisor = readOutgoingSupervisor;
         }
         [HttpGet]
         public IActionResult GetById([FromQuery][BindRequired] int Id)
@@ -62,6 +63,10 @@ namespace Shambala.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
             return Ok(_outgoingReadSupervisor.GetOutgoingShipmentBySalesmanIdAndAfterDate(salesmanId, date));
+        }
+        public IActionResult GetDetailsById([FromRoute][BindRequired] int Id)
+        {
+            return Ok(_outgoingReadSupervisor.GetAggregate(Id));
         }
     }
 }
