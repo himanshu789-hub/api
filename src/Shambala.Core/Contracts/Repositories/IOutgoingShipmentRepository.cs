@@ -15,7 +15,7 @@ namespace Shambala.Core.Contracts.Repositories
         //bool Complete(int Id);
         //  OutgoingShipment GetAllDetailById(int Id);
         IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
-        bool IncrRowVersion(OutgoingShipment outgoingShipment);
+        bool Update(OutgoingShipment outgoingShipment);
     }
     public interface IOutgoingShipmentDetailRepository : IGenericRepository<OutgoingShipmentDetails>
     {

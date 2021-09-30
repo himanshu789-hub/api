@@ -46,7 +46,7 @@ namespace Shambala.Controller.Test
             _outgoingAdded = System.Text.Json.JsonSerializer.Deserialize<OutgoingShipmentInfoDTO>(responseJson);
 
         }
-        
+
         [Fact]
         public async void OutgoingShipment_CheckAmount()
         {
@@ -67,8 +67,16 @@ namespace Shambala.Controller.Test
             param.Add("SalesmanId", salesmanId.ToString());
             param.Add("Date", date.ToString("s"));
             string uri = QueryHelpers.AddQueryString("api/shipment/GetOutgoingBySalesmanIdAndDate", param).ToString();
-            _testOutput.WriteLine("Url : "+ uri);
+            _testOutput.WriteLine("Url : " + uri);
             var response = await _client.GetAsync(uri);
+            _testOutput.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
+            response.EnsureSuccessStatusCode();
+        }
+        [Fact]
+        public async void GetDetailsById()
+        {
+            int Id = 34;
+            var response = await _client.GetAsync("api/shipment/getdetailsbyid/" + 34);
             _testOutput.WriteLine("Response :=>" + await response.Content.ReadAsStringAsync());
             response.EnsureSuccessStatusCode();
         }

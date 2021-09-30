@@ -28,15 +28,6 @@ namespace Shambala.Core.Supervisors
 
         public byte GSTRate => _gstRate;
 
-        IEnumerable<OutgoingShipmentDetailTransferDTO> mapOutgoingDetailsToOutgoingDTO(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetails, IEnumerable<Product> products)
-        {
-            foreach (var destElement in outgoingShipmentDetails)
-            {
-                Product product = products.FirstOrDefault(e => e.Id == destElement.ProductId);
-                destElement.SchemeInfo.SchemeQuantity = (byte)Utility.GetSchemeQuantityPerCaret(destElement.TotalQuantityShiped, destElement.SchemeInfo.TotalQuantity, product.CaretSize);
-            }
-            return outgoingShipmentDetails;
-        }
         public IEnumerable<ProductOutOfStockBLL> CheckPostShipment(IEnumerable<ProductQuantityBLL> productQuantitties, int? Id = null)
         {
             if (productQuantitties.Distinct().Count() != productQuantitties.Count())
@@ -213,7 +204,7 @@ namespace Shambala.Core.Supervisors
             }
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(outgoingShipmentDTO.Id);
-            bool IsUpdated = _unitOfWork.OutgoingShipmentRepository.IncrRowVersion(outgoingShipment);
+            bool IsUpdated = _unitOfWork.OutgoingShipmentRepository.Update(outgoingShipment);
             if (!IsUpdated)
             {
                 return new ResultModel

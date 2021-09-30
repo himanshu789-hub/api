@@ -31,10 +31,9 @@ namespace Shambala.Core.Supervisors
             foreach (OutgoingShipmentAggegateDetailDTO detail in outgoingShipmentAggregateDTO.OutgoingShipmentDetails)
             {
                 outgoingShipmentAggregateDTO.TotalNetPrice += detail.NetPrice;
-                outgoingShipmentAggregateDTO.TotalSaleQuantity = detail.SchemeInfo.TotalQuantity;
                 outgoingShipmentAggregateDTO.TotalShipedPrice += detail.TotalShipedPrice;
-                outgoingShipmentAggregateDTO.CustomCaratQuantity += detail.CustomCaratPrices.TotalQuantity;
                 outgoingShipmentAggregateDTO.CustomCaratTotalPrice += detail.CustomCaratPrices.TotalPrice;
+                outgoingShipmentAggregateDTO.TotalSchemeQuatity += detail.SchemeInfo.TotalQuantity;
             }
             return outgoingShipmentAggregateDTO;
         }

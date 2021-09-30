@@ -48,9 +48,14 @@ namespace Shambala.Repository
             return _context.OutgoingShipment.AsNoTracking().Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date >= date.Date).ToList();
         }
 
-        public bool IncrRowVersion(OutgoingShipment outgoingShipment)
+        public bool Update(OutgoingShipment outgoingShipment)
         {
+            if (outgoingShipment.Status != System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED))
+            {
+                outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED);
+            }
             outgoingShipment.RowVersion++;
+
             try
             {
                 _context.SaveChanges();
