@@ -15,7 +15,7 @@ namespace Shambala.General.Test
         {
 
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
-            config.AssertConfigurationIsValid();
+          //  config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
         }
         [Fact]
@@ -48,12 +48,15 @@ namespace Shambala.General.Test
             //  Status = "RETURN" };
             //    IncomingShipment incoming = new IncomingShipment(){Id=12,FlavourIdFk=99,ProductIdFk=80};
             //OutgoingShipmentPostDTO outgoing = new OutgoingShipmentPostDTO(){SalesmanId=2};
-            var products = new Product() { Id = 1, PricePerCaret = 134.34m, CaretSize = 24, Name = "Demo RGB", SchemeQuantity = 2 };
-            var result = _mapper.Map<ProductDTO>(products);
-            Assert.NotNull(result);
-            Assert.NotEqual(result.PricePerBottle, 0);
-            // Assert.Same(exptectedMapped.FullName, salesman.FullName);
-            Console.WriteLine("Desiralize Value : " + System.Text.Json.JsonSerializer.Serialize(result));
+            // var products = new Product() { Id = 1, PricePerCaret = 134.34m, CaretSize = 24, Name = "Demo RGB", SchemeQuantity = 2 };
+            // var result = _mapper.Map<ProductDTO>(products);
+            // Assert.NotNull(result);
+            // Assert.NotEqual(result.PricePerBottle, 0);
+            // // Assert.Same(exptectedMapped.FullName, salesman.FullName);
+            //    Console.WriteLine("Desiralize Value : " + System.Text.Json.JsonSerializer.Serialize(result));
+            var result = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
+            Assert.Equal(result,"FILLED");
+            Console.WriteLine("Result : "+result);
         }
     }
 }

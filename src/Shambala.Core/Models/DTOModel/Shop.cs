@@ -12,10 +12,6 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]  
         public short Id { get; set; }
     }
-    public class ShopInfoDTO : ShopDTO
-    {
-        public SchemeDTO Scheme { get; set; }
-    }
     public class ShopWithInvoicesDTO : ShopDTO
     {
         public ICollection<ShipmentLedgerDetail> Invoice { get; set; }

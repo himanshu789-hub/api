@@ -54,7 +54,8 @@ namespace Shambala.Core.Profile
             CreateMap<Salesman, SalesmanDTO>().ReverseMap();
 
             //         CreateMap<Scheme, SchemeDTO>();
-            CreateMap<Scheme, SchemeDTO>().ReverseMap();
+            CreateMap<Scheme, SchemeDTO>()
+            .ReverseMap();
 
             //           CreateMap<Debit, DebitDTO>();
             CreateMap<Debit, DebitDTO>().ReverseMap();
@@ -63,6 +64,7 @@ namespace Shambala.Core.Profile
 
             CreateMap<OutgoingShipmentStatus, string>()
             .ConvertUsing(src => System.Enum.GetName(typeof(OutgoingShipmentStatus), src));
+
             CreateMap<string, OutgoingShipmentStatus>().ConvertUsing<StringToOutgoingEnum>();
 
             CreateMap<OutgoingShipmentDetails, OutgoingShipmentDetailDTO>();
@@ -121,8 +123,6 @@ namespace Shambala.Core.Profile
 
             //        CreateMap<Shop, ShopDTO>();
             CreateMap<Shop, ShopDTO>().ReverseMap();
-
-            CreateMap<Shop, ShopInfoDTO>();
 
             //      CreateMap<Shop, ShopWithInvoicesDTO>();
             CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();

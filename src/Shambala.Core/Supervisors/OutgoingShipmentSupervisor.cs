@@ -162,7 +162,24 @@ namespace Shambala.Core.Supervisors
                     productFlavourElements.Add(new ProductFlavourElement { ProductId = productFlavourElement.ProductId, FlavourId = productFlavourElement.FlavourId });
             return productFlavourElements.Count > 0 ? productFlavourElements : null;
         }
-        IEnumerable<ProductFlavourElement> CheckCustomCaratPriceValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailDTOs)
+        IEnumerable<ProductFlavourElement> CheckCustomCaratPriceValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailTransferDTOs, IEnumerable<Product> products)
+        {
+            ICollection<ProductFlavourElement> productFlavours = new List<ProductFlavourElement>();
+            foreach (OutgoingShipmentDetailTransferDTO item in outgoingShipmentDetailTransferDTOs)
+            {
+                if (item.CustomCaratPrices.TotalPrice != item.CustomCaratPrices.Prices.Sum(e =>
+                {
+                    Product product = products.First(f => f.Id == item.ProductId);
+                    product.PricePerCaret = e.PricePerCarat;
+                    return Utility.GetTotalProductPrice(product, e.Quantity);
+                }))
+                {
+                    productFlavours.Add(new ProductFlavourElement { ProductId = item.ProductId, FlavourId = item.FlavourId });
+                }
+            }
+            return productFlavours.Count > 0 ? productFlavours : null;
+        }
+        IEnumerable<ProductFlavourElement> CheckCustomCaratQuantityValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailDTOs)
         {
             ICollection<ProductFlavourElement> elemtnWithInvalidCaratPriceCollection = new List<ProductFlavourElement>();
             foreach (OutgoingShipmentDetailTransferDTO outgoingShipmentDetail in outgoingShipmentDetailDTOs)
@@ -186,21 +203,76 @@ namespace Shambala.Core.Supervisors
             }
             return result.Count > 0 ? result : null;
         }
+        IEnumerable<ProductFlavourElement> CheckSalePriceValid(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetailTransferDTOs, IEnumerable<Product> products)
+        {
+            ICollection<ProductFlavourElement> productFlavours = new List<ProductFlavourElement>();
+            foreach (var detail in outgoingShipmentDetailTransferDTOs)
+            {
+                Product product = products.First(e => e.Id == detail.ProductId);
+                if (Utility.GetTotalProductPrice(product, detail.TotalQuantityShiped) != detail.TotalShipedPrice)
+                    productFlavours.Add(new ProductFlavourElement { FlavourId = detail.FlavourId, ProductId = detail.ProductId });
+            }
+            return productFlavours.Count > 0 ? productFlavours : null;
+        }
         public ResultModel Update(OutgoingShipmentDTO outgoingShipmentDTO)
         {
-            IEnumerable<ProductFlavourElement> productFlavourElements = CheckQuantityShipedValid(outgoingShipmentDTO.OutgoingShipmentDetails);
-            if (productFlavourElements != null)
-                return new ResultModel { Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Code = ((int)OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Content = productFlavourElements };
-            IEnumerable<ProductFlavourElement> elementWithInvalidCustomPriceCollection = CheckCustomCaratPriceValid(outgoingShipmentDTO.OutgoingShipmentDetails);
-            if (elementWithInvalidCustomPriceCollection != null)
+            // check valididty
             {
-                return new ResultModel
+                IEnumerable<ProductFlavourElement> productFlavourElements = CheckQuantityShipedValid(outgoingShipmentDTO.OutgoingShipmentDetails);
+                if (productFlavourElements != null)
+                    return new ResultModel { Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Code = ((int)OutgoingErroCode.SHIPED_QUANTITY_NOT_VALID), Content = productFlavourElements };
+                IEnumerable<ProductFlavourElement> elementWithInvalidCustomPriceCollection = CheckCustomCaratQuantityValid(outgoingShipmentDTO.OutgoingShipmentDetails);
+                if (elementWithInvalidCustomPriceCollection != null)
                 {
-                    Code = ((int)OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID),
-                    Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID),
-                    Content = elementWithInvalidCustomPriceCollection,
-                    IsValid = false
-                };
+                    return new ResultModel
+                    {
+                        Code = ((int)OutgoingErroCode.INVALID_CUSTOM_CARAT_QUANTITY),
+                        Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.INVALID_CUSTOM_CARAT_QUANTITY),
+                        Content = elementWithInvalidCustomPriceCollection,
+                        IsValid = false
+                    };
+                }
+
+                IEnumerable<Product> products = this._unitOfWork.ProductRepository.GetAllWithNoTracking();
+
+                //check Given TotalSchemeQuantity == (QSinCaret)*SchemeQuantityPerCaret
+                {
+                    IEnumerable<ProductFlavourElement> productWithSchemeNotValid = this.CheckSchemeQuantityValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
+                    if (productWithSchemeNotValid != null)
+                        return new ResultModel { Code = ((int)OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), IsValid = false, Content = productWithSchemeNotValid };
+                    //check scheme total price valid 
+                    IEnumerable<ProductFlavourElement> productWithSchemePriceNotValid = this.CheckSchemePriceValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
+                    if (productWithSchemePriceNotValid != null)
+                        return new ResultModel { Code = (int)OutgoingErroCode.SCHME_PRICE_NOT_VALID, Content = productWithSchemePriceNotValid, Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHME_PRICE_NOT_VALID) };
+                }
+                //check shiped price valid
+                {
+                    IEnumerable<ProductFlavourElement> itemWithInvalidShipedPrice = this.CheckSalePriceValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
+                    if (itemWithInvalidShipedPrice != null)
+                    {
+                        return new ResultModel
+                        {
+                            Code = ((int)OutgoingErroCode.SCHME_PRICE_NOT_VALID),
+                            Content = itemWithInvalidShipedPrice,
+                            IsValid = false,
+                            Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SHIPED_PRICE_NOT_VALID)
+                        };
+                    }
+                }
+                //check custom carat price valid
+                {
+                    IEnumerable<ProductFlavourElement> itemsWithInavlidCustomCaratTotalPrice = this.CheckCustomCaratPriceValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
+                    if (itemsWithInavlidCustomCaratTotalPrice != null)
+                    {
+                        return new ResultModel
+                        {
+                            Code = ((int)OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID),
+                            Content = itemsWithInavlidCustomCaratTotalPrice,
+                            IsValid = false,
+                            Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.CUSTOM_CARAT_PRICE_NOT_VALID)
+                        };
+                    }
+                }
             }
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(outgoingShipmentDTO.Id);
@@ -216,31 +288,23 @@ namespace Shambala.Core.Supervisors
                 };
             }
             outgoingShipment.Status = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
-            IEnumerable<Product> products = _unitOfWork.ProductRepository.GetAllWithNoTracking();
+            IEnumerable<Product> products1 = _unitOfWork.ProductRepository.GetAllWithNoTracking();
 
-            //check Given TotalSchemeQuantity == (QSinCaret)*SchemeQuantityPerCaret
+            //check scheme quantity available
             {
-                IEnumerable<ProductFlavourElement> productWithSchemeNotValid = this.CheckSchemeQuantityValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
-                if (productWithSchemeNotValid != null)
-                    return new ResultModel { Code = ((int)OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHEME_QUANTITY_NOT_VALID), IsValid = false, Content = productWithSchemeNotValid };
-                //check scheme total price valid 
-                IEnumerable<ProductFlavourElement> productWithSchemePriceNotValid = this.CheckSchemePriceValid(outgoingShipmentDTO.OutgoingShipmentDetails, products);
-                if (productWithSchemePriceNotValid != null)
-                    return new ResultModel { Code = (int)OutgoingErroCode.SCHME_PRICE_NOT_VALID, Content = productWithSchemePriceNotValid, Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHME_PRICE_NOT_VALID) };
 
-                //check scheme quantity available
-                if (!this.IsSchemeQuantityAvailable(outgoingShipmentDTO.OutgoingShipmentDetails, outgoingShipment.OutgoingShipmentDetails, products))
+                if (!this.IsSchemeQuantityAvailable(outgoingShipmentDTO.OutgoingShipmentDetails, outgoingShipment.OutgoingShipmentDetails, products1))
                     return new ResultModel { Code = ((int)OutgoingErroCode.SCHEME_EXCEED), Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SCHEME_EXCEED), Content = "Scheme Product Quantity Exceed" };
             }
 
             //check quantity available            
-            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.GetOutOfStockList(outgoingShipment, outgoingShipmentDTO.OutgoingShipmentDetails.Select(e => new ProductQuantityBLL { ProductId = e.ProductId, Quantity = e.TotalQuantityShiped - e.TotalQuantityReturned, FlavourId = e.FlavourId }), products);
+            IEnumerable<ProductOutOfStockBLL> productOutOfStockBLLs = this.GetOutOfStockList(outgoingShipment, outgoingShipmentDTO.OutgoingShipmentDetails.Select(e => new ProductQuantityBLL { ProductId = e.ProductId, Quantity = e.TotalQuantityShiped - e.TotalQuantityReturned, FlavourId = e.FlavourId }), products1);
             if (productOutOfStockBLLs != null)
             {
                 return new ResultModel { Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.OUT_OF_STOCK), Code = ((int)OutgoingErroCode.OUT_OF_STOCK), Content = productOutOfStockBLLs };
             }
 
-            Product SchemeProduct = products.First(e => e.Id == this.schemeProductOptions.ProductId);
+            Product SchemeProduct = products1.First(e => e.Id == this.schemeProductOptions.ProductId);
             int SchemeProductId = this.schemeProductOptions.ProductId;
             short SchemeFlavourId = this.schemeProductOptions.FlavourId;
             //delete shipments
@@ -262,7 +326,7 @@ namespace Shambala.Core.Supervisors
                 OutgoingShipmentDetails newShipmentDetails = _mapper.Map<OutgoingShipmentDetails>(newShipment);
                 int ProductId = newShipment.ProductId; short FlavourId = newShipment.FlavourId;
                 newShipmentDetails.OutgoingShipmentIdFk = outgoingShipment.Id;
-                Product product = products.First(e => e.Id == ProductId);
+                Product product = products1.First(e => e.Id == ProductId);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(ProductId, FlavourId, newShipment.TotalQuantityShiped + newShipment.TotalQuantityRejected);
                 short TotalSchemeQuantity = newShipment.SchemeInfo.TotalQuantity;
                 //add scheme price and quantity
@@ -280,7 +344,7 @@ namespace Shambala.Core.Supervisors
                 OutgoingShipmentDetails updateShipment = _mapper.Map<OutgoingShipmentDetails>(shipment);
                 updateShipment.OutgoingShipmentIdFk = outgoingShipment.Id;
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
-                Product product = products.First(e => e.Id == ProductId);
+                Product product = products1.First(e => e.Id == ProductId);
                 OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
 
                 SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices);
