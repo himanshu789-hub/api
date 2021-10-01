@@ -169,9 +169,18 @@ namespace Shambala.Core.Supervisors
             {
                 if (item.CustomCaratPrices.TotalPrice != item.CustomCaratPrices.Prices.Sum(e =>
                 {
+
                     Product product = products.First(f => f.Id == item.ProductId);
-                    product.PricePerCaret = e.PricePerCarat;
-                    return Utility.GetTotalProductPrice(product, e.Quantity);
+                    Product newProduct = new Product
+                    {
+                        CaretSize = product.CaretSize,
+                        Id = product.Id,
+                        Name = product.Name,
+                        PricePerCaret = product.PricePerCaret,
+                        SchemeQuantity = product.SchemeQuantity,
+                    };
+                    newProduct.PricePerCaret = e.PricePerCarat;
+                    return Utility.GetTotalProductPrice(newProduct, e.Quantity);
                 }))
                 {
                     productFlavours.Add(new ProductFlavourElement { ProductId = item.ProductId, FlavourId = item.FlavourId });
@@ -213,6 +222,25 @@ namespace Shambala.Core.Supervisors
                     productFlavours.Add(new ProductFlavourElement { FlavourId = detail.FlavourId, ProductId = detail.ProductId });
             }
             return productFlavours.Count > 0 ? productFlavours : null;
+        }
+
+
+        void SetNetAndSalePrice(OutgoingShipmentDetails detail, Product product)
+        {
+            detail.TotalShipedPrice = Utility.GetTotalProductPrice(product, detail.TotalQuantityShiped);
+            detail.NetPrice = Utility.GetTotalProductPrice(product, ((short)(detail.TotalQuantityShiped - detail.CustomCaratPrices.Sum(e => e.Quantity)))) - detail.SchemeTotalPrice + detail.CustomCaratPrices.Sum(e =>
+            {
+                Product newProduct = new Product()
+                {
+                    CaretSize = product.CaretSize,
+                    Id = product.Id,
+                    Name = product.Name,
+                    PricePerCaret = product.PricePerCaret,
+                    SchemeQuantity = product.SchemeQuantity
+                };
+                newProduct.PricePerCaret = e.PricePerCarat;
+                return Utility.GetTotalProductPrice(newProduct, e.Quantity);
+            });
         }
         public ResultModel Update(OutgoingShipmentDTO outgoingShipmentDTO)
         {
@@ -332,6 +360,8 @@ namespace Shambala.Core.Supervisors
                 //add scheme price and quantity
                 newShipmentDetails.SchemeTotalQuantity = ((byte)TotalSchemeQuantity);
                 newShipmentDetails.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, TotalSchemeQuantity);
+                SetNetAndSalePrice(newShipmentDetails, product);
+                SetNewCustomCaratPrice(null, newShipmentDetails.CustomCaratPrices);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductId, SchemeFlavourId, TotalSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
             }
@@ -375,7 +405,7 @@ namespace Shambala.Core.Supervisors
                 }
                 short previousQuantity = previousShipment.TotalQuantityShiped;
                 short newQuantity = updateShipment.TotalQuantityShiped;
-
+                SetNetAndSalePrice(updateShipment, product);
                 updateShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, newSchemeQuantity);
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
             }
