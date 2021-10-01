@@ -87,6 +87,11 @@ namespace Shambala.Infrastructure
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
+                entity.HasOne(e=>e.OutgoinShipmentDetailIdFkNavigation)
+                .WithMany(e=>e.CustomCaratPrices)
+                .HasForeignKey(e=>e.OutgoinShipmentDetailIdFk)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("OutgoingShipment_CustomPrice_Relationship");
             });
 
             modelBuilder.Entity<Debit>(entity =>
@@ -229,7 +234,8 @@ namespace Shambala.Infrastructure
                 entity.HasIndex(e => e.ProductIdFk)
                     .HasName("Outgoing_Shipment_Details_Product_RelationShip_idx");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int(10) unsigned")
+                .ValueGeneratedOnAdd();
 
                 //  entity.Property(e => e.CaretSize).HasColumnType("tinyint(4)");
 
@@ -294,9 +300,9 @@ namespace Shambala.Infrastructure
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_OutgoingShipment_Relationship");
 
-                entity.HasMany(e => e.CustomCaratPrices)
-                .WithOne()
-                .HasForeignKey(e => e.OutgoinShipmentDetailIdFk);
+                // entity.HasMany(e => e.CustomCaratPrices)
+                // .WithOne()
+                // .HasForeignKey(e => e.OutgoinShipmentDetailIdFk);
 
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)

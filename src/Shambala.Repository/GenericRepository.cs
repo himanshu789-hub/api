@@ -30,7 +30,7 @@ namespace Shambala.Repository
                 typeof(T).GetProperty("Id").SetValue(entity, 0);
             }
             var AddedEntity = _context.Set<T>().Add(entity);
-
+           // _context.SaveChanges(); 
             return AddedEntity.Entity;
         }
 

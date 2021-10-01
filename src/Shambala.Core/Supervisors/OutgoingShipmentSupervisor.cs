@@ -350,12 +350,13 @@ namespace Shambala.Core.Supervisors
             .Where(e => !outgoingShipmentDTO.OutgoingShipmentDetails.Any(f => f.FlavourId == e.FlavourIdFk && f.ProductId == e.ProductIdFk && f.OutgoingShipmentId == e.OutgoingShipmentIdFk));
             foreach (var deleteShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(deleteShipments))
             {
-                _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
                 _unitOfWork.ProductRepository.AddQuantity(deleteShipment.ProductIdFk, deleteShipment.FlavourIdFk, deleteShipment.TotalQuantityShiped);
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
                 foreach (var customprice in deleteShipment.CustomCaratPrices)
                     _unitOfWork.CustomPriceRepository.Delete(customprice);
+                _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
             }
+
             //new Shipments
             IEnumerable<OutgoingShipmentDetailTransferDTO> newShipments = outgoingShipmentDTO.OutgoingShipmentDetails.Where(e => !outgoingShipment.OutgoingShipmentDetails.Any(f => f.ProductIdFk == e.ProductId && f.FlavourIdFk == e.FlavourId)).ToList();
 
@@ -369,11 +370,11 @@ namespace Shambala.Core.Supervisors
                 short TotalSchemeQuantity = newShipment.SchemeInfo.TotalQuantity;
                 //add scheme price and quantity
                 newShipmentDetails.SchemeTotalQuantity = ((byte)TotalSchemeQuantity);
-                newShipmentDetails.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, TotalSchemeQuantity);
+                newShipmentDetails.SchemeTotalPrice = Utility.CalculatePricePerBottleOfProduct(SchemeProduct) * TotalSchemeQuantity;
                 SetNetAndSalePrice(newShipmentDetails, product);
-                SetNewCustomCaratPrice(null, newShipmentDetails.CustomCaratPrices);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductId, SchemeFlavourId, TotalSchemeQuantity);
-                _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
+                OutgoingShipmentDetails outgoingShipmentDetails = _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
+                SetNewCustomCaratPrice(null, newShipmentDetails.CustomCaratPrices, outgoingShipmentDetails);
             }
 
             //update Shipments
@@ -385,9 +386,9 @@ namespace Shambala.Core.Supervisors
                 updateShipment.OutgoingShipmentIdFk = outgoingShipment.Id;
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
                 Product product = products1.First(e => e.Id == ProductId);
-                OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.Id == updateShipment.Id);
+                OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.ProductIdFk == updateShipment.ProductIdFk && e.FlavourIdFk == updateShipment.FlavourIdFk);
 
-                SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices);
+                SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices,previousShipment);
                 if (previousShipment.TotalQuantityTaken != updateShipment.TotalQuantityTaken)
                 {
                     short abolsuteQuantity = (short)Math.Abs(previousShipment.TotalQuantityTaken - updateShipment.TotalQuantityTaken);
@@ -416,20 +417,25 @@ namespace Shambala.Core.Supervisors
                 short previousQuantity = previousShipment.TotalQuantityShiped;
                 short newQuantity = updateShipment.TotalQuantityShiped;
                 SetNetAndSalePrice(updateShipment, product);
-                updateShipment.SchemeTotalPrice = Utility.GetTotalProductPrice(SchemeProduct, newSchemeQuantity);
+                updateShipment.SchemeTotalPrice = Utility.CalculatePricePerBottleOfProduct(SchemeProduct) * newSchemeQuantity;
                 _unitOfWork.OutgoingShipmentDetailRepository.Update(updateShipment);
             }
             _unitOfWork.SaveChanges();
             return new ResultModel { IsValid = true };
         }
-        void SetNewCustomCaratPrice(IEnumerable<CustomCaratPrice> oldCustomPries, IEnumerable<CustomCaratPrice> newCustomPrices)
+        void SetNewCustomCaratPrice(IEnumerable<CustomCaratPrice> oldCustomPries, IEnumerable<CustomCaratPrice> newCustomPrices, OutgoingShipmentDetails outgoingShipmentDetails)
         {
             if (oldCustomPries != null)
                 foreach (CustomCaratPrice customCaratPrice in oldCustomPries)
                     _unitOfWork.CustomPriceRepository.Delete(customCaratPrice);
             if (newCustomPrices != null)
+            {
                 foreach (CustomCaratPrice customCarat in newCustomPrices)
+                {
+                    customCarat.OutgoinShipmentDetailIdFkNavigation = outgoingShipmentDetails;
                     _unitOfWork.CustomPriceRepository.Add(customCarat);
+                }
+            }
         }
         bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
         {
