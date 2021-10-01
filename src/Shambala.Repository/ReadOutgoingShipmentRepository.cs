@@ -21,7 +21,7 @@ namespace Shambala.Repository
 
         public OutgoingShipmentAggregateBLL GetDetails(int Id)
         {
-            var outgoingShipment = context.OutgoingShipment.Where(e => e.Id == Id);
+            var outgoingShipment = context.OutgoingShipment.Include(e=>e.SalesmanIdFkNavigation).Where(e => e.Id == Id);
             var outgoingShipmentDetails = context.OutgoingShipmentDetails.Include(e => e.CustomCaratPrices).Where(e => e.OutgoingShipmentIdFk == Id)
             .Join(context.Product, (od) => od.ProductIdFk, (p) => p.Id, (od, p) => new OutgoingDetailBLL
             {

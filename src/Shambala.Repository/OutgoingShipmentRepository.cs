@@ -18,6 +18,7 @@ namespace Shambala.Repository
         public OutgoingShipment Add(OutgoingShipment outgoingShipment)
         {
             outgoingShipment.Id = 0;
+            outgoingShipment.RowVersion = 0;
             outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.PENDING);
             foreach (var details in outgoingShipment.OutgoingShipmentDetails)
             {
@@ -54,8 +55,10 @@ namespace Shambala.Repository
             {
                 outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED);
             }
-            outgoingShipment.RowVersion++;
-
+            var tracker = _context.Entry(outgoingShipment).Property(e => e.RowVersion);
+            tracker.IsModified = true;
+            tracker.CurrentValue = (short)(outgoingShipment.RowVersion + 1);
+            _context.Entry(outgoingShipment).Property(e => e.Status).IsModified = true;
             try
             {
                 _context.SaveChanges();

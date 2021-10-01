@@ -52,8 +52,8 @@ namespace Shambala.Controllers
             if (!resultModel.IsValid)
             {
                 if (resultModel.Code == ((int)ConcurrencyErrorCode.Concurrency_Error))
-                    return UnprocessableEntity(resultModel.Content);
-                return BadRequest(resultModel.Content);
+                    return UnprocessableEntity(resultModel);
+                return BadRequest(resultModel);
             }
             return Ok(resultModel.Content);
         }

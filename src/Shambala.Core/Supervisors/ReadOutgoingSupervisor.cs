@@ -33,7 +33,8 @@ namespace Shambala.Core.Supervisors
                 outgoingShipmentAggregateDTO.TotalNetPrice += detail.NetPrice;
                 outgoingShipmentAggregateDTO.TotalShipedPrice += detail.TotalShipedPrice;
                 outgoingShipmentAggregateDTO.CustomCaratTotalPrice += detail.CustomCaratPrices.TotalPrice;
-                outgoingShipmentAggregateDTO.TotalSchemeQuatity += detail.SchemeInfo.TotalQuantity;
+                outgoingShipmentAggregateDTO.TotalSchemeQuantity += detail.SchemeInfo.TotalQuantity;
+                outgoingShipmentAggregateDTO.TotalSchemePrice+=detail.SchemeInfo.TotalSchemePrice;
             }
             return outgoingShipmentAggregateDTO;
         }

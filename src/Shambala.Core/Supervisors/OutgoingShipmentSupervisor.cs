@@ -280,7 +280,7 @@ namespace Shambala.Core.Supervisors
                     {
                         return new ResultModel
                         {
-                            Code = ((int)OutgoingErroCode.SCHME_PRICE_NOT_VALID),
+                            Code = ((int)OutgoingErroCode.SHIPED_PRICE_NOT_VALID),
                             Content = itemWithInvalidShipedPrice,
                             IsValid = false,
                             Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.SHIPED_PRICE_NOT_VALID)
@@ -304,6 +304,16 @@ namespace Shambala.Core.Supervisors
             }
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(outgoingShipmentDTO.Id);
+            if (outgoingShipmentDTO.RowVersion != outgoingShipment.RowVersion)
+            {
+                return new ResultModel
+                {
+                    Code = ((int)ConcurrencyErrorCode.Concurrency_Error),
+                    Content = "Another User Already Changed The Content",
+                    IsValid = false,
+                    Name = "Concurrency Exception"
+                };
+            }
             bool IsUpdated = _unitOfWork.OutgoingShipmentRepository.Update(outgoingShipment);
             if (!IsUpdated)
             {
@@ -394,7 +404,7 @@ namespace Shambala.Core.Supervisors
                     else
                         _unitOfWork.ProductRepository.AddQuantity(ProductId, FlavourId, absoluteQuantity);
                 }
-                short newSchemeQuantity = Utility.GetTotalSchemeQuantity(updateShipment.TotalQuantityShiped, product.CaretSize, product.SchemeQuantity ?? 0);
+                short newSchemeQuantity = Utility.GetTotalSchemeQuantity(updateShipment.TotalQuantityShiped, product.CaretSize, shipment.SchemeInfo.SchemeQuantity);
                 if (previousShipment.SchemeTotalQuantity != newSchemeQuantity)
                 {
                     short absoluteQuantity = (short)Math.Abs(previousShipment.SchemeTotalQuantity - newSchemeQuantity);
@@ -414,10 +424,12 @@ namespace Shambala.Core.Supervisors
         }
         void SetNewCustomCaratPrice(IEnumerable<CustomCaratPrice> oldCustomPries, IEnumerable<CustomCaratPrice> newCustomPrices)
         {
-            foreach (CustomCaratPrice customCaratPrice in oldCustomPries)
-                _unitOfWork.CustomPriceRepository.Delete(customCaratPrice);
-            foreach (CustomCaratPrice customCarat in newCustomPrices)
-                _unitOfWork.CustomPriceRepository.Add(customCarat);
+            if (oldCustomPries != null)
+                foreach (CustomCaratPrice customCaratPrice in oldCustomPries)
+                    _unitOfWork.CustomPriceRepository.Delete(customCaratPrice);
+            if (newCustomPrices != null)
+                foreach (CustomCaratPrice customCarat in newCustomPrices)
+                    _unitOfWork.CustomPriceRepository.Add(customCarat);
         }
         bool IsShipmentsUnique(IEnumerable<ShipmentDTO> shipments)
         {
@@ -449,6 +461,7 @@ namespace Shambala.Core.Supervisors
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
             OutgoingShipmentInfoDTO outgoingShipmentInfoDTO = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
             AfterMapper.OutgoingShipmentTransferDTODetails(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking());
+
             return outgoingShipmentInfoDTO;
         }
     }

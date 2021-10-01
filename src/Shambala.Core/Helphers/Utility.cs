@@ -75,7 +75,14 @@ namespace Shambala.Core.Helphers
         }
         static public decimal GetTotalProductPrice(Product Product, short quantity)
         {
-            return Utility.CalculatePricePerBottleOfProduct(Product) * quantity;
+            short[] cp = GetTotalCaratandPiece(Product.CaretSize, quantity);
+            return Product.PricePerCaret * cp[0] + cp[1] * Utility.CalculatePricePerBottleOfProduct(Product);
+        }
+        static public short[] GetTotalCaratandPiece(short CaretSize, short quantity)
+        {
+            short carat = ((short)System.Math.Floor(decimal.Divide(quantity, CaretSize)));
+            short piece = (short)(quantity % CaretSize);
+            return new short[] { carat, piece };
         }
         static public short GetTotalSchemeQuantity(int totalProductQuantity, short caretSize, byte schemequantity)
         {

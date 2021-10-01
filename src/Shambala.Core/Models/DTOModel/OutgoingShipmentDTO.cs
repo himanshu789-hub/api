@@ -12,6 +12,7 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
+        public short RowVersion { get; set; }
         public ICollection<OutgoingShipmentDetailTransferDTO> OutgoingShipmentDetails { get; set; }
     }
     public class OutgoingShipmentDTO : OutgoingShipmentBaseDTO
@@ -81,5 +82,5 @@ namespace Shambala.Core.Models.DTOModel
         public DateTime DateCreated { get; set; }
         public IEnumerable<ShipmentDTO> Shipments { get; set; }
     }
-   
+
 }
