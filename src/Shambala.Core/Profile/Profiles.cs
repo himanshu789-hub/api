@@ -90,9 +90,7 @@ namespace Shambala.Core.Profile
 
             //CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
-            .ReverseMap()
-            .ForMember(e => e.OutgoinShipmentDetailIdFk, m => m.MapFrom((src, desr, d, context) => context.Items["OutgoingId"] == null ? 0 : context.Items["OutgoingId"]));
-
+            .ReverseMap();
             // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));

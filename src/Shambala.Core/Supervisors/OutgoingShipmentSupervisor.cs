@@ -202,10 +202,10 @@ namespace Shambala.Core.Supervisors
         {
             ICollection<ProductFlavourElement> result = new List<ProductFlavourElement>();
             Product schemeProduct = products.First(e => e.Id == schemeProductOptions.ProductId);
-            decimal pricePerBottle = schemeProduct.PricePerCaret / schemeProduct.CaretSize;
+            decimal pricePerBottle = Utility.CalculatePricePerBottleOfProduct(schemeProduct);
             foreach (OutgoingShipmentDetailTransferDTO detailDTO in outgoingShipmentDetailDTOs)
             {
-                if (detailDTO.SchemeInfo.TotalSchemePrice != Utility.GetTotalProductPrice(schemeProduct, detailDTO.SchemeInfo.TotalQuantity))
+                if (detailDTO.SchemeInfo.TotalSchemePrice != (pricePerBottle * detailDTO.SchemeInfo.TotalQuantity))
                 {
                     result.Add(new ProductFlavourElement { FlavourId = detailDTO.FlavourId, ProductId = detailDTO.ProductId });
                 }
