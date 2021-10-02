@@ -43,6 +43,8 @@ namespace Shambala.Core.Helphers
                 setSchemePerCaret(detail, product);
                 detail.CaretSize = product.CaretSize;
                 detail.UnitPrice = product.PricePerCaret;
+                detail.ProductName = product.Name;
+                detail.FlavourName = product.ProductFlavourQuantity.First(e => e.FlavourIdFk == detail.FlavourId).FlavourIdFkNavigation.Title;
             }
             return aggegateDetailDTOs;
         }

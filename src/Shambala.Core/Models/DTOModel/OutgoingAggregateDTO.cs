@@ -13,12 +13,14 @@ namespace Shambala.Core.Models.DTOModel
         public decimal TotalSchemePrice { get; set; }
         public decimal TotalShipedPrice { get; set; }
         public decimal TotalNetPrice { get; set; }
-        public short TotalSchemeQuantity{get;set;}
+        public short TotalSchemeQuantity { get; set; }
         public decimal CustomCaratTotalPrice { get; set; }
 
     }
     public class OutgoingShipmentAggegateDetailDTO : OutgoingShipmentDetailTransferDTO
     {
+        public string ProductName { get; set; }
+        public string FlavourName { get; set; }
         public byte CaretSize { get; set; }
         public decimal UnitPrice { get; set; }
     }

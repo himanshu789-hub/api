@@ -13,8 +13,8 @@ namespace Shambala.Core.Models
     }
     public class OutgoingDetailBLL : OutgoingShipmentDetails
     {
-    public byte CaretSize { get; set; }
+        public byte CaretSize { get; set; }
         public decimal UnitPrice { get; set; }
-    
+
     }
 }

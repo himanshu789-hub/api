@@ -467,7 +467,7 @@ namespace Shambala.Core.Supervisors
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
             OutgoingShipmentInfoDTO outgoingShipmentInfoDTO = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
             AfterMapper.OutgoingShipmentTransferDTODetails(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking());
-
+            
             return outgoingShipmentInfoDTO;
         }
     }
