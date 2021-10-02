@@ -4,6 +4,6 @@ namespace Shambala.Core.Models.DTOModel
     {
         public short Quantity { get; set; }
         public decimal PricePerCarat { get; set; }
-        public int Id{get;set;}
+        public long Id{get;set;}
     }
 }

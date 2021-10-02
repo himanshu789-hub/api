@@ -9,16 +9,16 @@ namespace Shambala.Domain
 {
     public partial class OutgoingShipmentDetails
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public int ProductIdFk { get; set; }
         public short TotalQuantityShiped { get; set; }
-        public byte TotalQuantityRejected { get; set; }
+        public short TotalQuantityRejected { get; set; }
         public int OutgoingShipmentIdFk { get; set; }
         public byte FlavourIdFk { get; set; }
         public short TotalQuantityReturned { get; set; }
-        public byte SchemeTotalQuantity { get; set; }
+        public short SchemeTotalQuantity { get; set; }
         public decimal SchemeTotalPrice { get; set; }
-        public short TotalQuantityTaken { get; set; }
+        public int TotalQuantityTaken { get; set; }
         public decimal TotalShipedPrice { get; set; }
         public decimal NetPrice { get; set; }
 

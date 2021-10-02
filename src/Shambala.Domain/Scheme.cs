@@ -9,7 +9,7 @@ namespace Shambala.Domain
 {
     public partial class Scheme
     {
-        public short Id { get; set; }
+        public int Id { get; set; }
         public DateTime DateCreated { get; set; }
         public byte Quantity { get; set; }
         public int ProductIdFk { get; set; }

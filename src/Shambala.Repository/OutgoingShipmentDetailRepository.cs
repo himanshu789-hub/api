@@ -13,7 +13,7 @@ namespace Shambala.Repository
             this.context = context;
         }
 
-        public bool Delete(int Id)
+        public bool Delete(long Id)
         {
             context.OutgoingShipmentDetails.Remove(new OutgoingShipmentDetails() { Id = Id });
 

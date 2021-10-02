@@ -10,7 +10,7 @@ namespace Shambala.Domain
 
         public int GetHashCode(OutgoingShipmentDetails obj)
         {
-            return obj.Id ;
+            return obj.Id.GetHashCode() ;
         }
     }
     public class IncomingShipmentComparer : IEqualityComparer<IncomingShipment>

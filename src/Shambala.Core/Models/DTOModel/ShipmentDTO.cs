@@ -9,9 +9,9 @@ namespace Shambala.Core.Models.DTOModel
         [RequiredWithNonDefault]
         public int Id { get; set; }
         [RequiredWithNonDefault]
-        public short TotalRecievedPieces { get; set; }
+        public int TotalRecievedPieces { get; set; }
         [Required]
-        public short TotalDefectPieces { get; set; }
+        public int TotalDefectPieces { get; set; }
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         [RequiredWithNonDefault]

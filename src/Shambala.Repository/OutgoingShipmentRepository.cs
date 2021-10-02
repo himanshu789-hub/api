@@ -29,7 +29,7 @@ namespace Shambala.Repository
 
         }
 
-        public OutgoingShipment GetByIdWithNoTracking(int Id)
+        public OutgoingShipment GetByIdWithNoTracking(long Id)
         {
             return _context.OutgoingShipment
                 .Include(e => e.SalesmanIdFkNavigation)
@@ -39,7 +39,7 @@ namespace Shambala.Repository
         }
 
 
-        public bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedValue)
+        public bool CheckStatusWithNoTracking(long Id, OutgoingShipmentStatus expectedValue)
         {
             return _context.OutgoingShipment.AsNoTracking().First(e => e.Id == Id).Status == System.Enum.GetName(typeof(OutgoingShipmentStatus), expectedValue);
         }

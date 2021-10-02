@@ -6,7 +6,7 @@ namespace Shambala.Core.Models.DTOModel
     {
 
         [RequiredWithNonDefault]
-        public short Id { get; set; }
+        public int Id { get; set; }
         
         [RequiredWithNonDefault]
         public int Quantity { get; set; }

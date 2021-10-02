@@ -8,7 +8,7 @@ namespace Shambala.Core.Models.DTOModel
     public abstract class OutgoingShipmentBaseDTO
     {
         [RequiredWithNonDefault]
-        public int Id { get; set; }
+        public long Id { get; set; }
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
@@ -39,7 +39,7 @@ namespace Shambala.Core.Models.DTOModel
     }
     public class OutgoingShipmentDetailDTO : OutgoingShipmentDetailBaseDTO
     {
-        public byte SchemeTotalQuantity { get; set; }
+        public short SchemeTotalQuantity { get; set; }
         public decimal SchemeTotalPrice { get; set; }
         public ICollection<CustomCaratPriceDTO> CustomCaratPrices { get; set; }
     }
