@@ -8,7 +8,7 @@ namespace Shambala.Core.Models.DTOModel
     public abstract class OutgoingShipmentBaseDTO
     {
         [RequiredWithNonDefault]
-        public long Id { get; set; }
+        public int Id { get; set; }
         [RequiredWithNonDefault]
         public DateTime DateCreated { get; set; }
         public OutgoingShipmentStatus Status { get; set; }

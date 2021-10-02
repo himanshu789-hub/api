@@ -37,7 +37,7 @@ namespace Shambala.Infrastructure
             if (!optionsBuilder.IsConfigured)
             {
 #warning To protect potentially sensitive information in your connection string, you should move it out of source code. See http://go.microsoft.com/fwlink/?LinkId=723263 for guidance on storing connection strings.
-                optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None");
+                optionsBuilder.UseMySQL("Server=localhost;Port=3306;Database=shambala;Uid=root;Pwd=mysql@90dev;SslMode=None").EnableSensitiveDataLogging();
             }
         }
 
@@ -83,7 +83,7 @@ namespace Shambala.Infrastructure
                     .HasColumnName("OutgoinShipmentDetail_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.Id).HasColumnType("int(10) unsigned").ValueGeneratedOnAdd();
+                entity.Property(e => e.Id).HasColumnType("int(10)").ValueGeneratedOnAdd();
                 entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");

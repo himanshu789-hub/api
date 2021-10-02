@@ -29,42 +29,42 @@ namespace Shambala.Repository
 
         }
 
-        public OutgoingShipment GetByIdWithNoTracking(long Id)
+        public OutgoingShipment GetByIdWithNoTracking(int Id)
         {
-            return _context.OutgoingShipment
+            OutgoingShipment shipment = _context.OutgoingShipment
                 .Include(e => e.SalesmanIdFkNavigation)
                 .Include(e => e.OutgoingShipmentDetails).ThenInclude(e => e.CustomCaratPrices)
                 .AsNoTracking()
                 .First(e => e.Id == Id);
+                
+                return shipment;
         }
 
 
-        public bool CheckStatusWithNoTracking(long Id, OutgoingShipmentStatus expectedValue)
+        public bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedValue)
         {
             return _context.OutgoingShipment.AsNoTracking().First(e => e.Id == Id).Status == System.Enum.GetName(typeof(OutgoingShipmentStatus), expectedValue);
         }
 
         public IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
-            return _context.OutgoingShipment.AsNoTracking().Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date >= date.Date).ToList();
+            return _context.OutgoingShipment.Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date >= date.Date).AsNoTracking().ToList();
         }
 
         public bool Update(OutgoingShipment outgoingShipment)
         {
-            if (outgoingShipment.Status != System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED))
-            {
-                outgoingShipment.Status = System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED);
-            }
-            var tracker = _context.Entry(outgoingShipment).Property(e => e.RowVersion);
-            tracker.IsModified = true;
-            tracker.CurrentValue = (short)(outgoingShipment.RowVersion + 1);
-            _context.Entry(outgoingShipment).Property(e => e.Status).IsModified = true;
+            short newRowVersin = (short)(outgoingShipment.RowVersion + 1);
             try
             {
-                _context.SaveChanges();
-                return true;
+                int changes = _context.Database.ExecuteSqlRaw("UPDATE outgoing_shipment SET RowVersion={0} , Status={1} WHERE Id={2} AND RowVersion={3}",
+                 newRowVersin, System.Enum.GetName(typeof(OutgoingShipmentStatus), OutgoingShipmentStatus.FILLED), outgoingShipment.Id, outgoingShipment.RowVersion);
+                if (changes > 0)
+                {
+                    return true;
+                }
+                throw new DbUpdateConcurrencyException();
             }
-            catch (DbUpdateConcurrencyException e)
+            catch (DbUpdateConcurrencyException)
             {
                 return false;
             }

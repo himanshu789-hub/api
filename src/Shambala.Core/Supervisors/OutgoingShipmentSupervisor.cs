@@ -325,7 +325,6 @@ namespace Shambala.Core.Supervisors
                     Name = "Concurrency Exception"
                 };
             }
-            outgoingShipment.Status = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
             IEnumerable<Product> products1 = _unitOfWork.ProductRepository.GetAllWithNoTracking();
 
             //check scheme quantity available
@@ -353,7 +352,7 @@ namespace Shambala.Core.Supervisors
                 _unitOfWork.ProductRepository.AddQuantity(deleteShipment.ProductIdFk, deleteShipment.FlavourIdFk, deleteShipment.TotalQuantityShiped);
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
                 foreach (var customprice in deleteShipment.CustomCaratPrices)
-                    _unitOfWork.CustomPriceRepository.Delete(customprice);
+                    _unitOfWork.CustomPriceRepository.Delete(customprice.Id);
                 _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
             }
 
@@ -373,8 +372,9 @@ namespace Shambala.Core.Supervisors
                 newShipmentDetails.SchemeTotalPrice = Utility.CalculatePricePerBottleOfProduct(SchemeProduct) * TotalSchemeQuantity;
                 SetNetAndSalePrice(newShipmentDetails, product);
                 _unitOfWork.ProductRepository.DeductQuantityOfProductFlavour(SchemeProductId, SchemeFlavourId, TotalSchemeQuantity);
-                OutgoingShipmentDetails outgoingShipmentDetails = _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
-                SetNewCustomCaratPrice(null, newShipmentDetails.CustomCaratPrices, outgoingShipmentDetails);
+                _unitOfWork.OutgoingShipmentDetailRepository.Add(newShipmentDetails);
+                SetNewCustomCaratPrice(null, newShipmentDetails.CustomCaratPrices,newShipmentDetails);
+               
             }
 
             //update Shipments
@@ -386,9 +386,11 @@ namespace Shambala.Core.Supervisors
                 updateShipment.OutgoingShipmentIdFk = outgoingShipment.Id;
                 int ProductId = updateShipment.ProductIdFk; short FlavourId = updateShipment.FlavourIdFk;
                 Product product = products1.First(e => e.Id == ProductId);
-                OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails.First(e => e.ProductIdFk == updateShipment.ProductIdFk && e.FlavourIdFk == updateShipment.FlavourIdFk);
-
-                SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices,previousShipment);
+                OutgoingShipmentDetails previousShipment = outgoingShipment.OutgoingShipmentDetails
+                .First(e => e.ProductIdFk == updateShipment.ProductIdFk && e.FlavourIdFk == updateShipment.FlavourIdFk);
+                updateShipment.Id = previousShipment.Id;
+                //passed shipment must be new instance
+                SetNewCustomCaratPrice(previousShipment.CustomCaratPrices, updateShipment.CustomCaratPrices, updateShipment);
                 if (previousShipment.TotalQuantityTaken != updateShipment.TotalQuantityTaken)
                 {
                     short abolsuteQuantity = (short)Math.Abs(previousShipment.TotalQuantityTaken - updateShipment.TotalQuantityTaken);
@@ -427,7 +429,7 @@ namespace Shambala.Core.Supervisors
         {
             if (oldCustomPries != null)
                 foreach (CustomCaratPrice customCaratPrice in oldCustomPries)
-                    _unitOfWork.CustomPriceRepository.Delete(customCaratPrice);
+                    _unitOfWork.CustomPriceRepository.Delete(customCaratPrice.Id);
             if (newCustomPrices != null)
             {
                 foreach (CustomCaratPrice customCarat in newCustomPrices)
@@ -467,7 +469,7 @@ namespace Shambala.Core.Supervisors
             OutgoingShipment outgoingShipment = _unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(Id);
             OutgoingShipmentInfoDTO outgoingShipmentInfoDTO = _mapper.Map<OutgoingShipmentInfoDTO>(outgoingShipment);
             AfterMapper.OutgoingShipmentTransferDTODetails(outgoingShipmentInfoDTO.OutgoingShipmentDetails, _unitOfWork.ProductRepository.GetAllWithNoTracking());
-            
+
             return outgoingShipmentInfoDTO;
         }
     }

@@ -13,9 +13,9 @@ namespace Shambala.Repository
             return this.context.CustomCaratPrice.Add(customCaratPrice).Entity;
         }
 
-        public bool Delete(CustomCaratPrice customCaratPrice)
+        public bool Delete(int Id)
         {
-            this.context.CustomCaratPrice.Remove(customCaratPrice);
+            this.context.CustomCaratPrice.Remove(new CustomCaratPrice(){Id = Id});
             return true;
         }
     }

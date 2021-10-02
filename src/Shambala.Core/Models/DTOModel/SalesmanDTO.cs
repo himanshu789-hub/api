@@ -5,7 +5,7 @@ namespace Shambala.Core.Models.DTOModel
     public class SalesmanDTO
     {
         [RequiredWithNonDefault]
-        public int Id { get; set; }
+        public short Id { get; set; }
         [Required,MinLength(1)]
         public string FullName { get; set; }
         

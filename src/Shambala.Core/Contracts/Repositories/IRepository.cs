@@ -12,7 +12,7 @@ namespace Shambala.Core.Contracts.Repositories
     public interface ICustomPriceRepository
     {
           CustomCaratPrice Add(CustomCaratPrice customCaratPrice);
-          bool Delete(CustomCaratPrice customCaratPrice);
+          bool Delete(int customCaratPrice);
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {

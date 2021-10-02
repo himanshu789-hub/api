@@ -10,8 +10,8 @@ namespace Shambala.Core.Contracts.Repositories
     public interface IOutgoingShipmentRepository : ILoadingProperties<OutgoingShipment>
     {
         OutgoingShipment Add(OutgoingShipment outgoingShipment);
-        OutgoingShipment GetByIdWithNoTracking(long Id);
-        bool CheckStatusWithNoTracking(long Id, OutgoingShipmentStatus expectedStatus);
+        OutgoingShipment GetByIdWithNoTracking(int Id);
+        bool CheckStatusWithNoTracking(int Id, OutgoingShipmentStatus expectedStatus);
         //bool Complete(int Id);
         //  OutgoingShipment GetAllDetailById(int Id);
         IEnumerable<OutgoingShipment> GetBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
@@ -19,6 +19,6 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface IOutgoingShipmentDetailRepository : IGenericRepository<OutgoingShipmentDetails>
     {
-        bool Delete(long Id);
+        bool Delete(int Id);
     }
 }

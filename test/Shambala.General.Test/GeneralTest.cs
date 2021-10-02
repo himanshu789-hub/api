@@ -15,7 +15,7 @@ namespace Shambala.General.Test
         {
 
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
-          //  config.AssertConfigurationIsValid();
+            config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
         }
         [Fact]

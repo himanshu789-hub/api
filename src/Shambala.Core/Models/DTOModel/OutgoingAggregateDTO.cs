@@ -6,7 +6,7 @@ namespace Shambala.Core.Models.DTOModel
     using Models;
     public class OutgoingShipmentAggregateDTO
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public SalesmanDTO Salesman { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
         public IEnumerable<OutgoingShipmentAggegateDetailDTO> OutgoingShipmentDetails { get; set; }

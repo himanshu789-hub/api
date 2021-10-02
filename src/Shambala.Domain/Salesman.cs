@@ -14,7 +14,7 @@ namespace Shambala.Domain
             OutgoingShipment = new HashSet<OutgoingShipment>();
         }
 
-        public int Id { get; set; }
+        public short Id { get; set; }
         public string FullName { get; set; }
         public bool IsActive { get; set; }
 

@@ -9,10 +9,10 @@ namespace Shambala.Domain
 {
     public partial class CustomCaratPrice
     {
-        public long Id{get;set;}
+        public int Id{get;set;}
         public short Quantity { get; set; }
         public decimal PricePerCarat { get; set; }
-        public long OutgoinShipmentDetailIdFk { get; set; } 
+        public int OutgoinShipmentDetailIdFk { get; set; } 
         public virtual OutgoingShipmentDetails OutgoinShipmentDetailIdFkNavigation{get;set;}
     }
 }

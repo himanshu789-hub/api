@@ -10,7 +10,7 @@ namespace Shambala.Core.Contracts.Repositories
     {
         IEnumerable<OutgoingShipment> GetShipmentsBySalesmanIdAndAfterDate(short salesmanId, System.DateTime date);
         //IEnumerable<OutgoingShipmentProductInfoDTO> GetProductsById(int orderId);
-        OutgoingShipmentAggregateBLL GetDetails(long Id);
+        OutgoingShipmentAggregateBLL GetDetails(int Id);
     }
     public interface IReadInvoiceRepository
     {
