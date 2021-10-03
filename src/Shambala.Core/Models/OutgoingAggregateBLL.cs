@@ -11,6 +11,7 @@ namespace Shambala.Core.Models
         public Salesman Salesman { get; set; }
         public Ledger Ledger{get;set;}
         public ICollection<OutgoingDetailBLL> OutgoingShipmentDetails { get; set; }
+        public short RowVersion{get;set;}
     }
     public class OutgoingDetailBLL : OutgoingShipmentDetails
     {

@@ -63,7 +63,8 @@ namespace Shambala.Repository
                 OutgoingShipmentDetails = new List<OutgoingDetailBLL>(detailBLLs),
                 Salesman = outgoingShipment.SalesmanIdFkNavigation,
                 Status = outgoingShipment.Status,
-                Ledger=outgoingShipment.Ledger
+                Ledger=outgoingShipment.Ledger,
+                RowVersion=outgoingShipment.RowVersion
             };
         }
 

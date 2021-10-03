@@ -19,6 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IReadInvoiceRepository, ReadInvoiceRepository>();
             services.AddScoped<IReadOutgoingShipmentRepository,ReadOutgoingShipmentRepository>();
             services.AddScoped<ICustomPriceRepository,CustomPriceRepository>();
+            services.AddScoped<ILedgerRespository,LedgerRepository>();
             return services;
         }
 
