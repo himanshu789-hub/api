@@ -21,17 +21,15 @@ namespace Shambala.Core.Supervisors
             decimal totalNetPrice = outgoingShipment.OutgoingShipmentDetails.Sum(e => e.NetPrice);
             totalNetPrice += ledger.OldCash;
             totalNetPrice -= ledger.NewCheque;
-            totalNetPrice += ledger.OldCheque;
+            totalNetPrice -= ledger.OldCheque;
             return totalNetPrice == ledger.NetPrice;
         }
-        public ResultModel Post(LedgerDTO ledger)
+        public ResultModel Post(LedgerDTO ledgerDTO)
         {
 
-
             unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
-            OutgoingShipment outgoingShipment = unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(ledger.OutgoingShipmentId);
-
-            if (!this.CheckNet(ledger, outgoingShipment))
+            OutgoingShipment outgoingShipment = unitOfWork.OutgoingShipmentRepository.GetByIdWithNoTracking(ledgerDTO.OutgoingShipmentId);
+            if (!this.CheckNet(ledgerDTO, outgoingShipment))
             {
                 return new ResultModel
                 {
@@ -41,7 +39,7 @@ namespace Shambala.Core.Supervisors
                     IsValid = false
                 };
             }
-            if (outgoingShipment.RowVersion != ledger.RowVersion)
+            if (outgoingShipment.RowVersion != ledgerDTO.RowVersion)
             {
                 return new ResultModel
                 {
@@ -60,16 +58,15 @@ namespace Shambala.Core.Supervisors
                     Name = System.Enum.GetName(typeof(ConcurrencyErrorCode), ConcurrencyErrorCode.Concurrency_Error)
                 };
             }
-            unitOfWork.OutgoingShipmentRepository.Load(outgoingShipment, e => e.Ledger);
             Ledger ledger1 = new Ledger
             {
-                NewCheque = ledger.NewCheque,
-                OldCheque = ledger.OldCheque,
+                NewCheque = ledgerDTO.NewCheque,
+                OldCheque = ledgerDTO.OldCheque,
                 OutgoingShipmentIdFk = outgoingShipment.Id,
-                TotalNewChequel = ledger.TotalNewCheque,
-                TotalOldCheque = ledger.TotalOldCheque
+                TotalNewChequel = ledgerDTO.TotalNewCheque,
+                TotalOldCheque = ledgerDTO.TotalOldCheque
             };
-            if (outgoingShipment.Ledger == null)
+            if (!unitOfWork.LedgerRespository.DoLedgerExistsForShipment(ledgerDTO.OutgoingShipmentId))
             {
                 unitOfWork.LedgerRespository.Add(ledger1);
             }

@@ -1,4 +1,4 @@
-
+using System.Linq;
 namespace Shambala.Repository
 {
     using Infrastructure;
@@ -18,6 +18,11 @@ namespace Shambala.Repository
             ledger.Id = 0;
             var entity = context.Ledger.Add(ledger);
             return entity.Entity;
+        }
+
+        public bool DoLedgerExistsForShipment(int Id)
+        {
+            return context.Ledger.Count(e => e.OutgoingShipmentIdFk == Id) > 0;
         }
 
         public void Update(Ledger ledger)

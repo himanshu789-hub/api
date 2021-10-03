@@ -13,6 +13,7 @@ namespace Shambala.Core.Models.DTOModel
         public decimal OldCash { get; set; }
         [Range(0,int.MaxValue)]
         public short RowVersion { get; set; }
+        [RequiredWithNonDefault]
         public decimal NetPrice { get; set; }
 
     }

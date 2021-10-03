@@ -13,7 +13,8 @@ namespace Shambala.Controllers
         {
             ledgerSupervisor = supervisor;
         }
-        public IActionResult Add(LedgerDTO ledger)
+        [HttpPost]
+        public IActionResult Add([FromBody]LedgerDTO ledger)
         {
             if (!ModelState.IsValid)
             {

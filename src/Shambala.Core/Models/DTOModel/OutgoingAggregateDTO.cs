@@ -7,7 +7,7 @@ namespace Shambala.Core.Models.DTOModel
     public class OutgoingShipmentAggregateDTO
     {
         public int Id { get; set; }
-        public short RowVersion{get;set;}
+        public short RowVersion { get; set; }
         public SalesmanDTO Salesman { get; set; }
         public OutgoingShipmentStatus Status { get; set; }
         public IEnumerable<OutgoingShipmentAggegateDetailDTO> OutgoingShipmentDetails { get; set; }
@@ -16,7 +16,7 @@ namespace Shambala.Core.Models.DTOModel
         public decimal TotalNetPrice { get; set; }
         public short TotalSchemeQuantity { get; set; }
         public decimal CustomCaratTotalPrice { get; set; }
-
+        public LedgerDTO LedgerDTO { get; set; }
     }
     public class OutgoingShipmentAggegateDetailDTO : OutgoingShipmentDetailTransferDTO
     {
