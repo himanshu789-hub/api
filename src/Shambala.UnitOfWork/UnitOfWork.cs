@@ -17,6 +17,7 @@ namespace Shambala.UnitOfWork
         IDbContextTransaction transaction;
         ShambalaContext _context;
         IShopRepository _shopRepository { get; set; }
+        ILedgerRespository _ledgerRepostory { get; set; }
         IDebitRepository _debitRepository { get; set; }
         // IInvoiceRepository _invoiceRepository { get; set; }
         IOutgoingShipmentRepository _outgoingShipmentRepository { get; set; }
@@ -26,6 +27,13 @@ namespace Shambala.UnitOfWork
         ISchemeRepository _schemeRepository { get; set; }
         IOutgoingShipmentDetailRepository _outgoingShipmentDetailRepository { get; set; }
         ICustomPriceRepository _customPricerepository { get; set; }
+        public ILedgerRespository LedgerRespository
+        {
+            get
+            {
+                return _ledgerRepostory = _ledgerRepostory == null ? new LedgerRepository(_context) : _ledgerRepostory;
+            }
+        }
         public ICustomPriceRepository CustomPriceRepository
         {
             get

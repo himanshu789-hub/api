@@ -41,7 +41,6 @@ namespace Shambala.Core.Supervisors
         {
             _unitOfWork.BeginTransaction(System.Data.IsolationLevel.Serializable);
             return _unitOfWork.ProductRepository.GetProductsInStockWithDispatchQuantity(ProductId, FlavourId);
-
         }
 
     }

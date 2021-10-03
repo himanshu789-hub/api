@@ -91,7 +91,7 @@ namespace Shambala.Core.Profile
             //CreateMap<CustomCaratPrice, CustomCaratPriceDTO>();
             CreateMap<CustomCaratPrice, CustomCaratPriceDTO>()
             .ReverseMap();
-                        // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
+            // CreateMap<OutgoingShipmentDetails, ShipmentDTO>()
             // .ForMember(e => e.TotalRecievedPieces, map => map.MapFrom(e => e.TotalQuantityShiped))
             // .ForMember(e => e.TotalDefectPieces, map => map.MapFrom(e => e.TotalQuantityRejected));
 
@@ -123,8 +123,10 @@ namespace Shambala.Core.Profile
             CreateMap<Shop, ShopDTO>().ReverseMap();
 
             //      CreateMap<Shop, ShopWithInvoicesDTO>();
-            CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();
-
+            //            CreateMap<Shop, ShopWithInvoicesDTO>().ReverseMap();
+            CreateMap<Ledger, LedgerDTO>()
+            .ReverseMap();
+            
             CreateMap<Product, ProductDTO>()
             .ForMember(e => e.Flavours, map => map.MapFrom(e => e.ProductFlavourQuantity))
             .ForMember(e => e.PricePerBottle, map => map.MapFrom(new PricePerBottleValueResolver()))

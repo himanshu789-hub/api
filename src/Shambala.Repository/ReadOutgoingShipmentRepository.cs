@@ -21,7 +21,7 @@ namespace Shambala.Repository
 
         public OutgoingShipmentAggregateBLL GetDetails(int Id)
         {
-            var outgoingShipment = context.OutgoingShipment.Include(e=>e.SalesmanIdFkNavigation).Where(e => e.Id == Id);
+            var outgoingShipment = context.OutgoingShipment.Include(e=>e.SalesmanIdFkNavigation).Include(e=>e.Ledger).Where(e => e.Id == Id);
             var outgoingShipmentDetails = context.OutgoingShipmentDetails.Include(e => e.CustomCaratPrices)
             .Where(e => e.OutgoingShipmentIdFk == Id)
             .Join(context.Product, (od) => od.ProductIdFk, (p) => p.Id, (od, p) => new OutgoingDetailBLL
@@ -62,7 +62,8 @@ namespace Shambala.Repository
                 Id = outgoingShipment.Id,
                 OutgoingShipmentDetails = new List<OutgoingDetailBLL>(detailBLLs),
                 Salesman = outgoingShipment.SalesmanIdFkNavigation,
-                Status = outgoingShipment.Status
+                Status = outgoingShipment.Status,
+                Ledger=outgoingShipment.Ledger
             };
         }
 

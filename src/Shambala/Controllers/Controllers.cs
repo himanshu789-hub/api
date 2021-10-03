@@ -76,14 +76,14 @@ namespace Shambala.Controllers
         {
             _supervisor = supervisor;
         }
-        public IActionResult GetInvoices([FromRoute][BindRequired] int Id)
-        {
-            if (!ModelState.IsValid)
-                return BadRequest();
+        // public IActionResult GetInvoices([FromRoute][BindRequired] int Id)
+        // {
+        //     if (!ModelState.IsValid)
+        //         return BadRequest();
 
-            return Ok(_supervisor.GetDetailWithInvoices(Id));
+        //     return Ok(_supervisor.GetDetailWithInvoices(Id));
 
-        }
+        // }
 
         [HttpGet]
         public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)

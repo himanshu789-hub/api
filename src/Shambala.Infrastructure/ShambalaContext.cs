@@ -30,6 +30,7 @@ namespace Shambala.Infrastructure
         public virtual DbSet<ProductFlavourQuantity> ProductFlavourQuantity { get; set; }
         public virtual DbSet<Salesman> Salesman { get; set; }
         public virtual DbSet<Scheme> Scheme { get; set; }
+        public virtual DbSet<Ledger> Ledger{get;set;}
         public virtual DbSet<Shop> Shop { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -43,6 +44,32 @@ namespace Shambala.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Ledger>(entity =>
+            {
+                entity.ToTable("ledger");
+
+                entity.HasIndex(e => e.OutgoingShipmentIdFk)
+                    .HasName("Ledger_OutgoingShipment_Relationship_idx");
+
+                entity.Property(e => e.Id).HasColumnType("int(11)");
+
+                entity.Property(e => e.NewCheque).HasColumnType("decimal(8,2)");
+
+                entity.Property(e => e.OldCheque).HasColumnType("decimal(8,2)");
+
+                entity.Property(e => e.OutgoingShipmentIdFk)
+                    .HasColumnName("OutgoingShipment_Id_FK")
+                    .HasColumnType("int(10) unsigned");
+
+                entity.Property(e => e.TotalNewChequel).HasColumnType("tinyint(4)");
+
+                entity.Property(e => e.TotalOldCheque).HasColumnType("tinyint(4)");
+
+                entity.HasOne(d => d.OutgoingShipmentIdFkNavigation)
+                    .WithOne(p => p.Ledger)
+                    .HasForeignKey<Ledger>(d => d.OutgoingShipmentIdFk)
+                    .HasConstraintName("Ledger_OutgoingShipment_Relationship");
+            });
             modelBuilder.Entity<Credit>(entity =>
             {
                 entity.ToTable("credit");
@@ -300,10 +327,7 @@ namespace Shambala.Infrastructure
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("Outgoing_Shipment_Details_OutgoingShipment_Relationship");
 
-                // entity.HasMany(e => e.CustomCaratPrices)
-                // .WithOne()
-                // .HasForeignKey(e => e.OutgoinShipmentDetailIdFk);
-
+                
                 entity.HasOne(d => d.ProductIdFkNavigation)
                     .WithMany(p => p.OutgoingShipmentDetails)
                     .HasForeignKey(d => d.ProductIdFk)

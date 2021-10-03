@@ -67,11 +67,11 @@ namespace Shambala.Core.Supervisors
         {
 
         }
-        public ShopWithInvoicesDTO GetDetailWithInvoices(int Id)
-        {
-            Shop Shop = _repository.GetWithInvoiceDetail(Id);
-            return _mapper.Map<ShopWithInvoicesDTO>(Shop);
-        }
+        // public ShopWithInvoicesDTO GetDetailWithInvoices(int Id)
+        // {
+        //     Shop Shop = _repository.GetWithInvoiceDetail(Id);
+        //     return _mapper.Map<ShopWithInvoicesDTO>(Shop);
+        // }
         public override bool IsNameAlreadyExists(string name, int? Id)
         {
             return _repository.IsNameAlreadyExists(name, Id);
