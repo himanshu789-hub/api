@@ -79,8 +79,8 @@ namespace Shambala.Core.Supervisors
                 {
                     _unitOfWork.Rollback();
                     resultModel.IsValid = false;
-                    resultModel.Code = ((int)OutgoingErroCode.DUPLICATE);
-                    resultModel.Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.DUPLICATE);
+                    resultModel.Code = ((int)OutgoingErroCode.OUT_OF_STOCK);
+                    resultModel.Name = System.Enum.GetName(typeof(OutgoingErroCode), OutgoingErroCode.OUT_OF_STOCK);
                     resultModel.Content = productOutOfStockBLLs;
                     return resultModel;
                 }
@@ -149,7 +149,7 @@ namespace Shambala.Core.Supervisors
             foreach (OutgoingShipmentDetailTransferDTO outgoingDetail in outgoingShipmentDetailDTOs)
             {
                 Product product = products.First(e => e.Id == outgoingDetail.ProductId);
-                if (Utility.GetTotalSchemeQuantity(outgoingDetail.TotalQuantityShiped, product.CaretSize, outgoingDetail.SchemeInfo.SchemeQuantity) != outgoingDetail.SchemeInfo.TotalQuantity)
+                if (Utility.GetTotalSchemeQuantity(outgoingDetail.TotalQuantityShiped-outgoingDetail.CustomCaratPrices.TotalQuantity, product.CaretSize, outgoingDetail.SchemeInfo.SchemeQuantity) != outgoingDetail.SchemeInfo.TotalQuantity)
                     productFlavourElements.Add(new ProductFlavourElement { FlavourId = outgoingDetail.FlavourId, ProductId = outgoingDetail.ProductId });
             }
             return productFlavourElements.Count > 0 ? productFlavourElements : null;

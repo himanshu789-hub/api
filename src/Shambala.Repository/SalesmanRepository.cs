@@ -21,7 +21,7 @@ namespace Shambala.Repository
         }
 
 
-        public bool IsNameAlreadyExists(string name, int? Id)
+        public bool IsNameAlreadyExists(string name, short? Id)
         {
             bool IsNameExists = false;
             if (Id.HasValue)

@@ -35,12 +35,6 @@ namespace Shambala.Core.Supervisors
 
             return _mapper.Map<TDTO>(_repository.GetById(Id));
         }
-
-        public virtual bool IsNameAlreadyExists(string name, int? Id)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public bool Update(TDTO entityDTO)
         {
             T DomainEntity = _mapper.Map<T>(entityDTO);

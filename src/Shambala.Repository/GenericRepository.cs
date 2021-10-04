@@ -27,7 +27,7 @@ namespace Shambala.Repository
                 typeof(T).GetProperty("IsActive").SetValue(entity, true);
             if (typeof(T).GetProperty("Id") != null && Utility.NumericOnly(System.Type.GetTypeCode(typeof(T).GetProperty("Id").PropertyType)))
             {
-                typeof(T).GetProperty("Id").SetValue(entity, 0);
+                typeof(T).GetProperty("Id").SetValue(entity,System.Activator.CreateInstance(typeof(T).GetProperty("Id").PropertyType));
             }
             var AddedEntity = _context.Set<T>().Add(entity);
            // _context.SaveChanges(); 

@@ -11,11 +11,12 @@ namespace Shambala.Core.Contracts.Repositories
     // }
     public interface ICustomPriceRepository
     {
-          CustomCaratPrice Add(CustomCaratPrice customCaratPrice);
-          bool Delete(int customCaratPrice);
+        CustomCaratPrice Add(CustomCaratPrice customCaratPrice);
+        bool Delete(int customCaratPrice);
     }
     public interface ISalesmanRepository : IGenericRepository<Salesman>, IQueryList<Salesman>
     {
+        bool IsNameAlreadyExists(string name, short? Id);
         IEnumerable<Salesman> GetAllActive();
     }
 
@@ -31,6 +32,7 @@ namespace Shambala.Core.Contracts.Repositories
     }
     public interface IShopRepository : IGenericRepository<Shop>, IQueryList<Shop>
     {
+        bool IsNameAlreadyExists(string name, int? Id);
         Shop GetWithInvoiceDetail(int Id);
         IEnumerable<Shop> GetAllByName(string name);
     }

@@ -29,7 +29,7 @@ namespace Shambala.Core.Supervisors
             return _mapper.Map<IEnumerable<SalesmanDTO>>(_repository.FetchList(e => EF.Functions.Like(e.FullName, $"%{name}%")));
         }
 
-        public override bool IsNameAlreadyExists(string name, int? Id)
+        public bool IsNameAlreadyExists(string name, short? Id)
         {
             return _repository.IsNameAlreadyExists(name, Id);
         }
@@ -72,7 +72,7 @@ namespace Shambala.Core.Supervisors
         //     Shop Shop = _repository.GetWithInvoiceDetail(Id);
         //     return _mapper.Map<ShopWithInvoicesDTO>(Shop);
         // }
-        public override bool IsNameAlreadyExists(string name, int? Id)
+        public  bool IsNameAlreadyExists(string name, int? Id)
         {
             return _repository.IsNameAlreadyExists(name, Id);
         }

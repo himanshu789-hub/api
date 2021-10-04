@@ -30,7 +30,7 @@ namespace Shambala.Controllers
                 }
                 return Ok("Not Added");
             }
-            return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e=>e.ErrorMessage)));
+            return BadRequest(ModelState.Values.SelectMany(e => e.Errors.Select(e => e.ErrorMessage)));
         }
         [HttpPut]
         public IActionResult Update([FromBody] T dto)
@@ -110,7 +110,7 @@ namespace Shambala.Controllers
         }
 
         [HttpGet]
-        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, int? Id)
+        public IActionResult IsNameAlreadyExists([BindRequired][FromQuery] string name, short? Id)
         {
             if (!ModelState.IsValid)
                 return BadRequest("Name Value Required");

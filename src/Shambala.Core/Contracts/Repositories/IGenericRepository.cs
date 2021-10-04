@@ -6,7 +6,7 @@ namespace Shambala.Core.Contracts.Repositories
 {
     public interface IQueryList<T> where T : class
     {
-        bool IsNameAlreadyExists(string name, int? Id);
+  //      bool IsNameAlreadyExists(string name, int? Id);
     }
     public interface ILoadingProperties<T> where T : class
     {
