@@ -5,7 +5,7 @@ namespace Shambala.Core.Contracts.Repositories
     {
         Ledger Add(Ledger ledger);
         
-        bool DoLedgerExistsForShipment(int Id);
+        Ledger FindByShipmentId(int OutgoingShipmentId);
         void Update(Ledger ledger);
     }
 }

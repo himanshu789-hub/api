@@ -15,7 +15,7 @@ namespace Shambala.General.Test
         {
 
             var config = new MapperConfiguration(opt => opt.AddProfile(new ApplicationProfiles()));
-            config.AssertConfigurationIsValid();
+          //  config.AssertConfigurationIsValid();
             _mapper = config.CreateMapper();
         }
         [Fact]
@@ -54,9 +54,13 @@ namespace Shambala.General.Test
             // Assert.NotEqual(result.PricePerBottle, 0);
             // // Assert.Same(exptectedMapped.FullName, salesman.FullName);
             //    Console.WriteLine("Desiralize Value : " + System.Text.Json.JsonSerializer.Serialize(result));
-            var result = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
-            Assert.Equal(result,"FILLED");
-            Console.WriteLine("Result : "+result);
+           // var result = _mapper.Map<string>(OutgoingShipmentStatus.FILLED);
+            Ledger ledger = new Ledger{
+                Id = 1,
+                NewCheque=1
+            };
+            Console.WriteLine(
+            System.Text.Json.JsonSerializer.Serialize(_mapper.Map<LedgerDTO>(ledger)));
         }
     }
 }

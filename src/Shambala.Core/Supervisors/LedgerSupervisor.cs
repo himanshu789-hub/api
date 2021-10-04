@@ -58,21 +58,29 @@ namespace Shambala.Core.Supervisors
                     Name = System.Enum.GetName(typeof(ConcurrencyErrorCode), ConcurrencyErrorCode.Concurrency_Error)
                 };
             }
-            Ledger ledger1 = new Ledger
+            Ledger prviousShipment = unitOfWork.LedgerRespository.FindByShipmentId(ledgerDTO.OutgoingShipmentId);
+            if (prviousShipment == null)
             {
-                NewCheque = ledgerDTO.NewCheque,
-                OldCheque = ledgerDTO.OldCheque,
-                OutgoingShipmentIdFk = outgoingShipment.Id,
-                TotalNewChequel = ledgerDTO.TotalNewCheque,
-                TotalOldCheque = ledgerDTO.TotalOldCheque
-            };
-            if (!unitOfWork.LedgerRespository.DoLedgerExistsForShipment(ledgerDTO.OutgoingShipmentId))
-            {
+
+                Ledger ledger1 = new Ledger
+                {
+                    NewCheque = ledgerDTO.NewCheque,
+                    OldCheque = ledgerDTO.OldCheque,
+                    OutgoingShipmentIdFk = outgoingShipment.Id,
+                    TotalNewCheque = ledgerDTO.TotalNewCheque,
+                    TotalOldCheque = ledgerDTO.TotalOldCheque,
+                    OldCash=ledgerDTO.OldCash
+                };
                 unitOfWork.LedgerRespository.Add(ledger1);
             }
             else
             {
-                unitOfWork.LedgerRespository.Update(ledger1);
+                prviousShipment.OldCash  = ledgerDTO.OldCash;
+                prviousShipment.NewCheque = ledgerDTO.NewCheque;
+                prviousShipment.OldCheque = ledgerDTO.OldCheque;
+                prviousShipment.TotalNewCheque = ledgerDTO.TotalNewCheque;
+                prviousShipment.TotalOldCheque = ledgerDTO.TotalOldCheque;
+                unitOfWork.LedgerRespository.Update(prviousShipment);
             }
             unitOfWork.SaveChanges();
             return new ResultModel { IsValid = true };

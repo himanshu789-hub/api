@@ -4,6 +4,7 @@ namespace Shambala.Core.Models.DTOModel
     using Helphers;
     public class LedgerDTO
     {
+        public int Id{get;set;}
         [RequiredWithNonDefault]
         public int OutgoingShipmentId { get; set; }
         public decimal OldCheque { get; set; }
@@ -15,6 +16,5 @@ namespace Shambala.Core.Models.DTOModel
         public short RowVersion { get; set; }
         [RequiredWithNonDefault]
         public decimal NetPrice { get; set; }
-
     }
 }

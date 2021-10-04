@@ -70,7 +70,7 @@ namespace Shambala.Repository
 
         public IEnumerable<OutgoingShipment> GetShipmentsBySalesmanIdAndAfterDate(short salesmanId, DateTime date)
         {
-            var dateCreated = date.ToUniversalTime().Date;
+            var dateCreated = date.Date;
             var query = context.OutgoingShipment.Include(e => e.SalesmanIdFkNavigation).Where(e => e.SalesmanIdFk == salesmanId && e.DateCreated.Date == dateCreated);
             if (context.Database.CurrentTransaction != null)
                 return query.ToList();

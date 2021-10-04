@@ -7,7 +7,8 @@ namespace Shambala.Domain
         public decimal OldCheque { get; set; }
         public decimal NewCheque { get; set; }
         public byte TotalOldCheque { get; set; }
-        public byte TotalNewChequel { get; set; }
+        public byte TotalNewCheque { get; set; }
+        public decimal OldCash{get;set;}
         public virtual OutgoingShipment OutgoingShipmentIdFkNavigation { get; set; }
     }
 }

@@ -16,7 +16,7 @@ namespace Shambala.Core.Models.DTOModel
         public decimal TotalNetPrice { get; set; }
         public short TotalSchemeQuantity { get; set; }
         public decimal CustomCaratTotalPrice { get; set; }
-        public LedgerDTO LedgerDTO { get; set; }
+        public LedgerDTO Ledger { get; set; }
     }
     public class OutgoingShipmentAggegateDetailDTO : OutgoingShipmentDetailTransferDTO
     {

@@ -20,9 +20,9 @@ namespace Shambala.Repository
             return entity.Entity;
         }
 
-        public bool DoLedgerExistsForShipment(int Id)
+        public Ledger FindByShipmentId(int Id)
         {
-            return context.Ledger.Count(e => e.OutgoingShipmentIdFk == Id) > 0;
+            return context.Ledger.FirstOrDefault(e=>e.OutgoingShipmentIdFk==Id) ;
         }
 
         public void Update(Ledger ledger)

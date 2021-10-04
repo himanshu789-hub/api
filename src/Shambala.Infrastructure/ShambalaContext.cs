@@ -57,11 +57,13 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.OldCheque).HasColumnType("decimal(8,2)");
 
+                entity.Property(e => e.OldCash).HasColumnType("decimal(8,2)");
+
                 entity.Property(e => e.OutgoingShipmentIdFk)
                     .HasColumnName("OutgoingShipment_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.TotalNewChequel).HasColumnType("tinyint(4)");
+                entity.Property(e => e.TotalNewCheque).HasColumnType("tinyint(4)");
 
                 entity.Property(e => e.TotalOldCheque).HasColumnType("tinyint(4)");
 
