@@ -1,0 +1,56 @@
+-- MySQL dump 10.13  Distrib 8.0.26, for Win64 (x86_64)
+--
+-- Host: localhost    Database: test
+-- ------------------------------------------------------
+-- Server version	8.0.4-rc-log
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!50503 SET NAMES utf8 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `scheme`
+--
+
+DROP TABLE IF EXISTS `scheme`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `scheme` (
+  `Id` smallint(5) NOT NULL AUTO_INCREMENT,
+  `DateCreated` date NOT NULL,
+  `Quantity` tinyint(4) unsigned NOT NULL,
+  `Product_Id_FK` int(10) unsigned NOT NULL,
+  PRIMARY KEY (`Id`),
+  UNIQUE KEY `Id_UNIQUE` (`Id`),
+  KEY `Scheme_Product_Relationship_idx` (`Product_Id_FK`),
+  CONSTRAINT `Scheme_Product_Relationship` FOREIGN KEY (`Product_Id_FK`) REFERENCES `product` (`id`) ON UPDATE CASCADE
+) ENGINE=InnoDB AUTO_INCREMENT=33 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `scheme`
+--
+
+LOCK TABLES `scheme` WRITE;
+/*!40000 ALTER TABLE `scheme` DISABLE KEYS */;
+INSERT INTO `scheme` VALUES (1,'0001-01-01',0,1),(2,'0001-01-01',0,2),(3,'0001-01-01',0,3),(4,'0001-01-01',0,4),(5,'0001-01-01',0,5),(6,'0001-01-01',0,6),(7,'0001-01-01',0,7),(8,'0001-01-01',0,8),(9,'0001-01-01',0,9),(10,'0001-01-01',0,10),(11,'0001-01-01',0,11),(12,'0001-01-01',0,12),(13,'0001-01-01',0,13),(14,'0001-01-01',0,14),(15,'0001-01-01',0,15),(16,'0001-01-01',0,16),(17,'0001-01-01',0,17),(18,'0001-01-01',0,18),(19,'0001-01-01',0,19),(20,'0001-01-01',0,20),(21,'0001-01-01',0,21),(22,'0001-01-01',0,22),(23,'0001-01-01',0,23),(24,'0001-01-01',0,24),(25,'0001-01-01',0,25),(26,'0001-01-01',0,26),(27,'0001-01-01',0,27),(28,'0001-01-01',0,28),(29,'0001-01-01',0,29),(30,'0001-01-01',0,30),(31,'0001-01-01',0,31),(32,'0001-01-01',0,32);
+/*!40000 ALTER TABLE `scheme` ENABLE KEYS */;
+UNLOCK TABLES;
+/*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
+
+-- Dump completed on 2021-10-08 21:45:30
