@@ -10,12 +10,13 @@ namespace Shambala.Repository
         public CustomCaratPrice Add(CustomCaratPrice customCaratPrice)
         {
             customCaratPrice.Id = 0;
-            return this.context.CustomCaratPrice.Add(customCaratPrice).Entity;
+            var entity = this.context.CustomCaratPrice.Add(customCaratPrice).Entity;
+            return entity;
         }
 
         public bool Delete(int Id)
         {
-            this.context.CustomCaratPrice.Remove(new CustomCaratPrice(){Id = Id});
+            this.context.CustomCaratPrice.Remove(new CustomCaratPrice() { Id = Id });
             return true;
         }
     }

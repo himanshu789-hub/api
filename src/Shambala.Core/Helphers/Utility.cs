@@ -11,9 +11,10 @@ namespace Shambala.Core.Helphers
     using Models;
     public class AfterMapper
     {
-        public static System.Action<OutgoingShipmentDetailTransferDTO, Product> setSchemePerCaret = (shipmentDetail, p) =>
+        public static System.Action<OutgoingShipmentDetailTransferDTO, Product> setSchemePerCaretAndCustomCarat = (shipmentDetail, p) =>
         {
-            shipmentDetail.SchemeInfo.SchemeQuantity = Utility.GetSchemeQuantityPerCaret(shipmentDetail.TotalQuantityShiped, shipmentDetail.SchemeInfo.TotalQuantity, p.CaretSize);
+            shipmentDetail.CustomCaratPrices.TotalQuantity = 0;
+            shipmentDetail.CustomCaratPrices.TotalPrice = 0;
             foreach (CustomCaratPriceDTO customCaratPrice in shipmentDetail.CustomCaratPrices.Prices)
             {
                 Product newProduct = new Product
@@ -24,14 +25,16 @@ namespace Shambala.Core.Helphers
                     PricePerCaret = customCaratPrice.PricePerCarat,
                     SchemeQuantity = p.SchemeQuantity
                 };
+                shipmentDetail.CustomCaratPrices.TotalQuantity += customCaratPrice.Quantity;
                 shipmentDetail.CustomCaratPrices.TotalPrice += Utility.GetTotalProductPrice(newProduct, customCaratPrice.Quantity);
             }
+            shipmentDetail.SchemeInfo.SchemeQuantity = Utility.GetSchemeQuantityPerCaret(shipmentDetail.TotalQuantityShiped - shipmentDetail.CustomCaratPrices.TotalQuantity, shipmentDetail.SchemeInfo.TotalQuantity, p.CaretSize);
         };
         public static IEnumerable<OutgoingShipmentDetailTransferDTO> OutgoingShipmentTransferDTODetails(IEnumerable<OutgoingShipmentDetailTransferDTO> outgoingShipmentDetails, IEnumerable<Product> products)
         {
             foreach (var detail in outgoingShipmentDetails)
             {
-                AfterMapper.setSchemePerCaret(detail, products.First(e => e.Id == detail.ProductId));
+                AfterMapper.setSchemePerCaretAndCustomCarat(detail, products.First(e => e.Id == detail.ProductId));
             }
             return outgoingShipmentDetails;
         }
@@ -40,7 +43,7 @@ namespace Shambala.Core.Helphers
             foreach (OutgoingShipmentAggegateDetailDTO detail in aggegateDetailDTOs)
             {
                 Product product = products.First(e => e.Id == detail.ProductId);
-                setSchemePerCaret(detail, product);
+                setSchemePerCaretAndCustomCarat(detail, product);
                 detail.CaretSize = product.CaretSize;
                 detail.UnitPrice = product.PricePerCaret;
                 detail.ProductName = product.Name;
@@ -99,6 +102,6 @@ namespace Shambala.Core.Helphers
                 TotalRecievedPieces = e.TotalQuantityReturned
             });
         }
-        static public decimal CalculatePricePerBottleOfProduct(Product product) => decimal.Round(product.PricePerCaret / product.CaretSize, 2,System.MidpointRounding.AwayFromZero);
+        static public decimal CalculatePricePerBottleOfProduct(Product product) => decimal.Round(product.PricePerCaret / product.CaretSize, 2, System.MidpointRounding.AwayFromZero);
     }
 }

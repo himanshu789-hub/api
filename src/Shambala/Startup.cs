@@ -51,14 +51,14 @@ namespace Shambala
             {
                 app.UseDeveloperExceptionPage();
             }
-            app.UseHttpsRedirection();
+           // app.UseHttpsRedirection();
 
             if (!env.IsDevelopment())
             {
                 app.UseSpaStaticFiles();
             }
             app.UseRouting();
-            app.UseAuthorization();
+            //app.UseAuthorization();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
