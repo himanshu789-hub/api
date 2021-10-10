@@ -345,14 +345,16 @@ namespace Shambala.Core.Supervisors
             short SchemeFlavourId = this.schemeProductOptions.FlavourId;
             //delete shipments
             IEnumerable<OutgoingShipmentDetails> deleteShipments = outgoingShipment.OutgoingShipmentDetails
-            .Where(e => !outgoingShipmentDTO.OutgoingShipmentDetails.Any(f => f.FlavourId == e.FlavourIdFk && f.ProductId == e.ProductIdFk && f.OutgoingShipmentId == e.OutgoingShipmentIdFk));
+            .Where(e => !outgoingShipmentDTO.OutgoingShipmentDetails.Any(f => f.FlavourId == e.FlavourIdFk && f.ProductId == e.ProductIdFk));
             foreach (var deleteShipment in _mapper.Map<IEnumerable<OutgoingShipmentDetails>>(deleteShipments))
             {
                 _unitOfWork.ProductRepository.AddQuantity(deleteShipment.ProductIdFk, deleteShipment.FlavourIdFk, deleteShipment.TotalQuantityShiped);
+                //restore scheme
                 _unitOfWork.ProductRepository.AddQuantity(SchemeProductId, SchemeFlavourId, deleteShipment.SchemeTotalQuantity);
                 foreach (var customprice in deleteShipment.CustomCaratPrices)
                     _unitOfWork.CustomPriceRepository.Delete(customprice.Id);
                 _unitOfWork.OutgoingShipmentDetailRepository.Delete(deleteShipment.Id);
+              //  outgoingShipment.OutgoingShipmentDetails.Remove(deleteShipment);
             }
 
             //new Shipments
