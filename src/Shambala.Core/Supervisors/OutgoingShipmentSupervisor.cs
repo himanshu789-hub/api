@@ -141,10 +141,9 @@ namespace Shambala.Core.Supervisors
                 .FirstOrDefault(e => e.ProductIdFk == currentShipmentDetailDTO.ProductId && e.FlavourIdFk == currentShipmentDetailDTO.FlavourId);
                 short oldSchemeQuantity = oldDetail?.SchemeTotalQuantity ?? 0;
                 short newSchemeQuantity = currentShipmentDetailDTO.SchemeInfo.TotalQuantity;
-
-                if (!((currentShipmentDetailDTO.ProductId == this.schemeProductOptions.ProductId 
-                    && currentShipmentDetailDTO.FlavourId == this.schemeProductOptions.FlavourId)
-                    && oldSchemeProduct != null && newSchemeProduct != null))
+                // if  current ProductId and FavourId are SchemeProduct => oldDetail==oldSchemeProduct
+                if (!(currentShipmentDetailDTO.ProductId == this.schemeProductOptions.ProductId 
+                    && currentShipmentDetailDTO.FlavourId == this.schemeProductOptions.FlavourId))
                     schemeQuantityLeft += oldSchemeQuantity;
 
                 schemeQuantityLeft -= newSchemeQuantity;
