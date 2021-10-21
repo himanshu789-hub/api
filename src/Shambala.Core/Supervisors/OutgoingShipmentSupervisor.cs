@@ -131,7 +131,7 @@ namespace Shambala.Core.Supervisors
 
             int schemeQuantityLeft = products.First(e => e.Id == this.schemeProductOptions.ProductId)
             .ProductFlavourQuantity.First(e => e.FlavourIdFk == this.schemeProductOptions.FlavourId).Quantity
-            + (oldSchemeProduct?.TotalQuantityShiped ?? 0 + oldSchemeProduct?.SchemeTotalQuantity ?? 0)
+            + (oldSchemeProduct?.TotalQuantityShiped ?? 0) + (oldSchemeProduct?.SchemeTotalQuantity ?? 0)
             - (newSchemeProduct?.TotalQuantityShiped ?? 0);
 
 
