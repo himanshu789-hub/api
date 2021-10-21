@@ -10,7 +10,7 @@ namespace Shambala.Domain
     public partial class ProductFlavourQuantity
     {
         public byte Id { get; set; }
-        public short Quantity { get; set; }
+        public int Quantity { get; set; }
         public byte FlavourIdFk { get; set; }
         public int ProductIdFk { get; set; }
 

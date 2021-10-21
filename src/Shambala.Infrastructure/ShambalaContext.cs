@@ -113,9 +113,10 @@ namespace Shambala.Infrastructure
                     .HasColumnType("int(10) unsigned");
 
                 entity.Property(e => e.Id).HasColumnType("int(10)").ValueGeneratedOnAdd();
-                entity.Property(e => e.PricePerCarat).HasColumnType("decimal(6,2)");
+                entity.Property(e => e.PricePerCarat).HasColumnType("decimal(7,2)");
 
                 entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
+                
                 entity.HasOne(e=>e.OutgoinShipmentDetailIdFkNavigation)
                 .WithMany(e=>e.CustomCaratPrices)
                 .HasForeignKey(e=>e.OutgoinShipmentDetailIdFk)
@@ -274,12 +275,12 @@ namespace Shambala.Infrastructure
 
                 entity.Property(e => e.TotalShipedPrice)
                     .HasColumnName("Total_Shiped_Price")
-                    .HasColumnType("decimal(6,2)");
+                    .HasColumnType("decimal(10,2)");
 
 
                 entity.Property(e => e.NetPrice)
                     .HasColumnName("Net_Price")
-                    .HasColumnType("decimal(6,2)");
+                    .HasColumnType("decimal(10,2)");
 
                 entity.Property(e => e.OutgoingShipmentIdFk)
                     .HasColumnName("Outgoing_Shipment_Id_FK")
@@ -380,7 +381,7 @@ namespace Shambala.Infrastructure
                     .HasColumnName("Product_Id_FK")
                     .HasColumnType("int(10) unsigned");
 
-                entity.Property(e => e.Quantity).HasColumnType("smallint(5) unsigned");
+                entity.Property(e => e.Quantity).HasColumnType("int(11)");
 
                 entity.HasOne(d => d.FlavourIdFkNavigation)
                     .WithMany(p => p.ProductFlavourQuantity)
